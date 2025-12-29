@@ -2,7 +2,7 @@
 
  
 
-##📌 Overview
+## 📌 Overview
 
 Wateen is a Flutter mobile application developed as a Graduation Project that aims to improve the medical waiting experience and streamline communication between patients, doctors, and nurses.
 
