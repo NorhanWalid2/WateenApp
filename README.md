@@ -1,16 +1,17 @@
-# wateen_app
+#  Wateen – Smart Medical Waiting & Assistance App 🩺
 
-A new Flutter project.
+ 
 
-## Getting Started
+## 📌 Overview
 
-This project is a starting point for a Flutter application.
+Wateen is a Flutter mobile application developed as a Graduation Project that aims to improve the medical waiting experience and streamline communication between patients, doctors, and nurses.
 
-A few resources to get you started if this is your first Flutter project:
+The application is built using the MVVM (Model–View–ViewModel) architecture to ensure clean code, scalability, and maintainability.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🎯 Problem
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Long and unorganized patient waiting times
+
+Inefficient task coordination between doctors and nurses
+
+Limited access to quick medical guidance for patients
