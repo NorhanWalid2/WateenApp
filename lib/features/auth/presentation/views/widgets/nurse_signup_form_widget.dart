@@ -4,8 +4,8 @@ import 'package:wateen_app/features/auth/presentation/views/widgets/info_warning
 import 'package:wateen_app/features/auth/presentation/views/widgets/label_textfield_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/labeled_upload_field_widget.dart';
 
-class SignUpFormWidget extends StatelessWidget {
-  const SignUpFormWidget({super.key});
+class NurseSignupFormWidget extends StatelessWidget {
+  const NurseSignupFormWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

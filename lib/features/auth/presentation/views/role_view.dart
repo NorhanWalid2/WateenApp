@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/enums/user_role.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/utls/app_assets.dart';
 import 'package:wateen_app/core/utls/app_colors.dart';
@@ -43,7 +44,7 @@ class _RoleViewState extends State<RoleView> {
                 setState(() {
                   selectedIndex = 0;
                 });
-                CustomNavigation(context, '/signup');
+                CustomNavigation(context, '/signup', extra: UserRole.doctor);
               },
             ),
             const SizedBox(height: 16),
@@ -57,7 +58,7 @@ class _RoleViewState extends State<RoleView> {
                 setState(() {
                   selectedIndex = 1;
                 });
-                CustomNavigation(context, '/signup');
+                CustomNavigation(context, '/signup', extra: UserRole.nurse);
               },
             ),
             const SizedBox(height: 16),
@@ -70,7 +71,7 @@ class _RoleViewState extends State<RoleView> {
                 setState(() {
                   selectedIndex = 2;
                 });
-                CustomNavigation(context, '/signup');
+                CustomNavigation(context, '/signup', extra: UserRole.patient);
               },
 
               selectedIndex: selectedIndex,
