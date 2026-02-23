@@ -18,7 +18,7 @@ class SignupView extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: appBarWidget(title: _getTitle(role)),
+              child: AppBarWidget(title: _getTitle(role)),
             ),
             Expanded(
               child: Padding(
