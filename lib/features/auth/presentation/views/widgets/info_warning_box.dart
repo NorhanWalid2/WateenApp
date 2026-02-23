@@ -7,11 +7,14 @@ class InfoWarningBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: const Color.fromARGB(255, 255, 212, 182).withOpacity(0.56),
+        // tertiary في الـ theme هو accent = softRed/lightPastelPink — مناسب للـ warning
+        color: colorScheme.tertiary.withOpacity(0.25),
       ),
       child: Row(
         children: [
@@ -20,7 +23,10 @@ class InfoWarningBox extends StatelessWidget {
           Expanded(
             child: Text(
               'Your account will be under review by admin. You will be notified once approved.',
-              style: GoogleFonts.archivo(fontSize: 15),
+              style: GoogleFonts.archivo(
+                fontSize: 15,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],

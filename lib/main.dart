@@ -1,10 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/app/app.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/core/routes/app_router.dart';
+import 'package:wateen_app/core/theming/app_theme.dart';
+import 'package:wateen_app/core/theming/theme_cubit.dart';
+import 'package:wateen_app/features/auth/presentation/views/role_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(BlocProvider(create: (_) => ThemeCubit(), child: const MyApp()));
 }
 
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        return MaterialApp.router(
+          title: 'Wateen App',
+          themeMode: themeMode,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          routerConfig: router,
+        );
+      },
+    );
+  }
+}
 
 // 1- add package flutter_native_splash in pubspec.yaml part of dependencies
 
@@ -23,6 +45,9 @@ void main() {
       //     image: assets/images/splash_ios_android_12.png
       //     color: "#5F33E1"
 // 4- run => dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+
+
+
 // 1- add package flutter_launcher_icons in pubspec.yaml dev_dependencies
 // icons app logo
 // 2- app IOS:

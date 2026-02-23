@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wateen_app/core/utls/app_colors.dart';
 
 class CustomButtonWidget extends StatelessWidget {
-  const CustomButtonWidget({super.key, required this.text});
+  const CustomButtonWidget({super.key, required this.text, this.onTap});
   final String text;
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
+      onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: AppColors.primaryColor,
+          color: colorScheme.secondary,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
@@ -20,7 +24,7 @@ class CustomButtonWidget extends StatelessWidget {
             text,
             style: GoogleFonts.archivo(
               fontSize: 16,
-              color: AppColors.white,
+              color: Colors.white,
               fontWeight: FontWeight.w500,
             ),
           ),

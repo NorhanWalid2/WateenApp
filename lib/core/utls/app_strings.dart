@@ -1,1 +1,104 @@
- 
+abstract class AppStrings {
+  static String
+      //onBoarding
+      aIHealthAssistant =
+      'AI Health Assistant',
+  getInstantMedical =
+      'Get instant medical guidance powered by artificial intelligence 24/7',
+  skip = 'Skip',
+  next = 'Next',
+  expertDoctors = 'Expert Doctors',
+  connectWithCertified =
+      'Connect with certified healthcare professionals through video consultations',
+  homeCareServices = 'Home Care Services',
+  requestProfessionalNursing =
+      'Request professional nursing and physiotherapy services at your doorstep',
+  getStarted = 'Get Started',
+  wateen = 'Wateen',
+      // signIn
+      welcomeBack =
+      'Welcome Back',
+  signInTo = "Sign in to continue to your account",
+  emailAddress = 'Email Address',
+  enteryouremail = 'Enter your email',
+  password = 'Password',
+  enteryourpassword = 'Enter your password',
+  rememberMe = 'Remember me',
+  forgotpassword = 'Forgot password?',
+  signIn = 'Sign In',
+  doNotHave = "Don't have an account?",
+  signUp = 'Sign Up',
+  byContinuing = 'By continuing, you agree to our',
+  termsofServiceandPrivacyPolicy = ' Terms of Service and Privacy Policy',
+      // singUp
+      createAccount =
+      'Create Account',
+  chooseyourrole = 'Choose your role to get started',
+  patient = 'Patient',
+  accesshealthservices = 'Access health services',
+  doctor = 'Doctor',
+  managepatientcare = 'Manage patient care',
+  homeService = 'Home Service',
+  providecareservices = 'Provide care services',
+  alreadyhaveanaccount = 'Already have an account?',
+  patientRegistration = 'Patient Registration',
+  createyouraccount = 'Create your account to access healthcare services',
+  personalInformation = 'Personal Information',
+  fullName = 'Full Name ',
+  enteryourfullname = 'Enter your full name',
+  youremailexample = 'your.email@example.com',
+  createApassword = 'Create a password',
+  confirmPassword = 'Confirm Password ',
+  confirmyourpassword = 'Confirm your password',
+  phoneNumber = 'Phone Number ',
+  numberExample = '+966 5x xxx xxxx',
+  dateofBirth = 'Date of Birth',
+  gender = 'Gender',
+  nationalID = 'National ID',
+  enteryournationalID = 'Enter your national ID',
+  bloodType = 'Blood Type',
+  emergencyContact = 'Emergency Contact',
+  contactName = 'Contact Name',
+  fullnameofemergencycontact = 'Full name of emergency contact',
+  contactPhone = 'Contact Phone',
+  createPatientAccount = 'Create Patient Account',
+  doctorRegistration = 'Doctor Registration',
+  step = 'Step',
+  basicInformation = 'Basic Information',
+  professionalInformation = 'Professional Information',
+  specialization = 'Specialization ',
+  medicalLicenseNumber = 'Medical License Number ',
+  enterLicenseNumber = 'Enter license number',
+  yearsofExperience = 'Years of Experience ',
+  hospitalClinicAffiliation = 'Hospital/Clinic Affiliation ',
+  currentWorkplace = 'Current workplace',
+  consultationFee = 'Consultation Fee (SAR)',
+  availableForHomeVisits = 'Available for Home Visits',
+  checkThisIfYou = 'Check this if you provide home visit services',
+  uploadMedicalLicense = 'Upload Medical License',
+  uploadAClearPhoto =
+      "Upload a clear photo or scan of your medical license. We'll verify it using OCR technology.",
+  uploadLicenseDocument = 'Upload License Document',
+  jPGPNGOrPDF = 'JPG, PNG or PDF (max 10MB)',
+  takePhoto = 'Take Photo',
+  yourAccountWillBe =
+      "Your account will be under review by our admin team. You'll be notified once approved.",
+  submitRegistration = 'Submit Registration',
+      //Forget Password
+      resetPassword =
+      'Reset Password',
+  enterYourEmail =
+      "Enter your email address and we'll send you a verification code to reset your password",
+  sendVerificationCode = 'Send Verification Code',
+  theVerificationCode =
+      'The verification code will be sent to your registered email address and will expire in 10 minutes.',
+  needHelp = 'Need help?',
+  contactSupport = 'Contact Support',
+  verifyCode = 'Verify Code',
+  weSentA6Digit = 'We sent a 6-digit code to',
+  enterVerificationCode = 'Enter Verification Code',
+  resendCode = 'Resend code in',
+  wrongEmail = 'Wrong email?',
+  changeEmail = 'Change Email',
+  continue_ = 'Continue';
+}
