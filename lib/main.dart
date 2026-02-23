@@ -23,6 +23,9 @@ void main() {
       //     image: assets/images/splash_ios_android_12.png
       //     color: "#5F33E1"
 // 4- run => dart run flutter_native_splash:create --path=flutter_native_splash.yaml
+
+
+
 // 1- add package flutter_launcher_icons in pubspec.yaml dev_dependencies
 // icons app logo
 // 2- app IOS:
