@@ -36,7 +36,7 @@ class LabeledUploadFieldWidget extends StatelessWidget {
             color: colorScheme.surface,
           ),
           child: ListTile(
-            leading: Image.asset(Assets.assetsImagesLicense),
+            leading: Image.asset(AppAssets.assetsImagesLicense),
             title: Text(
               document,
               style: GoogleFonts.archivo(
@@ -45,11 +45,8 @@ class LabeledUploadFieldWidget extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            subtitle: Text(
-              subtitle,
-              style: textTheme.bodyMedium,
-            ),
-            trailing: Image.asset(Assets.assetsImagesUpload),
+            subtitle: Text(subtitle, style: textTheme.bodyMedium),
+            trailing: Image.asset(AppAssets.assetsImagesUpload),
           ),
         ),
       ],

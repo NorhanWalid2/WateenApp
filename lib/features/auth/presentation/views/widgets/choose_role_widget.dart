@@ -23,7 +23,7 @@ class ChooseRoleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isSelected = index == selectedIndex;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    // final textTheme = Theme.of(context).textTheme;
 
     return GestureDetector(
       onTap: onTap,
@@ -50,12 +50,12 @@ class ChooseRoleWidget extends StatelessWidget {
         ),
         child: ListTile(
           leading: leading,
-          title: Text(roleTitle, style: AppTextstyle.archivo20(context)),
+          title: Text(roleTitle, style: AppTextstyle.arimo24(context)),
           subtitle: Text(
             subTitleRole,
             style: AppTextstyle.archivo15w400Gray(context),
           ),
-          trailing: Image.asset(Assets.assetsImagesRightarrow),
+          trailing: Image.asset(AppAssets.assetsImagesRightarrow),
         ),
       ),
     );

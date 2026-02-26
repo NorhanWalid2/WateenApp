@@ -12,26 +12,54 @@ class SignupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserRole role = GoRouterState.of(context).extra as UserRole;
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
           children: [
+            // ── AppBar ───────────────────────────
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: AppBarWidget(title: _getTitle(role)),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: AppBarWidget(),
             ),
+
+            // ── Scrollable Content ───────────────
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: switch (role) {
-                        UserRole.doctor => DoctorSignUpFormWidget(),
-                        UserRole.nurse => NurseSignupFormWidget(),
-                        UserRole.patient => PatientSignupFormWidget(),
-                      },
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+
+                    // ── Title ──────────────────────
+                    Text(
+                      _getTitle(role),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _getSubtitle(role),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Form ───────────────────────
+                    switch (role) {
+                      UserRole.doctor => DoctorSignUpFormWidget(),
+                      UserRole.nurse => NurseSignupFormWidget(),
+                      UserRole.patient => PatientSignupFormWidget(),
+                    },
+
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -51,5 +79,16 @@ String _getTitle(UserRole role) {
       return 'Nurse Registration';
     case UserRole.patient:
       return 'Patient Registration';
+  }
+}
+
+String _getSubtitle(UserRole role) {
+  switch (role) {
+    case UserRole.doctor:
+      return 'Create your account to manage patient care';
+    case UserRole.nurse:
+      return 'Create your account to provide care services';
+    case UserRole.patient:
+      return 'Create your account to access healthcare services';
   }
 }

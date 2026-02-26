@@ -18,7 +18,7 @@ class InfoWarningBox extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(Assets.assetsImagesWarning),
+          Image.asset(AppAssets.assetsImagesWarning),
           const SizedBox(width: 20),
           Expanded(
             child: Text(
