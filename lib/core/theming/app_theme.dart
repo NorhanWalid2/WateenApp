@@ -540,7 +540,7 @@ abstract class AppTheme {
     // ── Text Theme ──────────────────────────
     textTheme: const TextTheme(
       headlineLarge: TextStyle(
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: FontWeight.w700,
         color: AppColorsLight.textPrimary,
       ),

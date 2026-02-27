@@ -3,7 +3,6 @@ import 'package:wateen_app/core/enums/user_role.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/utls/app_icons.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';
-import 'package:wateen_app/core/utls/app_textstyle.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/features/auth/data/model/role_model.dart';
@@ -44,6 +43,7 @@ class _RoleViewState extends State<RoleView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final bool hasSelection = selectedIndex != -1;
 
     return Scaffold(
@@ -56,16 +56,12 @@ class _RoleViewState extends State<RoleView> {
             children: [
               AppBarWidget(),
               const SizedBox(height: 32),
-              Text(
-                AppStrings.createAccount,
-                style: AppTextstyle.arimo30(context),
-              ),
+              Text(AppStrings.createAccount, style: textTheme.headlineLarge),
               const SizedBox(height: 4),
               Text(
                 AppStrings.chooseyourrole,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.outlineVariant,
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
 
@@ -92,7 +88,7 @@ class _RoleViewState extends State<RoleView> {
 
               // Create Account button
               CustomButton(
-                title:  AppStrings.createAccount,
+                title: AppStrings.createAccount,
                 onTap:
                     hasSelection
                         ? () => CustomNavigation(
@@ -116,6 +112,9 @@ class _RoleViewState extends State<RoleView> {
                 colorScheme: colorScheme,
                 firstText: AppStrings.alreadyhaveanaccount,
                 secondText: AppStrings.signIn,
+                onTap: () {
+                  return CustomNavigation(context, '/login');
+                },
               ),
 
               const SizedBox(height: 8),

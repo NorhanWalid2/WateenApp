@@ -40,7 +40,7 @@ abstract class AppStrings {
   managepatientcare = 'Manage patient care',
   homeService = 'Home Service',
   providecareservices = 'Provide care services',
-  alreadyhaveanaccount = 'Already have an account?',
+  alreadyhaveanaccount = 'Already have an account? ',
   patientRegistration = 'Patient Registration',
   createyouraccount = 'Create your account to access healthcare services',
   personalInformation = 'Personal Information',
@@ -121,4 +121,7 @@ abstract class AppStrings {
   noLicenseUploaded = 'No License Uploaded',
   bySubmittingThis =
       'By submitting this registration, you confirm that all information provided is accurate and you agree to our ';
+
+  static const String forgotPassword = 'Forgot password?';
+  static const String dontHaveAnAccount = "Don't have an account? ";
 }
