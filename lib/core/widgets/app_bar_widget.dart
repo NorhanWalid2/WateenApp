@@ -6,13 +6,13 @@ import 'package:wateen_app/core/theming/theme_cubit.dart';
 import 'package:wateen_app/core/theming/theme_toggle.dart';
 import 'package:wateen_app/core/utls/app_icons.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';
-import 'package:wateen_app/core/utls/app_textstyle.dart';
 
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Row(
       children: [
         GestureDetector(
@@ -20,7 +20,7 @@ class AppBarWidget extends StatelessWidget {
           child: SvgPicture.asset(AppIcons.assetsIconsLogo, width: 35),
         ),
         const SizedBox(width: 12),
-        Text(AppStrings.wateen, style: AppTextstyle.arimo24(context)),
+        Text(AppStrings.wateen, style: textTheme.displayLarge),
         Spacer(),
         ThemeToggle(
           onThemeChanged:

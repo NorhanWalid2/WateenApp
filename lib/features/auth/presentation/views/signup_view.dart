@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/enums/user_role.dart';
-import 'package:wateen_app/core/utls/app_textstyle.dart';
-import 'package:wateen_app/core/widgets/app_bar_widget.dart';
+ import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_signup_form_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_signup_form_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/patient_signup_form_widget.dart';

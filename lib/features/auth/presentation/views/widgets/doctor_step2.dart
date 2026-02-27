@@ -29,7 +29,6 @@ class DoctorStep2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return StepCard(
       child: Form(
