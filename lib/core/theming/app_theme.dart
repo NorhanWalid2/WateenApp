@@ -579,6 +579,11 @@ abstract class AppTheme {
         fontWeight: FontWeight.w400,
         color: AppColorsLight.divider,
       ),
+      displayLarge: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+        color: AppColorsLight.lightDark,
+      ),
     ),
   );
 }

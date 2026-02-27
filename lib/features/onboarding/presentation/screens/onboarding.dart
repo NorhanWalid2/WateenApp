@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/utls/app_assets.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';

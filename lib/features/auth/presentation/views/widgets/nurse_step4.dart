@@ -1,0 +1,191 @@
+import 'package:flutter/material.dart';
+import 'package:wateen_app/features/auth/presentation/views/widgets/review_row.dart';
+import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+
+class NurseStep4 extends StatelessWidget {
+  final String fullName;
+  final String email;
+  final String phone;
+  final String serviceType;
+  final String licenseNumber;
+  final String experience;
+  final List<String> serviceAreas;
+  final String? uploadedFileName;
+
+  const NurseStep4({
+    super.key,
+    required this.fullName,
+    required this.email,
+    required this.phone,
+    required this.serviceType,
+    required this.licenseNumber,
+    required this.experience,
+    required this.serviceAreas,
+    required this.uploadedFileName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      children: [
+        // ── Personal Details ───────────────────
+        StepCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Review Your Information', style: textTheme.titleLarge),
+              const SizedBox(height: 16),
+              Text(
+                'Personal Details',
+                style: textTheme.titleSmall
+                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 8),
+              ReviewRow(label: 'Name:', value: fullName),
+              ReviewRow(label: 'Email:', value: email),
+              ReviewRow(label: 'Phone:', value: phone),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── Professional Details ───────────────
+        StepCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Professional Details',
+                style: textTheme.titleSmall
+                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 8),
+              ReviewRow(label: 'Service Type:', value: serviceType),
+              ReviewRow(label: 'License Number:', value: licenseNumber),
+              ReviewRow(label: 'Experience:', value: '$experience years'),
+
+              // ── Service Areas Chips ────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 110,
+                      child: Text(
+                        'Service Areas:',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: serviceAreas
+                            .map((area) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.secondary
+                                        .withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                        color: colorScheme.secondary
+                                            .withOpacity(0.4)),
+                                  ),
+                                  child: Text(
+                                    area,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.secondary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── License Status ─────────────────────
+        StepCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'License Status',
+                style: textTheme.titleSmall
+                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.shade300),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle_outline,
+                        color: Colors.green, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      uploadedFileName != null
+                          ? 'License Verified via OCR'
+                          : 'No License Uploaded',
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: Colors.green.shade700),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // ── Terms ──────────────────────────────
+        StepCard(
+          color: colorScheme.primaryContainer,
+          child: RichText(
+            text: TextSpan(
+              style: textTheme.bodySmall,
+              children: [
+                const TextSpan(
+                  text:
+                      'By submitting this registration, you confirm that all information provided is accurate and you agree to our ',
+                ),
+                TextSpan(
+                  text: 'Terms of Service',
+                  style: TextStyle(
+                      color: colorScheme.error, fontWeight: FontWeight.w600),
+                ),
+                const TextSpan(text: ' and '),
+                TextSpan(
+                  text: 'Privacy Policy',
+                  style: TextStyle(
+                      color: colorScheme.error, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
