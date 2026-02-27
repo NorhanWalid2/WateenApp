@@ -47,7 +47,9 @@ class LoginView extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 20),
+                          horizontal: 16,
+                          vertical: 20,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -57,7 +59,9 @@ class LoginView extends StatelessWidget {
                             // Logo red box
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFE00000),
                                 borderRadius: BorderRadius.circular(10),
@@ -98,10 +102,7 @@ class LoginView extends StatelessWidget {
                       const SizedBox(height: 6),
                       const Text(
                         'Sign in to continue to your account',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
 
                       const SizedBox(height: 28),
@@ -116,34 +117,41 @@ class LoginView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-
                             // Email field
-                            const Text('Email Address',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14)),
+                            const Text(
+                              'Email Address',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 hintText: 'Enter your email',
-                                prefixIcon: const Icon(Icons.email_outlined,
-                                    color: Colors.grey),
+                                prefixIcon: const Icon(
+                                  Icons.email_outlined,
+                                  color: Colors.grey,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Color(0xFFE0E0E0)),
+                                    color: Color(0xFFE0E0E0),
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Color(0xFFE0E0E0)),
+                                    color: Color(0xFFE0E0E0),
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Color(0xFFE00000)),
+                                    color: Color(0xFFE00000),
+                                  ),
                                 ),
                               ),
                               validator: (value) {
@@ -160,18 +168,23 @@ class LoginView extends StatelessWidget {
                             const SizedBox(height: 20),
 
                             // Password field
-                            const Text('Password',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14)),
+                            const Text(
+                              'Password',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _passwordController,
                               obscureText: !cubit.isPasswordVisible,
                               decoration: InputDecoration(
                                 hintText: 'Enter your password',
-                                prefixIcon: const Icon(Icons.lock_outline,
-                                    color: Colors.grey),
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.grey,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     cubit.isPasswordVisible
@@ -179,23 +192,26 @@ class LoginView extends StatelessWidget {
                                         : Icons.visibility_off_outlined,
                                     color: Colors.grey,
                                   ),
-                                  onPressed: () =>
-                                      cubit.togglePasswordVisibility(),
+                                  onPressed:
+                                      () => cubit.togglePasswordVisibility(),
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Color(0xFFE0E0E0)),
+                                    color: Color(0xFFE0E0E0),
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Color(0xFFE0E0E0)),
+                                    color: Color(0xFFE0E0E0),
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Color(0xFFE00000)),
+                                    color: Color(0xFFE00000),
+                                  ),
                                 ),
                               ),
                               validator: (value) {
@@ -220,11 +236,14 @@ class LoginView extends StatelessWidget {
                                     Checkbox(
                                       value: cubit.rememberMe,
                                       activeColor: const Color(0xFFE00000),
-                                      onChanged: (value) =>
-                                          cubit.toggleRememberMe(value!),
+                                      onChanged:
+                                          (value) =>
+                                              cubit.toggleRememberMe(value!),
                                     ),
-                                    const Text('Remember me',
-                                        style: TextStyle(fontSize: 13)),
+                                    const Text(
+                                      'Remember me',
+                                      style: TextStyle(fontSize: 13),
+                                    ),
                                   ],
                                 ),
                                 TextButton(
@@ -249,37 +268,40 @@ class LoginView extends StatelessWidget {
                               width: double.infinity,
                               height: 52,
                               child: ElevatedButton(
-                                onPressed: state is LoginLoading
-                                    ? null
-                                    : () {
-                                        if (_formKey.currentState!
-                                            .validate()) {
-                                          cubit.login(
-                                            email: _emailController.text
-                                                .trim(),
-                                            password: _passwordController
-                                                .text
-                                                .trim(),
-                                          );
-                                        }
-                                      },
+                                onPressed:
+                                    state is LoginLoading
+                                        ? null
+                                        : () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            cubit.login(
+                                              email:
+                                                  _emailController.text.trim(),
+                                              password:
+                                                  _passwordController.text
+                                                      .trim(),
+                                            );
+                                          }
+                                        },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFE00000),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(32),
                                   ),
                                 ),
-                                child: state is LoginLoading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white)
-                                    : const Text(
-                                        'Sign In',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
+                                child:
+                                    state is LoginLoading
+                                        ? const CircularProgressIndicator(
                                           color: Colors.white,
+                                        )
+                                        : const Text(
+                                          'Sign In',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                      ),
                               ),
                             ),
                           ],
@@ -294,7 +316,9 @@ class LoginView extends StatelessWidget {
                           text: TextSpan(
                             text: "Don't have an account? ",
                             style: const TextStyle(
-                                color: Colors.black, fontSize: 14),
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
                             children: [
                               TextSpan(
                                 text: 'Sign Up',
@@ -303,11 +327,11 @@ class LoginView extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Navigator.pushNamed(
-                                        context, '/signup');
-                                  },
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.pushNamed(context, '/signup');
+                                      },
                               ),
                             ],
                           ),
@@ -323,7 +347,9 @@ class LoginView extends StatelessWidget {
                           text: TextSpan(
                             text: 'By continuing, you agree to our ',
                             style: const TextStyle(
-                                color: Colors.grey, fontSize: 12),
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
                             children: [
                               TextSpan(
                                 text: 'Terms of Service',
@@ -332,10 +358,11 @@ class LoginView extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    // TODO: open terms
-                                  },
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () {
+                                        // TODO: open terms
+                                      },
                               ),
                               const TextSpan(text: ' and '),
                               TextSpan(
@@ -345,10 +372,11 @@ class LoginView extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    // TODO: open privacy policy
-                                  },
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () {
+                                        // TODO: open privacy policy
+                                      },
                               ),
                             ],
                           ),
