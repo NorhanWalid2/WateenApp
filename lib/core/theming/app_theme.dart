@@ -30,6 +30,7 @@ abstract class AppTheme {
       surfaceContainerHigh: AppColorsDark.darkWhite,
       inverseSurface: AppColorsDark.lightDark,
       onError: AppColorsDark.textPrimary,
+      onTertiary: AppColorsLight.lightGrayBlue,
     ),
     scaffoldBackgroundColor: AppColorsDark.background,
 
@@ -283,6 +284,11 @@ abstract class AppTheme {
         fontWeight: FontWeight.w600,
         color: AppColorsDark.textPrimary,
       ),
+      displayMedium: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w400,
+        color: AppColorsDark.divider,
+      ),
     ),
   );
 
@@ -313,6 +319,8 @@ abstract class AppTheme {
       surfaceContainerHigh: AppColorsLight.darkWhite,
       inverseSurface: AppColorsLight.lightDark,
       onError: Colors.white,
+      onTertiary: AppColorsLight.lightGrayBlue,
+      background: AppColorsLight.background,
     ),
     scaffoldBackgroundColor: AppColorsLight.background,
 
@@ -532,7 +540,7 @@ abstract class AppTheme {
     // ── Text Theme ──────────────────────────
     textTheme: const TextTheme(
       headlineLarge: TextStyle(
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         color: AppColorsLight.textPrimary,
       ),
@@ -543,7 +551,7 @@ abstract class AppTheme {
       ),
       titleLarge: TextStyle(
         fontSize: 18,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         color: AppColorsLight.textPrimary,
       ),
       titleMedium: TextStyle(
@@ -557,7 +565,7 @@ abstract class AppTheme {
         color: AppColorsLight.textPrimary,
       ),
       bodyMedium: TextStyle(
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w400,
         color: AppColorsLight.textSecondary,
       ),
@@ -566,8 +574,11 @@ abstract class AppTheme {
         fontWeight: FontWeight.w600,
         color: AppColorsLight.textPrimary,
       ),
+      titleSmall: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColorsLight.divider,
+      ),
     ),
   );
-
-
 }

@@ -26,4 +26,11 @@ abstract class AppTextstyle {
         color: Theme.of(context).colorScheme.outlineVariant,
         fontWeight: FontWeight.w400,
       );
+  static TextStyle arimo24w700(BuildContext context) {
+    return GoogleFonts.arimo(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Theme.of(context).colorScheme.onPrimary,
+    );
+  }
 }

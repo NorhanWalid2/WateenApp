@@ -92,6 +92,7 @@ class _RoleViewState extends State<RoleView> {
 
               // Create Account button
               CustomButton(
+                title:  AppStrings.createAccount,
                 onTap:
                     hasSelection
                         ? () => CustomNavigation(

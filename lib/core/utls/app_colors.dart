@@ -18,6 +18,7 @@ abstract class AppColorsDark {
   static const Color lightDark = Color(0xFF101828);
   static const Color lightPastelPink = Color(0xFFFFc9c9);
   static const Color softRed = Color(0xFFE87D7D);
+  static const Color lightGrayBlue = Color(0xffD1D5DC);
 }
 
 abstract class AppColorsLight {
@@ -36,6 +37,7 @@ abstract class AppColorsLight {
   static const Color whiteGray = Color(0xFF101828);
   static const Color darkWhite = Color(0xFF101828);
   static const Color lightDark = Color(0xFF101828);
-  static const Color lightPastelPink = Color(0xFFFFC9C9);
+  static const Color lightPastelPink = Color(0xFFFEF2F2);
   static const Color softRed = Color(0xFFE87D7D);
+  static const Color lightGrayBlue = Color(0xffD1D5DC);
 }

@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, required this.color, required this.colorText, this.onTap});
+  const CustomButton({
+    super.key,
+    required this.color,
+    required this.colorText,
+    this.onTap, required this.title,
+  });
   final Color? color;
   final Color? colorText;
   final void Function()? onTap;
+  final String title;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -21,7 +27,7 @@ class CustomButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            AppStrings.createAccount,
+           title,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

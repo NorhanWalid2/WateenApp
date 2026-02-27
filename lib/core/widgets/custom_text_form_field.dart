@@ -1,37 +1,40 @@
 import 'package:flutter/material.dart';
 
-typedef Validator = String? Function(String?);
 
-
-class TextFormFieldWidget extends StatefulWidget {
+class CustomTextFormFieldWidget extends StatefulWidget {
   final String hintText;
   final String title;
   final TextInputType keyboardType;
   bool obscureText;
   final bool isPassword;
   final TextEditingController controller;
-  final Validator myValidator;
-
-  TextFormFieldWidget({
+  final String? Function(String?)? myValidator;
+  final bool? readOrNot;
+  void Function()? onTap;
+  CustomTextFormFieldWidget({
     required this.title,
     required this.hintText,
     required this.controller,
-    required this.myValidator,
+    this.myValidator,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
     this.isPassword = false,
+    this.readOrNot,
+    this.onTap,
     super.key,
   });
 
   @override
-  State<TextFormFieldWidget> createState() => _TextFormFieldWidgetState();
+  State<CustomTextFormFieldWidget> createState() =>
+      _CustomTextFormFieldWidgetState();
 }
 
-class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
+class _CustomTextFormFieldWidgetState extends State<CustomTextFormFieldWidget> {
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,
       children: [
         Text(
@@ -39,53 +42,54 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: Color(0xff716C7E),
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
-
+        const SizedBox(height: 5),
         TextFormField(
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w400,
-            color: Colors.black,
+            color: colorScheme.onSurface,
             overflow: TextOverflow.ellipsis,
           ),
-
+          readOnly: widget.readOrNot ?? false,
           obscureText: widget.obscureText,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            fillColor: Colors.grey.shade100,
+            fillColor: Colors.transparent,
             filled: true,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      widget.obscureText
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: const Color(0xff454A4F),
-                      size: 24,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        widget.obscureText = !widget.obscureText;
-                      });
-                    },
-                  )
-                : null,
+            suffixIcon:
+                widget.isPassword
+                    ? IconButton(
+                      icon: Icon(
+                        widget.obscureText
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: colorScheme.onSurfaceVariant,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          widget.obscureText = !widget.obscureText;
+                        });
+                      },
+                    )
+                    : null,
 
             contentPadding: const EdgeInsets.all(15),
             enabledBorder: outlineInputBorder(
-              color: Color(0xff716C7E),
+              color: colorScheme.onTertiary,
               radius: 10,
               width: 1,
             ),
             focusedBorder: outlineInputBorder(
-              color: Color(0xff5F33E1),
+              color: colorScheme.outlineVariant,
               radius: 10,
               width: 1,
             ),
             errorBorder: outlineInputBorder(
-              color: Color(0xffFF4949),
+              color: colorScheme.error,
               radius: 10,
               width: 1,
             ),
@@ -93,6 +97,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
           keyboardType: widget.keyboardType,
           controller: widget.controller,
           validator: widget.myValidator,
+          onTap: widget.onTap,
         ),
       ],
     );
