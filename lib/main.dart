@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/routes/app_router.dart';
 import 'package:wateen_app/core/theming/app_theme.dart';
 import 'package:wateen_app/core/theming/theme_cubit.dart';
-import 'package:wateen_app/features/auth/presentation/views/role_view.dart';
 
 void main() {
   runApp(BlocProvider(create: (_) => ThemeCubit(), child: const MyApp()));
@@ -17,6 +16,7 @@ class MyApp extends StatelessWidget {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, themeMode) {
         return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
           title: 'Wateen App',
           themeMode: themeMode,
           theme: AppTheme.lightTheme,

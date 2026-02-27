@@ -40,7 +40,7 @@ abstract class AppStrings {
   managepatientcare = 'Manage patient care',
   homeService = 'Home Service',
   providecareservices = 'Provide care services',
-  alreadyhaveanaccount = 'Already have an account?',
+  alreadyhaveanaccount = 'Already have an account? ',
   patientRegistration = 'Patient Registration',
   createyouraccount = 'Create your account to access healthcare services',
   personalInformation = 'Personal Information',
@@ -62,6 +62,9 @@ abstract class AppStrings {
   fullnameofemergencycontact = 'Full name of emergency contact',
   contactPhone = 'Contact Phone',
   createPatientAccount = 'Create Patient Account',
+  termsOfService = 'Terms of Service',
+  byCreatingAnAccount = ' By creating an account, you agree to our and',
+  privacyPolicy = ' Privacy Policy',
   doctorRegistration = 'Doctor Registration',
   step = 'Step',
   basicInformation = 'Basic Information',
@@ -82,7 +85,7 @@ abstract class AppStrings {
   jPGPNGOrPDF = 'JPG, PNG or PDF (max 10MB)',
   takePhoto = 'Take Photo',
   yourAccountWillBe =
-      "Your account will be under review by our admin team. You'll be notified once approved.",
+      "Note: Your account will be under review by our admin team. You'll be notified once approved.",
   submitRegistration = 'Submit Registration',
       //Forget Password
       resetPassword =
@@ -100,5 +103,25 @@ abstract class AppStrings {
   resendCode = 'Resend code in',
   wrongEmail = 'Wrong email?',
   changeEmail = 'Change Email',
-  continue_ = 'Continue';
+  continue_ = 'Continue',
+  drFullName = 'Dr. Full Name',
+  doctorHospital = 'doctor@hospital.com',
+  createSecurePassword = 'Create a secure password',
+  reviewYourInformation = 'Review Your Information',
+  personalDetails = 'Personal Details',
+  professionalDetails = 'Professional Details',
+  name = 'Name :',
+  email = 'Email :',
+  phone = 'Phone :',
+  licenseNumber = 'License Number :',
+  experience = 'Experience :',
+  hospital = 'Hospital :',
+  licenseStatus = 'License Status',
+  licenseVerified = 'License Verified via OCR',
+  noLicenseUploaded = 'No License Uploaded',
+  bySubmittingThis =
+      'By submitting this registration, you confirm that all information provided is accurate and you agree to our ';
+
+  static const String forgotPassword = 'Forgot password?';
+  static const String dontHaveAnAccount = "Don't have an account? ";
 }
