@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/review_row.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
 
@@ -31,22 +32,26 @@ class NurseStep4 extends StatelessWidget {
 
     return Column(
       children: [
-        // ── Personal Details ───────────────────
+        // ───── Personal Details ───────────────────
         StepCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Review Your Information', style: textTheme.titleLarge),
+              Text(
+                AppStrings.reviewYourInformation,
+                style: textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               Text(
-                'Personal Details',
-                style: textTheme.titleSmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+                AppStrings.personalDetails,
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 8),
-              ReviewRow(label: 'Name:', value: fullName),
-              ReviewRow(label: 'Email:', value: email),
-              ReviewRow(label: 'Phone:', value: phone),
+              ReviewRow(label: AppStrings.name, value: fullName),
+              ReviewRow(label: AppStrings.email, value: email),
+              ReviewRow(label: AppStrings.phone, value: phone),
             ],
           ),
         ),
@@ -59,14 +64,18 @@ class NurseStep4 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Professional Details',
-                style: textTheme.titleSmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+                AppStrings.professionalDetails,
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 8),
               ReviewRow(label: 'Service Type:', value: serviceType),
-              ReviewRow(label: 'License Number:', value: licenseNumber),
-              ReviewRow(label: 'Experience:', value: '$experience years'),
+              ReviewRow(label: AppStrings.licenseNumber, value: licenseNumber),
+              ReviewRow(
+                label: AppStrings.experience,
+                value: '$experience years',
+              ),
 
               // ── Service Areas Chips ────────────
               Padding(
@@ -87,27 +96,34 @@ class NurseStep4 extends StatelessWidget {
                       child: Wrap(
                         spacing: 6,
                         runSpacing: 6,
-                        children: serviceAreas
-                            .map((area) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.secondary
-                                        .withOpacity(0.12),
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(
+                        children:
+                            serviceAreas
+                                .map(
+                                  (area) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.secondary.withOpacity(
+                                        0.12,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
                                         color: colorScheme.secondary
-                                            .withOpacity(0.4)),
-                                  ),
-                                  child: Text(
-                                    area,
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: colorScheme.secondary,
-                                      fontWeight: FontWeight.w600,
+                                            .withOpacity(0.4),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      area,
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.secondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
-                                ))
-                            .toList(),
+                                )
+                                .toList(),
                       ),
                     ),
                   ],
@@ -125,14 +141,17 @@ class NurseStep4 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'License Status',
-                style: textTheme.titleSmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+                AppStrings.licenseStatus,
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 10),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -140,15 +159,19 @@ class NurseStep4 extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_outline,
-                        color: Colors.green, size: 18),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.green,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       uploadedFileName != null
-                          ? 'License Verified via OCR'
-                          : 'No License Uploaded',
-                      style: textTheme.bodyMedium
-                          ?.copyWith(color: Colors.green.shade700),
+                          ? AppStrings.licenseVerified
+                          : AppStrings.noLicenseUploaded,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: Colors.green.shade700,
+                      ),
                     ),
                   ],
                 ),
@@ -166,20 +189,21 @@ class NurseStep4 extends StatelessWidget {
             text: TextSpan(
               style: textTheme.bodySmall,
               children: [
-                const TextSpan(
-                  text:
-                      'By submitting this registration, you confirm that all information provided is accurate and you agree to our ',
-                ),
+                TextSpan(text: AppStrings.bySubmittingThis),
                 TextSpan(
-                  text: 'Terms of Service',
+                  text: AppStrings.termsOfService,
                   style: TextStyle(
-                      color: colorScheme.error, fontWeight: FontWeight.w600),
+                    color: colorScheme.error,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const TextSpan(text: ' and '),
                 TextSpan(
-                  text: 'Privacy Policy',
+                  text: AppStrings.privacyPolicy,
                   style: TextStyle(
-                      color: colorScheme.error, fontWeight: FontWeight.w600),
+                    color: colorScheme.error,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),

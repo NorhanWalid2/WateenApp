@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
@@ -55,12 +56,12 @@ class NurseStep2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Professional Information', style: textTheme.titleLarge),
+            Text(AppStrings.professionalInformation, style: textTheme.titleLarge),
             const SizedBox(height: 16),
 
             // ── Service Type Dropdown ────────────
             Text(
-              'Service Type *',
+              AppStrings.serviceType,
               style: textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -69,9 +70,8 @@ class NurseStep2 extends StatelessWidget {
             DropdownButtonFormField<String>(
               value: selectedServiceType,
               hint: Text(
-                'Select your service type',
-                style: TextStyle(
-                    fontSize: 14, color: colorScheme.onSurfaceVariant),
+                AppStrings.selectYourServiceType,
+                style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
               ),
               items: _serviceTypes
                   .map((e) => DropdownMenuItem(
@@ -86,18 +86,15 @@ class NurseStep2 extends StatelessWidget {
                 filled: true,
                 fillColor: Colors.transparent,
                 enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: colorScheme.outline, width: 1),
+                  borderSide: BorderSide(color: colorScheme.outline, width: 1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: colorScheme.secondary, width: 1.5),
+                  borderSide: BorderSide(color: colorScheme.secondary, width: 1.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: colorScheme.error, width: 1),
+                  borderSide: BorderSide(color: colorScheme.error, width: 1),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -108,19 +105,17 @@ class NurseStep2 extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            // ── License Number ───────────────────
             CustomTextFormFieldWidget(
-              title: 'License/Certification Number *',
-              hintText: 'Enter license number',
+              title: AppStrings.medicalLicenseNumber,
+              hintText: AppStrings.enterLicenseNumber,
               controller: licenseNumberController,
               myValidator: Validator.validateName,
             ),
 
             const SizedBox(height: 14),
 
-            // ── Years of Experience ──────────────
             CustomTextFormFieldWidget(
-              title: 'Years of Experience *',
+              title: AppStrings.yearsofExperience,
               hintText: 'e.g., 3',
               controller: experienceController,
               myValidator: Validator.validateName,
@@ -129,9 +124,8 @@ class NurseStep2 extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            // ── Hourly Rate ──────────────────────
             CustomTextFormFieldWidget(
-              title: 'Hourly Rate (SAR)',
+              title: AppStrings.consultationFee,
               hintText: 'e.g., 150',
               controller: hourlyRateController,
               myValidator: (_) => null,
@@ -187,14 +181,12 @@ class NurseStep2 extends StatelessWidget {
               }).toList(),
             ),
 
-            // ── Validation Message ───────────────
             if (selectedAreas.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   'Please select at least one area',
-                  style: textTheme.bodySmall
-                      ?.copyWith(color: colorScheme.error),
+                  style: textTheme.bodySmall?.copyWith(color: colorScheme.error),
                 ),
               ),
           ],

@@ -123,5 +123,7 @@ abstract class AppStrings {
       'By submitting this registration, you confirm that all information provided is accurate and you agree to our ';
 
   static const String forgotPassword = 'Forgot password?';
-  static const String dontHaveAnAccount = "Don't have an account? ";
+  static const String dontHaveAnAccount = "Don't have an account? ",
+      serviceType = 'Service Type',
+      selectYourServiceType = 'Select your service type';
 }

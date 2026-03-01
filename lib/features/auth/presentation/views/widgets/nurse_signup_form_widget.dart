@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step1.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step1.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step2.dart';
+import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step4.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_progress_bar.dart';
 
@@ -175,8 +175,8 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
           CustomButton(
             title:
                 _currentStep == _totalSteps - 1
-                    ? 'Submit Registration'
-                    : 'Continue',
+                    ? AppStrings.submitRegistration
+                    : AppStrings.continue_,
             color: colorScheme.secondary,
             colorText: colorScheme.primary,
             onTap: _onContinue,
@@ -189,7 +189,6 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
   Widget _buildCurrentStep() {
     switch (_currentStep) {
       case 0:
-        // ✅ بنستخدم DoctorStep1 لأنه نفس البيانات بالظبط
         return NurseStep1(
           formKey: _step1Key,
           fullNameController: _fullNameController,
@@ -210,8 +209,7 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
           onAreaToggled: _toggleArea,
         );
       case 2:
-        // ✅ بنستخدم DoctorStep3 لأنه نفس الـ upload
-        return DoctorStep3(
+        return NurseStep3(
           uploadedFileName: _uploadedFileName,
           onFileUploaded: (name) => setState(() => _uploadedFileName = name),
         );

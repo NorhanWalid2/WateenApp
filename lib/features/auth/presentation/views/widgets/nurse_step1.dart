@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
@@ -30,34 +31,34 @@ class NurseStep1 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Basic Information', style: textTheme.titleLarge),
+            Text(AppStrings.basicInformation, style: textTheme.titleLarge),
             const SizedBox(height: 16),
             CustomTextFormFieldWidget(
-              title: 'Full Name *',
-              hintText: 'Your full name',
+              title: AppStrings.fullName,
+              hintText: AppStrings.enteryourfullname,
               controller: fullNameController,
               myValidator: Validator.validateName,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: 'Email Address *',
-              hintText: 'your.email@example.com',
+              title: AppStrings.emailAddress,
+              hintText: AppStrings.youremailexample,
               controller: emailController,
               myValidator: Validator.validateEmail,
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: 'Phone Number *',
-              hintText: '+966 5x xxx xxxx',
+              title: AppStrings.phoneNumber,
+              hintText: AppStrings.numberExample,
               controller: phoneController,
               myValidator: Validator.validatePhoneNumber,
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: 'Password *',
-              hintText: 'Create a secure password',
+              title: AppStrings.password,
+              hintText: AppStrings.createSecurePassword,
               controller: passwordController,
               myValidator: Validator.validatePassword,
               isPassword: true,
@@ -65,8 +66,8 @@ class NurseStep1 extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: 'Confirm Password *',
-              hintText: 'Confirm your password',
+              title: AppStrings.confirmPassword,
+              hintText: AppStrings.confirmyourpassword,
               controller: confirmPasswordController,
               myValidator: (val) => Validator.validateConfirmPassword(
                 val,
