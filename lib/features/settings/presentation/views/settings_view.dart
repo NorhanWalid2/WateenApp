@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/theming/theme_cubit.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
+import 'package:wateen_app/core/widgets/language_bottom_sheet.dart';
 import 'package:wateen_app/features/settings/presentation/views/widgets/settings_item_widget.dart';
 import 'package:wateen_app/features/settings/presentation/views/widgets/settings_section_widget.dart';
 import 'package:wateen_app/features/settings/presentation/views/widgets/settings_toggle_item_widget.dart';
@@ -120,9 +121,7 @@ class _SettingsViewState extends State<SettingsView> {
                         icon: Icons.language_rounded,
                         title: AppStrings.language,
                         subtitle: AppStrings.englishArabic,
-                        onTap: () {
-                          // TODO: language picker
-                        },
+                        onTap: () => LanguageBottomSheet.show(context),
                       ),
                     ),
 
