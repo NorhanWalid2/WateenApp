@@ -1,5 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wateen_app/core/utls/app_icons.dart';
+import 'package:wateen_app/core/utls/app_strings.dart';
+import 'package:wateen_app/core/utls/app_textstyle.dart';
 import 'widgets/wateen_header_card.dart';
 import 'widgets/contact_support_text.dart';
 import 'widgets/forget_password_form_widget.dart';
@@ -13,7 +17,6 @@ class ForgetPasswordView extends StatefulWidget {
 }
 
 class _ForgetPasswordViewState extends State<ForgetPasswordView> {
-  // ── Controllers ──
   final TextEditingController _emailController = TextEditingController();
   final List<TextEditingController> _otpControllers = List.generate(
     6,
@@ -21,13 +24,11 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
   );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
-  // ── Local State ──
   bool _isOtpStep = false;
   bool _isLoading = false;
   int _timerSeconds = 56;
   Timer? _timer;
 
-  // ── Timer ──
   void _startTimer() {
     _timer?.cancel();
     _timerSeconds = 56;
@@ -40,16 +41,18 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
     });
   }
 
-  // ── Send Code ──
   Future<void> _sendCode() async {
     if (_emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter your email')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppStrings.enteryouremail),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
       return;
     }
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2)); // TODO: real API call
+    await Future.delayed(const Duration(seconds: 2)); // TODO: real API
     setState(() {
       _isLoading = false;
       _isOtpStep = true;
@@ -57,11 +60,9 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
     _startTimer();
   }
 
-  // ── Verify OTP ──
   Future<void> _verifyCode() async {
-    final otp = _otpControllers.map((c) => c.text).join();
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2)); // TODO: real API call
+    await Future.delayed(const Duration(seconds: 2)); // TODO: real API
     setState(() => _isLoading = false);
     Navigator.pushReplacementNamed(
       context,
@@ -69,13 +70,11 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
     ); // TODO: your route
   }
 
-  // ── Resend ──
   void _resendCode() {
     for (var c in _otpControllers) c.clear();
     _sendCode();
   }
 
-  // ── Change Email ──
   void _changeEmail() {
     _timer?.cancel();
     for (var c in _otpControllers) c.clear();
@@ -94,7 +93,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -103,52 +102,46 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
             children: [
               const SizedBox(height: 16),
 
-              // Back button
+              // ── Back Button ──
               GestureDetector(
-                onTap: () {
-                  if (_isOtpStep) {
-                    _changeEmail();
-                  } else {
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Row(
+                onTap:
+                    () => _isOtpStep ? _changeEmail() : Navigator.pop(context),
+                child: Row(
                   children: [
-                    Icon(Icons.arrow_back_ios, size: 16),
-                    Text('Back'),
+                    SvgPicture.asset(AppIcons.assetsIconsBack, height: 20),
+                    const SizedBox(width: 6),
+                    Text('Back', style: AppTextstyle.arimo16(context)),
                   ],
                 ),
               ),
 
               const SizedBox(height: 20),
 
-              const WateenHeaderCard(subtitle: 'Reset your\npassword'),
+              // ── Header Card ──
+              WateenHeaderCard(
+                subtitle: '${AppStrings.resetPassword}\n${AppStrings.wateen}',
+              ),
 
               const SizedBox(height: 32),
 
-              // Title
+              // ── Title ──
               Text(
-                _isOtpStep ? 'Verify Code' : 'Reset Password',
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                _isOtpStep ? AppStrings.verifyCode : AppStrings.resetPassword,
+                style: AppTextstyle.arimo30(context),
               ),
+
               const SizedBox(height: 6),
+
               Text(
                 _isOtpStep
-                    ? 'We sent a 6-digit code to\n${_emailController.text}'
-                    : "Enter your email address and we'll send you a\nverification code to reset your password",
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                  height: 1.5,
-                ),
+                    ? '${AppStrings.weSentA6Digit}\n${_emailController.text}'
+                    : AppStrings.enterYourEmail,
+                style: AppTextstyle.archivo15w400Gray(context),
               ),
 
               const SizedBox(height: 24),
 
-              // Step 1 or Step 2
+              // ── Step 1 or Step 2 ──
               if (!_isOtpStep)
                 ForgetPasswordFormWidget(
                   emailController: _emailController,

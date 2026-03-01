@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wateen_app/core/utls/app_icons.dart';
+import 'package:wateen_app/core/utls/app_textstyle.dart';
 
 class WateenHeaderCard extends StatelessWidget {
   final String subtitle;
@@ -10,35 +13,14 @@ class WateenHeaderCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE00000),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Text(
-              'Wateen',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-          ),
+          SvgPicture.asset(AppIcons.assetsIconsLogo, height: 40),
           const SizedBox(width: 16),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.black54,
-              height: 1.5,
-            ),
-          ),
+          Text(subtitle, style: AppTextstyle.archivo15w400Gray(context)),
         ],
       ),
     );

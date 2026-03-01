@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:wateen_app/core/utls/app_strings.dart';
+import 'package:wateen_app/core/utls/app_textstyle.dart';
 
 class OtpFormWidget extends StatelessWidget {
   final List<TextEditingController> otpControllers;
@@ -36,18 +38,20 @@ class OtpFormWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             children: [
-              const Text(
-                'Enter Verification Code',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              Text(
+                AppStrings.enterVerificationCode,
+                style: AppTextstyle.arimo16(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 20),
 
-              // 6 OTP boxes
+              // ── 6 OTP Boxes ──
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
@@ -60,28 +64,28 @@ class OtpFormWidget extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       maxLength: 1,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextstyle.arimo24(context),
                       decoration: InputDecoration(
                         counterText: '',
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE0E0E0),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outlineVariant,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE0E0E0),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outlineVariant,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFE00000),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 1.5,
                           ),
                         ),
                       ),
@@ -99,17 +103,17 @@ class OtpFormWidget extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Timer or Resend
+              // ── Timer or Resend ──
               timerSeconds > 0
                   ? RichText(
                     text: TextSpan(
-                      text: 'Resend code in ',
-                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                      text: '${AppStrings.resendCode} ',
+                      style: AppTextstyle.archivo15w400Gray(context),
                       children: [
                         TextSpan(
                           text: _formatTimer(timerSeconds),
-                          style: const TextStyle(
-                            color: Color(0xFFE00000),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -118,10 +122,10 @@ class OtpFormWidget extends StatelessWidget {
                   )
                   : TextButton(
                     onPressed: onResend,
-                    child: const Text(
-                      'Resend Code',
+                    child: Text(
+                      AppStrings.resendCode,
                       style: TextStyle(
-                        color: Color(0xFFE00000),
+                        color: Theme.of(context).colorScheme.secondary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -129,7 +133,7 @@ class OtpFormWidget extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Verify button
+              // ── Verify Button ──
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -140,19 +144,18 @@ class OtpFormWidget extends StatelessWidget {
                     color: Colors.white,
                     size: 18,
                   ),
-                  label: const Text(
-                    'Verify Code',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  label: Text(
+                    AppStrings.verifyCode,
+                    style: AppTextstyle.arimo16(context).copyWith(
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         canVerify
-                            ? const Color(0xFFE00000)
-                            : Colors.grey.shade400,
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.outlineVariant,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32),
                     ),
@@ -165,16 +168,16 @@ class OtpFormWidget extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // Wrong email? Change Email
+        // ── Wrong email? Change Email ──
         RichText(
           text: TextSpan(
-            text: 'Wrong email? ',
-            style: const TextStyle(color: Colors.black, fontSize: 13),
+            text: '${AppStrings.wrongEmail} ',
+            style: AppTextstyle.archivo15w400Gray(context),
             children: [
               TextSpan(
-                text: 'Change Email',
-                style: const TextStyle(
-                  color: Color(0xFFE00000),
+                text: AppStrings.changeEmail,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
                   fontWeight: FontWeight.bold,
                 ),
                 recognizer: TapGestureRecognizer()..onTap = onChangeEmail,
