@@ -22,6 +22,13 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           routerConfig: router,
+          builder:
+              (context, child) => AnimatedTheme(
+                data: Theme.of(context),
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.linear,
+                child: child!,
+              ),
         );
       },
     );

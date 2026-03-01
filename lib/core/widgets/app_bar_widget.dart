@@ -20,12 +20,8 @@ class AppBarWidget extends StatelessWidget {
           child: SvgPicture.asset(AppIcons.assetsIconsLogo, width: 35),
         ),
         const SizedBox(width: 12),
-        Text(AppStrings.wateen, style: textTheme.displayLarge),
+        Text(AppStrings.wateen, style: textTheme.titleLarge),
         Spacer(),
-        ThemeToggle(
-          onThemeChanged:
-              (mode) => context.read<ThemeCubit>().changeTheme(mode),
-        ),
       ],
     );
   }
