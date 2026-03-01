@@ -158,12 +158,9 @@ class LoginView extends StatelessWidget {
                                         : () {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            cubit.login(
-                                              email:
-                                                  _emailController.text.trim(),
-                                              password:
-                                                  _passwordController.text
-                                                      .trim(),
+                                            return CustomNavigation(
+                                              context,
+                                              '/profile',
                                             );
                                           }
                                         },

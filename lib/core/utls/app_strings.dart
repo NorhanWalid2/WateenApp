@@ -126,4 +126,19 @@ abstract class AppStrings {
   static const String dontHaveAnAccount = "Don't have an account? ",
       serviceType = 'Service Type',
       selectYourServiceType = 'Select your service type';
+  static const String profile = 'Profile';
+  static const String familyMembers = 'Family Members';
+  static const String manageFamilyAccounts = 'Manage family accounts';
+  static const String medicalHistory = 'Medical History';
+  static const String viewAndUploadFiles = 'View and upload files';
+  static const String settings = 'Settings';
+  static const String appPreferences = 'App preferences';
+  static const String language = 'Language';
+  static const String englishArabic = 'English / العربية';
+  static const String logOut = 'Log Out';
+  static const String version = 'Version 1.0.0';
+  static const String confirmLogout = 'Confirm Logout';
+  static const String areYouSureLogout = 'Are you sure you want to log out?';
+  static const String no = 'No';
+  static const String sure = 'Sure';
 }

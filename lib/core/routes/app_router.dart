@@ -3,6 +3,7 @@ import 'package:wateen_app/features/auth/presentation/views/login_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/role_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/signup_view.dart';
 import 'package:wateen_app/features/onboarding/presentation/screens/onboarding.dart';
+import 'package:wateen_app/features/profile/presentation/views/profile_view.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
@@ -11,5 +12,6 @@ final GoRouter router = GoRouter(
     GoRoute(path: '/role', builder: (context, state) => const RoleView()),
     GoRoute(path: '/signup', builder: (context, state) => const SignupView()),
     GoRoute(path: '/login', builder: (context, state) => LoginView()),
+    GoRoute(path: '/profile', builder: (context, state) => ProfileView()),
   ],
 );
