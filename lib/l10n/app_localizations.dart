@@ -1003,6 +1003,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get help from our team'**
   String get contactSupportSubtitle;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back?'**
+  String get goBack;
+
+  /// No description provided for @goBackContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure? Your progress will be kept.'**
+  String get goBackContent;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @selectBloodType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select blood type'**
+  String get selectBloodType;
+
+  /// No description provided for @nurseRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Nurse Registration'**
+  String get nurseRegistration;
+
+  /// No description provided for @uploadNurseLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload License/Certification'**
+  String get uploadNurseLicense;
+
+  /// No description provided for @serviceAreasLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Areas'**
+  String get serviceAreasLabel;
+
+  /// No description provided for @pleaseSelectServiceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a service type'**
+  String get pleaseSelectServiceType;
+
+  /// No description provided for @pleaseSelectArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one area'**
+  String get pleaseSelectArea;
 }
 
 class _AppLocalizationsDelegate

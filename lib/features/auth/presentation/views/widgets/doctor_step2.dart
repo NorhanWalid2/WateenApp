@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
-import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
+ import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class DoctorStep2 extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -28,7 +28,9 @@ class DoctorStep2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return StepCard(
       child: Form(
@@ -36,27 +38,24 @@ class DoctorStep2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              AppStrings.professionalInformation,
-              style: textTheme.titleLarge,
-            ),
+            Text(l10n.professionalInformation, style: textTheme.titleLarge),
             const SizedBox(height: 16),
             CustomTextFormFieldWidget(
-              title: AppStrings.specialization,
+              title: l10n.specialization,
               hintText: 'e.g., Cardiology',
               controller: specializationController,
               myValidator: Validator.validateName,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.medicalLicenseNumber,
-              hintText: AppStrings.enterLicenseNumber,
+              title: l10n.medicalLicenseNumber,
+              hintText: l10n.enterLicenseNumber,
               controller: licenseNumberController,
               myValidator: Validator.validateName,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.yearsofExperience,
+              title: l10n.yearsofExperience,
               hintText: 'e.g., 5',
               controller: experienceController,
               myValidator: Validator.validateName,
@@ -64,20 +63,44 @@ class DoctorStep2 extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.hospitalClinicAffiliation,
-              hintText: AppStrings.currentWorkplace,
+              title: l10n.hospitalClinicAffiliation,
+              hintText: l10n.currentWorkplace,
               controller: hospitalController,
               myValidator: Validator.validateName,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.consultationFee,
+              title: l10n.consultationFee,
               hintText: 'e.g., 200',
               controller: consultationFeeController,
               myValidator: (_) => null,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
+
+            // ── Home Visits Toggle ──────────────
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.availableForHomeVisits,
+                          style: textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 2),
+                      Text(l10n.checkThisIfYou,
+                          style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant)),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: homeVisits,
+                  onChanged: onHomeVisitsChanged,
+                ),
+              ],
+            ),
           ],
         ),
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
-import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
+ import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class NurseStep2 extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -35,18 +35,13 @@ class NurseStep2 extends StatelessWidget {
   ];
 
   static const List<String> _serviceAreas = [
-    'Riyadh - North',
-    'Riyadh - South',
-    'Riyadh - East',
-    'Riyadh - West',
-    'Jeddah - North',
-    'Jeddah - South',
-    'Dammam',
-    'Khobar',
+    'Riyadh - North', 'Riyadh - South', 'Riyadh - East', 'Riyadh - West',
+    'Jeddah - North', 'Jeddah - South', 'Dammam', 'Khobar',
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -56,23 +51,21 @@ class NurseStep2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppStrings.professionalInformation, style: textTheme.titleLarge),
+            Text(l10n.professionalInformation, style: textTheme.titleLarge),
             const SizedBox(height: 16),
 
             // ── Service Type Dropdown ────────────
             Text(
-              AppStrings.serviceType,
+              l10n.serviceType,
               style: textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+                  color: colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
               value: selectedServiceType,
-              hint: Text(
-                AppStrings.selectYourServiceType,
-                style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
-              ),
+              hint: Text(l10n.selectYourServiceType,
+                  style: TextStyle(
+                      fontSize: 14, color: colorScheme.onSurfaceVariant)),
               items: _serviceTypes
                   .map((e) => DropdownMenuItem(
                         value: e,
@@ -81,7 +74,7 @@ class NurseStep2 extends StatelessWidget {
                   .toList(),
               onChanged: onServiceTypeChanged,
               validator: (val) =>
-                  val == null ? 'Please select a service type' : null,
+                  val == null ? l10n.pleaseSelectServiceType : null,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.transparent,
@@ -90,7 +83,8 @@ class NurseStep2 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: colorScheme.secondary, width: 1.5),
+                  borderSide:
+                      BorderSide(color: colorScheme.secondary, width: 1.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorBorder: OutlineInputBorder(
@@ -104,42 +98,35 @@ class NurseStep2 extends StatelessWidget {
             ),
 
             const SizedBox(height: 14),
-
             CustomTextFormFieldWidget(
-              title: AppStrings.medicalLicenseNumber,
-              hintText: AppStrings.enterLicenseNumber,
+              title: l10n.medicalLicenseNumber,
+              hintText: l10n.enterLicenseNumber,
               controller: licenseNumberController,
               myValidator: Validator.validateName,
             ),
-
             const SizedBox(height: 14),
-
             CustomTextFormFieldWidget(
-              title: AppStrings.yearsofExperience,
+              title: l10n.yearsofExperience,
               hintText: 'e.g., 3',
               controller: experienceController,
               myValidator: Validator.validateName,
               keyboardType: TextInputType.number,
             ),
-
             const SizedBox(height: 14),
-
             CustomTextFormFieldWidget(
-              title: AppStrings.consultationFee,
+              title: l10n.consultationFee,
               hintText: 'e.g., 150',
               controller: hourlyRateController,
               myValidator: (_) => null,
               keyboardType: TextInputType.number,
             ),
-
             const SizedBox(height: 16),
 
             // ── Service Areas ────────────────────
             Text(
-              'Service Areas * (Select at least one)',
-              style: textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+              l10n.serviceAreasLabel,
+              style: textTheme.bodyLarge
+                  ?.copyWith(color: colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -185,8 +172,9 @@ class NurseStep2 extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  'Please select at least one area',
-                  style: textTheme.bodySmall?.copyWith(color: colorScheme.error),
+                  l10n.pleaseSelectArea,
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: colorScheme.error),
                 ),
               ),
           ],

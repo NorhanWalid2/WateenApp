@@ -471,4 +471,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactSupportSubtitle => 'Get help from our team';
+
+  @override
+  String get goBack => 'Go Back?';
+
+  @override
+  String get goBackContent => 'Are you sure? Your progress will be kept.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get selectBloodType => 'Select blood type';
+
+  @override
+  String get nurseRegistration => 'Nurse Registration';
+
+  @override
+  String get uploadNurseLicense => 'Upload License/Certification';
+
+  @override
+  String get serviceAreasLabel => 'Service Areas';
+
+  @override
+  String get pleaseSelectServiceType => 'Please select a service type';
+
+  @override
+  String get pleaseSelectArea => 'Please select at least one area';
 }

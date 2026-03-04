@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:wateen_app/core/enums/user_role.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/utls/app_icons.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/features/auth/data/model/role_model.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/auth_switch_text.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/selectable_role_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class RoleView extends StatefulWidget {
   const RoleView({super.key});
@@ -19,22 +19,22 @@ class RoleView extends StatefulWidget {
 class _RoleViewState extends State<RoleView> {
   int selectedIndex = -1;
 
-  final List<RoleData> _roles = [
+  List<RoleData> _buildRoles(AppLocalizations l10n) => [
     RoleData(
-      title: AppStrings.patient,
-      subtitle: AppStrings.accesshealthservices,
+      title: l10n.patient,
+      subtitle: l10n.accesshealthservices,
       icon: AppIcons.assetsIconsPatient,
       role: UserRole.patient,
     ),
     RoleData(
-      title: AppStrings.doctor,
-      subtitle: AppStrings.managepatientcare,
+      title: l10n.doctor,
+      subtitle: l10n.managepatientcare,
       icon: AppIcons.assetsIconsDoctor,
       role: UserRole.doctor,
     ),
     RoleData(
-      title: AppStrings.homeService,
-      subtitle: AppStrings.providecareservices,
+      title: l10n.homeService,
+      subtitle: l10n.providecareservices,
       icon: AppIcons.assetsIconsHomeService,
       role: UserRole.nurse,
     ),
@@ -42,8 +42,10 @@ class _RoleViewState extends State<RoleView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final roles = _buildRoles(l10n);
     final bool hasSelection = selectedIndex != -1;
 
     return Scaffold(
@@ -56,10 +58,11 @@ class _RoleViewState extends State<RoleView> {
             children: [
               AppBarWidget(),
               const SizedBox(height: 32),
-              Text(AppStrings.createAccount, style: textTheme.headlineLarge),
+
+              Text(l10n.createAccount, style: textTheme.headlineLarge),
               const SizedBox(height: 4),
               Text(
-                AppStrings.chooseyourrole,
+                l10n.chooseyourrole,
                 style: textTheme.titleSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -67,10 +70,9 @@ class _RoleViewState extends State<RoleView> {
 
               const SizedBox(height: 28),
 
-              ...List.generate(_roles.length, (i) {
-                final role = _roles[i];
+              ...List.generate(roles.length, (i) {
+                final role = roles[i];
                 final bool isSelected = i == selectedIndex;
-
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: GestureDetector(
@@ -86,15 +88,15 @@ class _RoleViewState extends State<RoleView> {
 
               const Spacer(),
 
-              // Create Account button
+              // ── Create Account Button ─────────────
               CustomButton(
-                title: AppStrings.createAccount,
+                title: l10n.createAccount,
                 onTap:
                     hasSelection
                         ? () => CustomNavigation(
                           context,
                           '/signup',
-                          extra: _roles[selectedIndex].role,
+                          extra: roles[selectedIndex].role,
                         )
                         : null,
                 color:
@@ -107,14 +109,12 @@ class _RoleViewState extends State<RoleView> {
 
               const SizedBox(height: 16),
 
-              // Sign in link
+              // ── Sign In Link ──────────────────────
               AuthSwitchText(
                 colorScheme: colorScheme,
-                firstText: AppStrings.alreadyhaveanaccount,
-                secondText: AppStrings.signIn,
-                onTap: () {
-                  return CustomNavigation(context, '/login');
-                },
+                firstText: l10n.alreadyhaveanaccount,
+                secondText: l10n.signIn,
+                onTap: () => CustomNavigation(context, '/login'),
               ),
 
               const SizedBox(height: 8),

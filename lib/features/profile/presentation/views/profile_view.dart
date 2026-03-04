@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/function/navigation.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/features/profile/presentation/views/widgets/profile_header_widget.dart';
 import 'package:wateen_app/features/profile/presentation/views/widgets/profile_menu_item_widget.dart';
 import 'package:wateen_app/features/profile/presentation/views/widgets/logout_dialog_widget.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -21,7 +22,7 @@ class ProfileView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Title ────────────────────────────
-              Text(AppStrings.profile, style: textTheme.headlineMedium),
+              Text(l10n.profile, style: textTheme.headlineMedium),
               const SizedBox(height: 16),
 
               // ── Profile Header Card ───────────────
@@ -50,11 +51,9 @@ class ProfileView extends StatelessWidget {
                   children: [
                     ProfileMenuItemWidget(
                       icon: Icons.people_outline_rounded,
-                      title: AppStrings.familyMembers,
-                      subtitle: AppStrings.manageFamilyAccounts,
-                      onTap: () {
-                        // TODO: navigate to family members
-                      },
+                      title: l10n.familyMembers,
+                      subtitle: l10n.manageFamilyAccounts,
+                      onTap: () {},
                     ),
                     Divider(
                       height: 1,
@@ -62,11 +61,9 @@ class ProfileView extends StatelessWidget {
                     ),
                     ProfileMenuItemWidget(
                       icon: Icons.history_edu_outlined,
-                      title: AppStrings.medicalHistory,
-                      subtitle: AppStrings.viewAndUploadFiles,
-                      onTap: () {
-                        // TODO: navigate to medical history
-                      },
+                      title: l10n.medicalHistory,
+                      subtitle: l10n.viewAndUploadFiles,
+                      onTap: () {},
                     ),
                     Divider(
                       height: 1,
@@ -74,11 +71,9 @@ class ProfileView extends StatelessWidget {
                     ),
                     ProfileMenuItemWidget(
                       icon: Icons.settings_outlined,
-                      title: AppStrings.settings,
-                      subtitle: AppStrings.appPreferences,
-                      onTap: () {
-                        return CustomNavigation(context, '/settings');
-                      },
+                      title: l10n.settings,
+                      subtitle: l10n.appPreferences,
+                      onTap: () => CustomNavigation(context, '/settings'),
                     ),
                     Divider(
                       height: 1,
@@ -86,11 +81,9 @@ class ProfileView extends StatelessWidget {
                     ),
                     ProfileMenuItemWidget(
                       icon: Icons.language_outlined,
-                      title: AppStrings.language,
-                      subtitle: AppStrings.englishArabic,
-                      onTap: () {
-                        // TODO: navigate to language settings
-                      },
+                      title: l10n.language,
+                      subtitle: l10n.englishArabic,
+                      onTap: () {},
                     ),
                   ],
                 ),
@@ -102,14 +95,18 @@ class ProfileView extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _showLogoutDialog(context),
+                  onPressed:
+                      () => showDialog(
+                        context: context,
+                        builder: (ctx) => const LogoutDialogWidget(),
+                      ),
                   icon: Icon(
                     Icons.logout_rounded,
                     color: colorScheme.error,
                     size: 20,
                   ),
                   label: Text(
-                    AppStrings.logOut,
+                    l10n.logOut,
                     style: TextStyle(
                       color: colorScheme.error,
                       fontWeight: FontWeight.w600,
@@ -130,7 +127,7 @@ class ProfileView extends StatelessWidget {
               // ── Version ───────────────────────────
               Center(
                 child: Text(
-                  AppStrings.version,
+                  l10n.version,
                   style: textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -143,9 +140,5 @@ class ProfileView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(context: context, builder: (ctx) => const LogoutDialogWidget());
   }
 }

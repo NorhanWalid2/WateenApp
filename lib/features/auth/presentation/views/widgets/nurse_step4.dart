@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/review_row.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class NurseStep4 extends StatelessWidget {
   final String fullName;
@@ -27,55 +27,50 @@ class NurseStep4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       children: [
-        // ───── Personal Details ───────────────────
+        // ── Personal Details ──────────────────
         StepCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                AppStrings.reviewYourInformation,
-                style: textTheme.titleLarge,
-              ),
+              Text(l10n.reviewYourInformation, style: textTheme.titleLarge),
               const SizedBox(height: 16),
               Text(
-                AppStrings.personalDetails,
+                l10n.personalDetails,
                 style: textTheme.titleSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 8),
-              ReviewRow(label: AppStrings.name, value: fullName),
-              ReviewRow(label: AppStrings.email, value: email),
-              ReviewRow(label: AppStrings.phone, value: phone),
+              ReviewRow(label: l10n.name, value: fullName),
+              ReviewRow(label: l10n.email, value: email),
+              ReviewRow(label: l10n.phone, value: phone),
             ],
           ),
         ),
 
         const SizedBox(height: 16),
 
-        // ── Professional Details ───────────────
+        // ── Professional Details ──────────────
         StepCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppStrings.professionalDetails,
+                l10n.professionalDetails,
                 style: textTheme.titleSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 8),
-              ReviewRow(label: 'Service Type:', value: serviceType),
-              ReviewRow(label: AppStrings.licenseNumber, value: licenseNumber),
-              ReviewRow(
-                label: AppStrings.experience,
-                value: '$experience years',
-              ),
+              ReviewRow(label: '${l10n.serviceType}:', value: serviceType),
+              ReviewRow(label: l10n.licenseNumber, value: licenseNumber),
+              ReviewRow(label: l10n.experience, value: '$experience years'),
 
               // ── Service Areas Chips ────────────
               Padding(
@@ -86,7 +81,7 @@ class NurseStep4 extends StatelessWidget {
                     SizedBox(
                       width: 110,
                       child: Text(
-                        'Service Areas:',
+                        '${l10n.serviceAreasLabel}:',
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -135,13 +130,13 @@ class NurseStep4 extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // ── License Status ─────────────────────
+        // ── License Status ────────────────────
         StepCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppStrings.licenseStatus,
+                l10n.licenseStatus,
                 style: textTheme.titleSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -167,8 +162,8 @@ class NurseStep4 extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       uploadedFileName != null
-                          ? AppStrings.licenseVerified
-                          : AppStrings.noLicenseUploaded,
+                          ? l10n.licenseVerified
+                          : l10n.noLicenseUploaded,
                       style: textTheme.bodyMedium?.copyWith(
                         color: Colors.green.shade700,
                       ),
@@ -182,16 +177,16 @@ class NurseStep4 extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // ── Terms ──────────────────────────────
+        // ── Terms ─────────────────────────────
         StepCard(
           color: colorScheme.primaryContainer,
           child: RichText(
             text: TextSpan(
               style: textTheme.bodySmall,
               children: [
-                TextSpan(text: AppStrings.bySubmittingThis),
+                TextSpan(text: l10n.bySubmittingThis),
                 TextSpan(
-                  text: AppStrings.termsOfService,
+                  text: l10n.termsOfService,
                   style: TextStyle(
                     color: colorScheme.error,
                     fontWeight: FontWeight.w600,
@@ -199,7 +194,7 @@ class NurseStep4 extends StatelessWidget {
                 ),
                 const TextSpan(text: ' and '),
                 TextSpan(
-                  text: AppStrings.privacyPolicy,
+                  text: l10n.privacyPolicy,
                   style: TextStyle(
                     color: colorScheme.error,
                     fontWeight: FontWeight.w600,

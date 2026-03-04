@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/review_row.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class DoctorStep4 extends StatelessWidget {
   final String fullName;
@@ -29,69 +29,69 @@ class DoctorStep4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
+    final reviewBg = BoxDecoration(
+      color: colorScheme.surface,
+      borderRadius: BorderRadius.circular(10),
+    );
+
     return Column(
       children: [
-        // ── Personal Details ───────────────
+        // ── Personal + Professional Details ───
         StepCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                AppStrings.reviewYourInformation,
-                style: textTheme.titleLarge,
-              ),
+              Text(l10n.reviewYourInformation, style: textTheme.titleLarge),
               const SizedBox(height: 16),
-              Text(AppStrings.personalDetails, style: textTheme.titleMedium),
+
+              Text(l10n.personalDetails, style: textTheme.titleMedium),
               const SizedBox(height: 8),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                decoration: BoxDecoration(
-                  color: colorScheme.background,
-                  borderRadius: BorderRadius.circular(10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
                 ),
+                decoration: reviewBg,
                 child: Column(
                   children: [
-                    ReviewRow(label: AppStrings.name, value: fullName),
-                    ReviewRow(label: AppStrings.email, value: email),
-                    ReviewRow(label: AppStrings.phone, value: phone),
+                    ReviewRow(label: l10n.name, value: fullName),
+                    ReviewRow(label: l10n.email, value: email),
+                    ReviewRow(label: l10n.phone, value: phone),
                   ],
                 ),
               ),
+
               const SizedBox(height: 16),
-              Text(
-                AppStrings.professionalDetails,
-                style: textTheme.titleMedium,
-              ),
+              Text(l10n.professionalDetails, style: textTheme.titleMedium),
               const SizedBox(height: 8),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                decoration: BoxDecoration(
-                  color: colorScheme.background,
-                  borderRadius: BorderRadius.circular(10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
                 ),
+                decoration: reviewBg,
                 child: Column(
                   children: [
                     ReviewRow(
-                      label: AppStrings.specialization + ':',
+                      label: '${l10n.specialization}:',
                       value: specialization,
                     ),
+                    ReviewRow(label: l10n.licenseNumber, value: licenseNumber),
                     ReviewRow(
-                      label: AppStrings.licenseNumber,
-                      value: licenseNumber,
-                    ),
-                    ReviewRow(
-                      label: AppStrings.experience,
+                      label: l10n.experience,
                       value: '$experience years',
                     ),
-                    ReviewRow(label: AppStrings.hospital, value: hospital),
+                    ReviewRow(label: l10n.hospital, value: hospital),
                   ],
                 ),
               ),
+
               const SizedBox(height: 15),
-              Text(AppStrings.licenseStatus, style: textTheme.titleMedium),
+              Text(l10n.licenseStatus, style: textTheme.titleMedium),
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -113,8 +113,8 @@ class DoctorStep4 extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       uploadedFileName != null
-                          ? AppStrings.licenseVerified
-                          : AppStrings.noLicenseUploaded,
+                          ? l10n.licenseVerified
+                          : l10n.noLicenseUploaded,
                       style: textTheme.bodyMedium?.copyWith(
                         color: Colors.green.shade700,
                       ),
@@ -135,9 +135,9 @@ class DoctorStep4 extends StatelessWidget {
             text: TextSpan(
               style: textTheme.titleSmall,
               children: [
-                TextSpan(text: AppStrings.bySubmittingThis),
+                TextSpan(text: l10n.bySubmittingThis),
                 TextSpan(
-                  text: AppStrings.termsOfService,
+                  text: l10n.termsOfService,
                   style: TextStyle(
                     color: colorScheme.error,
                     fontWeight: FontWeight.w700,
@@ -145,7 +145,7 @@ class DoctorStep4 extends StatelessWidget {
                 ),
                 const TextSpan(text: ' and '),
                 TextSpan(
-                  text: AppStrings.privacyPolicy,
+                  text: l10n.privacyPolicy,
                   style: TextStyle(
                     color: colorScheme.error,
                     fontWeight: FontWeight.w700,

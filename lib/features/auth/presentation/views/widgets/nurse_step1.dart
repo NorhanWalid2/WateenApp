@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class NurseStep1 extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -24,41 +24,43 @@ class NurseStep1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+
     return StepCard(
       child: Form(
         key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppStrings.basicInformation, style: textTheme.titleLarge),
+            Text(l10n.basicInformation, style: textTheme.titleLarge),
             const SizedBox(height: 16),
             CustomTextFormFieldWidget(
-              title: AppStrings.fullName,
-              hintText: AppStrings.enteryourfullname,
+              title: l10n.fullName,
+              hintText: l10n.enteryourfullname,
               controller: fullNameController,
               myValidator: Validator.validateName,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.emailAddress,
-              hintText: AppStrings.youremailexample,
+              title: l10n.emailAddress,
+              hintText: l10n.youremailexample,
               controller: emailController,
               myValidator: Validator.validateEmail,
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.phoneNumber,
-              hintText: AppStrings.numberExample,
+              title: l10n.phoneNumber,
+              hintText: l10n.numberExample,
               controller: phoneController,
               myValidator: Validator.validatePhoneNumber,
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.password,
-              hintText: AppStrings.createSecurePassword,
+              title: l10n.password,
+              hintText: l10n.createSecurePassword,
               controller: passwordController,
               myValidator: Validator.validatePassword,
               isPassword: true,
@@ -66,13 +68,14 @@ class NurseStep1 extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             CustomTextFormFieldWidget(
-              title: AppStrings.confirmPassword,
-              hintText: AppStrings.confirmyourpassword,
+              title: l10n.confirmPassword,
+              hintText: l10n.confirmyourpassword,
               controller: confirmPasswordController,
-              myValidator: (val) => Validator.validateConfirmPassword(
-                val,
-                passwordController.text,
-              ),
+              myValidator:
+                  (val) => Validator.validateConfirmPassword(
+                    val,
+                    passwordController.text,
+                  ),
               isPassword: true,
               obscureText: true,
             ),

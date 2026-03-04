@@ -161,5 +161,16 @@
   "privacySubtitle": "اقرأ سياسة الخصوصية",
   "rateTheApp": "تقييم التطبيق",
   "rateSubtitle": "اترك تقييمك",
-  "contactSupportSubtitle": "احصل على مساعدة من فريقنا"
+  "contactSupportSubtitle": "احصل على مساعدة من فريقنا",
+  "goBack": "الرجوع؟",
+  "goBackContent": "هل أنت متأكد؟ سيتم الاحتفاظ بتقدمك.",
+  "cancel": "إلغاء",
+  "male": "ذكر",
+  "female": "أنثى",
+  "selectBloodType": "اختر فصيلة الدم",
+  "nurseRegistration": "تسجيل الممرض",
+  "uploadNurseLicense": "رفع الترخيص / الشهادة",
+"serviceAreasLabel": "مناطق الخدمة",
+"pleaseSelectServiceType": "يرجى اختيار نوع الخدمة",
+"pleaseSelectArea": "يرجى اختيار منطقة واحدة على الأقل"
 }

@@ -161,5 +161,16 @@
   "privacySubtitle": "Read our privacy policy",
   "rateTheApp": "Rate the App",
   "rateSubtitle": "Leave us a review",
-  "contactSupportSubtitle": "Get help from our team"
+  "contactSupportSubtitle": "Get help from our team",
+  "goBack": "Go Back?",
+  "goBackContent": "Are you sure? Your progress will be kept.",
+  "cancel": "Cancel",
+  "male": "Male",
+  "female": "Female",
+  "selectBloodType": "Select blood type",
+  "nurseRegistration": "Nurse Registration",
+  "uploadNurseLicense": "Upload License/Certification",
+"serviceAreasLabel": "Service Areas",
+"pleaseSelectServiceType": "Please select a service type",
+"pleaseSelectArea": "Please select at least one area"
 }

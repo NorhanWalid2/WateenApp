@@ -468,4 +468,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contactSupportSubtitle => 'احصل على مساعدة من فريقنا';
+
+  @override
+  String get goBack => 'الرجوع؟';
+
+  @override
+  String get goBackContent => 'هل أنت متأكد؟ سيتم الاحتفاظ بتقدمك.';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get male => 'ذكر';
+
+  @override
+  String get female => 'أنثى';
+
+  @override
+  String get selectBloodType => 'اختر فصيلة الدم';
+
+  @override
+  String get nurseRegistration => 'تسجيل الممرض';
+
+  @override
+  String get uploadNurseLicense => 'رفع الترخيص / الشهادة';
+
+  @override
+  String get serviceAreasLabel => 'مناطق الخدمة';
+
+  @override
+  String get pleaseSelectServiceType => 'يرجى اختيار نوع الخدمة';
+
+  @override
+  String get pleaseSelectArea => 'يرجى اختيار منطقة واحدة على الأقل';
 }

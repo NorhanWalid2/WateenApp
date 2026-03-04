@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class DoctorStep3 extends StatelessWidget {
   final String? uploadedFileName;
@@ -14,6 +14,7 @@ class DoctorStep3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -21,14 +22,14 @@ class DoctorStep3 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.uploadMedicalLicense, style: textTheme.titleLarge),
+          Text(l10n.uploadMedicalLicense, style: textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(AppStrings.uploadAClearPhoto, style: textTheme.bodySmall),
+          Text(l10n.uploadAClearPhoto, style: textTheme.bodySmall),
           const SizedBox(height: 20),
 
           // ── Upload Box ─────────────────────
           GestureDetector(
-            onTap: () => onFileUploaded(AppStrings.uploadLicenseDocument),
+            onTap: () => onFileUploaded(l10n.uploadLicenseDocument),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: double.infinity,
@@ -73,13 +74,10 @@ class DoctorStep3 extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            AppStrings.uploadLicenseDocument,
+                            l10n.uploadLicenseDocument,
                             style: textTheme.bodyMedium,
                           ),
-                          Text(
-                            AppStrings.jPGPNGOrPDF,
-                            style: textTheme.bodySmall,
-                          ),
+                          Text(l10n.jPGPNGOrPDF, style: textTheme.bodySmall),
                         ],
                       ),
             ),
@@ -89,10 +87,9 @@ class DoctorStep3 extends StatelessWidget {
 
           // ── Take Photo ─────────────────────
           OutlinedButton.icon(
-            onPressed:
-                () => onFileUploaded('photo_license.jpg'), // TODO: camera
+            onPressed: () => onFileUploaded('photo_license.jpg'),
             icon: const Icon(Icons.camera_alt_outlined),
-            label: const Text('Take Photo'),
+            label: Text(l10n.takePhoto),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(
@@ -117,7 +114,7 @@ class DoctorStep3 extends StatelessWidget {
                 const Text('📋 ', style: TextStyle(fontSize: 16)),
                 Expanded(
                   child: Text(
-                    AppStrings.yourAccountWillBe,
+                    l10n.yourAccountWillBe,
                     style: textTheme.bodySmall?.copyWith(
                       color: const Color(0xFF7D6200),
                     ),

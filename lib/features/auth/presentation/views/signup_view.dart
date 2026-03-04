@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/enums/user_role.dart';
- import 'package:wateen_app/core/widgets/app_bar_widget.dart';
+import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_signup_form_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_signup_form_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/patient_signup_form_widget.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -38,10 +39,7 @@ class _SignupViewState extends State<SignupView>
     );
 
     Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        print('✅ forward شغال'); // ✅ وده
-        _animController.forward();
-      }
+      if (mounted) _animController.forward();
     });
   }
 
@@ -53,6 +51,7 @@ class _SignupViewState extends State<SignupView>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final UserRole role = GoRouterState.of(context).extra as UserRole;
     final textTheme = Theme.of(context).textTheme;
 
@@ -81,9 +80,15 @@ class _SignupViewState extends State<SignupView>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 8),
-                        Text(_getTitle(role), style: textTheme.headlineLarge),
+                        Text(
+                          _getTitle(role, l10n),
+                          style: textTheme.headlineLarge,
+                        ),
                         const SizedBox(height: 4),
-                        Text(_getSubtitle(role), style: textTheme.bodyMedium),
+                        Text(
+                          _getSubtitle(role, l10n),
+                          style: textTheme.bodyMedium,
+                        ),
                         const SizedBox(height: 24),
                         switch (role) {
                           UserRole.doctor => DoctorSignUpFormWidget(),
@@ -104,24 +109,25 @@ class _SignupViewState extends State<SignupView>
   }
 }
 
-String _getTitle(UserRole role) {
+String _getTitle(UserRole role, AppLocalizations l10n) {
   switch (role) {
     case UserRole.doctor:
-      return 'Doctor Registration';
+      return l10n.doctorRegistration;
     case UserRole.nurse:
-      return 'Nurse Registration';
+      return l10n
+          .patientRegistration; // ← غيري لـ nurseRegistration لو أضفتيه في ARB
     case UserRole.patient:
-      return 'Patient Registration';
+      return l10n.patientRegistration;
   }
 }
 
-String _getSubtitle(UserRole role) {
+String _getSubtitle(UserRole role, AppLocalizations l10n) {
   switch (role) {
     case UserRole.doctor:
-      return 'Create your account to manage patient care';
+      return l10n.managepatientcare;
     case UserRole.nurse:
-      return 'Create your account to provide care services';
+      return l10n.providecareservices;
     case UserRole.patient:
-      return 'Create your account to access healthcare services';
+      return l10n.createyouraccount;
   }
 }

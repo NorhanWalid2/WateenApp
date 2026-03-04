@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+ import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class NurseStep3 extends StatelessWidget {
   final String? uploadedFileName;
@@ -14,6 +14,7 @@ class NurseStep3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -21,17 +22,14 @@ class NurseStep3 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Upload License/Certification', style: textTheme.titleLarge),
+          Text(l10n.uploadNurseLicense, style: textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(
-            "Upload a clear photo or scan of your professional license or certification. We'll verify it using OCR technology.",
-            style: textTheme.bodySmall,
-          ),
+          Text(l10n.uploadAClearPhoto, style: textTheme.bodySmall),
           const SizedBox(height: 20),
 
           // ── Upload Box ─────────────────────
           GestureDetector(
-            onTap: () => onFileUploaded('license_document.pdf'), // TODO: file picker
+            onTap: () => onFileUploaded('license_document.pdf'),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: double.infinity,
@@ -53,11 +51,9 @@ class NurseStep3 extends StatelessWidget {
                         Icon(Icons.check_circle_outline,
                             color: colorScheme.secondary, size: 36),
                         const SizedBox(height: 8),
-                        Text(
-                          uploadedFileName!,
-                          style: textTheme.bodySmall
-                              ?.copyWith(color: colorScheme.secondary),
-                        ),
+                        Text(uploadedFileName!,
+                            style: textTheme.bodySmall
+                                ?.copyWith(color: colorScheme.secondary)),
                       ],
                     )
                   : Column(
@@ -66,10 +62,9 @@ class NurseStep3 extends StatelessWidget {
                         Icon(Icons.upload_file_outlined,
                             color: colorScheme.onSurfaceVariant, size: 36),
                         const SizedBox(height: 8),
-                        Text(AppStrings.uploadLicenseDocument,
+                        Text(l10n.uploadLicenseDocument,
                             style: textTheme.bodyMedium),
-                        Text(AppStrings.jPGPNGOrPDF,
-                            style: textTheme.bodySmall),
+                        Text(l10n.jPGPNGOrPDF, style: textTheme.bodySmall),
                       ],
                     ),
             ),
@@ -77,11 +72,10 @@ class NurseStep3 extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // ── Take Photo ─────────────────────
           OutlinedButton.icon(
-            onPressed: () => onFileUploaded('photo_license.jpg'), // TODO: camera
+            onPressed: () => onFileUploaded('photo_license.jpg'),
             icon: const Icon(Icons.camera_alt_outlined),
-            label: Text(AppStrings.takePhoto),
+            label: Text(l10n.takePhoto),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(
@@ -91,7 +85,6 @@ class NurseStep3 extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // ── Note ───────────────────────────
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -105,10 +98,9 @@ class NurseStep3 extends StatelessWidget {
                 const Text('📋 ', style: TextStyle(fontSize: 16)),
                 Expanded(
                   child: Text(
-                    AppStrings.yourAccountWillBe,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF7D6200),
-                    ),
+                    l10n.yourAccountWillBe,
+                    style: textTheme.bodySmall
+                        ?.copyWith(color: const Color(0xFF7D6200)),
                   ),
                 ),
               ],

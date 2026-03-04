@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/function/navigation.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class LogoutDialogWidget extends StatelessWidget {
   const LogoutDialogWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -36,7 +37,7 @@ class LogoutDialogWidget extends StatelessWidget {
 
             // ── Title ─────────────────────────────
             Text(
-              AppStrings.confirmLogout,
+              l10n.confirmLogout,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -46,7 +47,7 @@ class LogoutDialogWidget extends StatelessWidget {
 
             // ── Subtitle ──────────────────────────
             Text(
-              AppStrings.areYouSureLogout,
+              l10n.areYouSureLogout,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -69,10 +70,7 @@ class LogoutDialogWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
-                      AppStrings.no,
-                      style: textTheme.titleSmall,
-                    ),
+                    child: Text(l10n.no, style: textTheme.titleSmall),
                   ),
                 ),
 
@@ -94,7 +92,7 @@ class LogoutDialogWidget extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      AppStrings.sure,
+                      l10n.sure,
                       style: textTheme.titleSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
