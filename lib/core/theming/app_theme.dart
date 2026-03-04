@@ -279,6 +279,11 @@ abstract class AppTheme {
         fontWeight: FontWeight.w400,
         color: AppColorsDark.textSecondary,
       ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: AppColorsLight.textSecondary, // ✅
+      ),
       labelLarge: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
@@ -577,7 +582,7 @@ abstract class AppTheme {
       titleSmall: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: AppColorsLight.divider,
+        color: AppColorsLight.textPrimary,
       ),
       displayLarge: TextStyle(
         fontSize: 24,

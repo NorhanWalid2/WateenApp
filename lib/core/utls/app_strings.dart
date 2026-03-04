@@ -123,5 +123,51 @@ abstract class AppStrings {
       'By submitting this registration, you confirm that all information provided is accurate and you agree to our ';
 
   static const String forgotPassword = 'Forgot password?';
-  static const String dontHaveAnAccount = "Don't have an account? ";
+  static const String dontHaveAnAccount = "Don't have an account? ",
+      serviceType = 'Service Type',
+      selectYourServiceType = 'Select your service type';
+  static const String profile = 'Profile';
+  static const String familyMembers = 'Family Members';
+  static const String manageFamilyAccounts = 'Manage family accounts';
+  static const String medicalHistory = 'Medical History';
+  static const String viewAndUploadFiles = 'View and upload files';
+  static const String settings = 'Settings';
+  static const String appPreferences = 'App preferences';
+  static const String language = 'Language';
+  static const String englishArabic = 'English / العربية';
+  static const String logOut = 'Log Out';
+  static const String version = 'Version 1.0.0';
+  static const String confirmLogout = 'Confirm Logout';
+  static const String areYouSureLogout = 'Are you sure you want to log out?';
+  static const String no = 'No';
+  static const String sure = 'Sure';
+  static const String appearance = 'Appearance';
+  static const String darkMode = 'Dark Mode';
+  static const String darkModeOn = 'Dark theme is active';
+  static const String darkModeOff = 'Light theme is active';
+  static const String fontSize = 'Font Size';
+  static const String fontSizeSubtitle = 'Adjust text size';
+  static const String notifications = 'Notifications';
+  static const String pushNotifications = 'Push Notifications';
+  static const String pushNotificationsSubtitle = 'Receive app notifications';
+  static const String emailNotifications = 'Email Notifications';
+  static const String emailNotificationsSubtitle = 'Receive updates via email';
+  static const String appointmentReminders = 'Appointment Reminders';
+  static const String appointmentRemindersSubtitle =
+      'Get reminded before appointments';
+  static const String privacyAndSecurity = 'Privacy & Security';
+  static const String changePassword = 'Change Password';
+  static const String changePasswordSubtitle = 'Update your password';
+  static const String biometricLogin = 'Biometric Login';
+  static const String biometricLoginSubtitle = 'Use Face ID or Fingerprint';
+  static const String twoFactorAuth = 'Two-Factor Authentication';
+  static const String twoFactorAuthSubtitle =
+      'Add extra security to your account';
+  static const String about = 'About';
+  static const String appVersion = 'App Version';
+  static const String termsSubtitle = 'Read our terms';
+  static const String privacySubtitle = 'Read our privacy policy';
+  static const String rateTheApp = 'Rate the App';
+  static const String rateSubtitle = 'Leave us a review';
+  static const String contactSupportSubtitle = 'Get help from our team';
 }

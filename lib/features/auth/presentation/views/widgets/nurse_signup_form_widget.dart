@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step1.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step1.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step2.dart';
+import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step4.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_progress_bar.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class NurseSignupFormWidget extends StatefulWidget {
   const NurseSignupFormWidget({super.key});
@@ -50,9 +50,9 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
     super.dispose();
   }
 
-  // ── Back with Confirm Dialog ──────────────────
   Future<void> _onBackPressed() async {
     if (_currentStep == 0) return;
+    final l10n = AppLocalizations.of(context)!;
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -61,19 +61,17 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            title: const Text('Go Back?'),
-            content: const Text(
-              'Are you sure you want to go back? Your progress in this step will be kept.',
-            ),
+            title: Text(l10n.goBack),
+            content: Text(l10n.goBackContent),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel'),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
                 child: Text(
-                  'Go Back',
+                  l10n.goBack,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
@@ -84,7 +82,6 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
     if (confirmed == true) setState(() => _currentStep--);
   }
 
-  // ── Continue / Submit ─────────────────────────
   void _onContinue() {
     switch (_currentStep) {
       case 0:
@@ -94,7 +91,7 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
         if (_step2Key.currentState!.validate() && _selectedAreas.isNotEmpty) {
           setState(() => _currentStep++);
         } else {
-          setState(() {}); // trigger rebuild to show areas error
+          setState(() {});
         }
         break;
       case 2:
@@ -106,7 +103,6 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
     }
   }
 
-  // ── Toggle Service Area ───────────────────────
   void _toggleArea(String area) {
     setState(() {
       if (_selectedAreas.contains(area)) {
@@ -119,6 +115,7 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -130,26 +127,20 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Step Label ───────────────────────
           Text(
-            'Step ${_currentStep + 1} of $_totalSteps',
+            '${l10n.step} ${_currentStep + 1} of $_totalSteps',
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
-
-          // ── Progress Bar ─────────────────────
           StepProgressBar(
             currentStep: _currentStep,
             totalSteps: _totalSteps,
             activeColor: colorScheme.secondary,
             inactiveColor: colorScheme.outline,
           ),
-
           const SizedBox(height: 24),
-
-          // ── Animated Step Content ────────────
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
             transitionBuilder:
@@ -168,15 +159,12 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
               child: _buildCurrentStep(),
             ),
           ),
-
           const SizedBox(height: 24),
-
-          // ── Button ───────────────────────────
           CustomButton(
             title:
                 _currentStep == _totalSteps - 1
-                    ? 'Submit Registration'
-                    : 'Continue',
+                    ? l10n.submitRegistration
+                    : l10n.continue_,
             color: colorScheme.secondary,
             colorText: colorScheme.primary,
             onTap: _onContinue,
@@ -189,7 +177,6 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
   Widget _buildCurrentStep() {
     switch (_currentStep) {
       case 0:
-        // ✅ بنستخدم DoctorStep1 لأنه نفس البيانات بالظبط
         return NurseStep1(
           formKey: _step1Key,
           fullNameController: _fullNameController,
@@ -210,8 +197,7 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
           onAreaToggled: _toggleArea,
         );
       case 2:
-        // ✅ بنستخدم DoctorStep3 لأنه نفس الـ upload
-        return DoctorStep3(
+        return NurseStep3(
           uploadedFileName: _uploadedFileName,
           onFileUploaded: (name) => setState(() => _uploadedFileName = name),
         );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/utls/app_assets.dart';
-import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/features/onboarding/data/models/model.dart';
 import 'package:wateen_app/features/onboarding/presentation/screens/widgets/custom.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -17,28 +17,28 @@ class _OnboardingViewState extends State<OnboardingView> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  final List<OnboardingModel> _pages = [
+  List<OnboardingModel> _buildPages(AppLocalizations l10n) => [
     OnboardingModel(
       image: AppAssets.assetsImagesOnBoarding1,
-      title: AppStrings.aIHealthAssistant,
-      description: AppStrings.getInstantMedical,
+      title: l10n.aIHealthAssistant,
+      description: l10n.getInstantMedical,
     ),
     OnboardingModel(
       image: AppAssets.assetsImagesOnBoarding2,
-      title: AppStrings.expertDoctors,
-      description: AppStrings.connectWithCertified,
+      title: l10n.expertDoctors,
+      description: l10n.connectWithCertified,
     ),
     OnboardingModel(
       image: AppAssets.assetsImagesOnBoarding3,
-      title: AppStrings.homeCareServices,
-      description: AppStrings.requestProfessionalNursing,
+      title: l10n.homeCareServices,
+      description: l10n.requestProfessionalNursing,
     ),
   ];
 
   void _goToRole() => CustomReplacementNavigation(context, '/role');
 
-  void _nextPage() {
-    if (_currentIndex < _pages.length - 1) {
+  void _nextPage(int total) {
+    if (_currentIndex < total - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -50,31 +50,30 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final bool isLastPage = _currentIndex == _pages.length - 1;
+    final pages = _buildPages(l10n);
+    final bool isLastPage = _currentIndex == pages.length - 1;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // ── PageView ─────────────────────────
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (index) => setState(() => _currentIndex = index),
                 itemBuilder:
                     (context, index) =>
-                        OnboardingPageWidget(model: _pages[index]),
+                        OnboardingPageWidget(model: pages[index]),
               ),
             ),
-
-            // ── Dots Indicator ───────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                _pages.length,
+                pages.length,
                 (index) => AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -90,45 +89,40 @@ class _OnboardingViewState extends State<OnboardingView> {
                 ),
               ),
             ),
-
             const SizedBox(height: 32),
-
-            // ── Buttons ──────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child:
                   isLastPage
                       ? CustomButton(
-                        title: 'Get Started',
+                        title: l10n.getStarted,
                         color: colorScheme.secondary,
                         colorText: colorScheme.primary,
                         onTap: _goToRole,
                       )
                       : Row(
                         children: [
-                          // Skip
                           Expanded(
                             child: TextButton(
                               onPressed: _goToRole,
-                              child: Text('Skip', style: textTheme.titleMedium),
+                              child: Text(
+                                l10n.skip,
+                                style: textTheme.titleMedium,
+                              ),
                             ),
                           ),
-
                           const SizedBox(width: 16),
-
-                          // Next
                           Expanded(
                             child: CustomButton(
-                              title: 'Next',
+                              title: l10n.next,
                               color: colorScheme.secondary,
                               colorText: colorScheme.primary,
-                              onTap: _nextPage,
+                              onTap: () => _nextPage(pages.length),
                             ),
                           ),
                         ],
                       ),
             ),
-
             const SizedBox(height: 32),
           ],
         ),

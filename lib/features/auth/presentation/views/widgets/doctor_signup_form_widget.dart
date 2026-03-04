@@ -5,6 +5,7 @@ import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step2
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step4.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_progress_bar.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class DoctorSignUpFormWidget extends StatefulWidget {
   const DoctorSignUpFormWidget({super.key});
@@ -52,38 +53,38 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
     super.dispose();
   }
 
-  // ── Back with Confirm Dialog ──────────────────
   Future<void> _onBackPressed() async {
     if (_currentStep == 0) return;
+    final l10n = AppLocalizations.of(context)!;
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Go Back?'),
-        content: const Text(
-          'Are you sure you want to go back? Your progress in this step will be kept.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              'Go Back',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
+            title: Text(l10n.goBack),
+            content: Text(l10n.goBackContent),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(
+                  l10n.goBack,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmed == true) setState(() => _currentStep--);
   }
 
-  // ── Continue / Submit ─────────────────────────
   void _onContinue() {
     switch (_currentStep) {
       case 0:
@@ -103,6 +104,7 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -114,51 +116,44 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Step Label ───────────────────────
           Text(
-            'Step ${_currentStep + 1} of $_totalSteps',
+            '${l10n.step} ${_currentStep + 1} of $_totalSteps',
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
-
-          // ── Progress Bar ─────────────────────
           StepProgressBar(
             currentStep: _currentStep,
             totalSteps: _totalSteps,
             activeColor: colorScheme.secondary,
             inactiveColor: colorScheme.outline,
           ),
-
           const SizedBox(height: 24),
-
-          // ── Animated Step Content ────────────
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.05, 0),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
-            ),
+            transitionBuilder:
+                (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.05, 0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                ),
             child: KeyedSubtree(
               key: ValueKey(_currentStep),
               child: _buildCurrentStep(),
             ),
           ),
-
           const SizedBox(height: 24),
-
-          // ── Button ───────────────────────────
           CustomButton(
-            title: _currentStep == _totalSteps - 1
-                ? 'Submit Registration'
-                : 'Continue',
+            title:
+                _currentStep == _totalSteps - 1
+                    ? l10n.submitRegistration
+                    : l10n.continue_,
             color: colorScheme.secondary,
             colorText: colorScheme.primary,
             onTap: _onContinue,
