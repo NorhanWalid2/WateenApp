@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
- import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
- import 'package:wateen_app/core/widgets/custom_button.dart';
+import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/login_cubi.dart';
@@ -125,7 +125,12 @@ class LoginView extends StatelessWidget {
                                   ],
                                 ),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    return CustomNavigation(
+                                      context,
+                                      '/forgetPassword',
+                                    );
+                                  },
                                   child: Text(
                                     l10n.forgotPassword,
                                     style: textTheme.bodySmall?.copyWith(

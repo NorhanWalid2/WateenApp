@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:wateen_app/features/auth/presentation/views/forget_password_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/login_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/role_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/signup_view.dart';
@@ -17,6 +18,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsView(),
+    ),
+    GoRoute(
+      path: '/forgetPassword',
+      builder: (context, state) => const ForgetPasswordView(),
     ),
   ],
 );
