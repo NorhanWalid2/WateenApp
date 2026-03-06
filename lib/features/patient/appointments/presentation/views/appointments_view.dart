@@ -76,10 +76,6 @@ class _AppointmentsViewState extends State<AppointmentsView>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Appointments', style: textTheme.headlineMedium),
-                  Icon(
-                    Icons.mic_none_rounded,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
                 ],
               ),
             ),
