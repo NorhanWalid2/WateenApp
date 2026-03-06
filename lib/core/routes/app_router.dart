@@ -34,14 +34,13 @@ final GoRouter router = GoRouter(
       path: '/appointments',
       builder: (_, __) => const AppointmentsView(),
     ),
-     GoRoute(
+    GoRoute(
       path: '/appointmentsDetails',
       builder: (_, __) => const AppointmentDetailsView(),
     ),
-     GoRoute(
+    GoRoute(
       path: '/rescheduleAppointments',
       builder: (_, __) => const RescheduleAppointmentView(),
     ),
-    
   ],
 );

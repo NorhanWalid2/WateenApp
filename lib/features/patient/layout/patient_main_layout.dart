@@ -74,7 +74,7 @@ class _PatientMainLayoutState extends State<PatientMainLayout> {
               const SizedBox(width: 72), // ← كبّر الـ width من 56 لـ 72
 
               NavItemWidget(
-                icon: Icons.favorite_rounded,
+                icon: Icons.monitor_heart_rounded,
                 label: l10n.health,
                 isSelected: _currentIndex == 2,
                 onTap: () => setState(() => _currentIndex = 2),

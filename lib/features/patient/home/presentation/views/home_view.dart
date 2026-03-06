@@ -31,7 +31,9 @@ class HomeView extends StatelessWidget {
             doctorName: 'Dr. Sarah Ahmed',
             specialty: 'Cardiologist',
             dateTime: 'Today, 2:30 PM',
-            onViewDetails: () {},
+            onViewDetails: () {
+              return CustomNavigation(context, '/appointmentsDetails');
+            },
             onStart: () {},
           ),
           const SizedBox(height: 20),
@@ -61,7 +63,9 @@ class HomeView extends StatelessWidget {
                   label: 'My Appointments',
                   subtitle: 'View & manage',
                   color: Colors.blue,
-                  onTap: () {},
+                  onTap: () {
+                    return CustomNavigation(context, '/appointments');
+                  },
                 ),
               ),
               QuickActionCardWidget(
