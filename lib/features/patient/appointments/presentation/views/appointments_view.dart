@@ -65,73 +65,82 @@ class _AppointmentsViewState extends State<AppointmentsView>
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Appointments', style: textTheme.headlineMedium),
-              Icon(Icons.mic_none_rounded, color: colorScheme.onSurfaceVariant),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // ── Tabs ─────────────────────────────
-        TabBar(
-          controller: _tabController,
-          labelColor: colorScheme.secondary,
-          unselectedLabelColor: colorScheme.onSurfaceVariant,
-          indicatorColor: colorScheme.secondary,
-          indicatorWeight: 2,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-          tabs: const [Tab(text: 'Upcoming'), Tab(text: 'Past')],
-        ),
-
-        // ── Tab Content ──────────────────────
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              // Upcoming
-              ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                itemCount: _upcoming.length,
-                itemBuilder:
-                    (ctx, i) => AppointmentCardWidget(
-                      appointment: _upcoming[i],
-                      onTap:
-                          () =>
-                              CustomNavigation(context, '/appointmentsDetails'),
-                      onAction: () {},
-                      onReschedule:
-                          () => CustomNavigation(
-                            context,
-                            '/rescheduleAppointments',
-                          ),
-                      onCancel:
-                          () => showDialog(
-                            context: context,
-                            builder:
-                                (_) => CancelAppointmentDialog(
-                                  onConfirm: () => Navigator.pop(context),
-                                  onGoBack: () => Navigator.pop(context),
-                                ),
-                          ),
-                    ),
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Appointments', style: textTheme.headlineMedium),
+                  Icon(
+                    Icons.mic_none_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ],
               ),
-              // Past
-              const Center(child: Text('No past appointments')),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+
+            // ── Tabs ─────────────────────────────
+            TabBar(
+              controller: _tabController,
+              labelColor: colorScheme.secondary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              indicatorColor: colorScheme.secondary,
+              indicatorWeight: 2,
+              labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+              tabs: const [Tab(text: 'Upcoming'), Tab(text: 'Past')],
+            ),
+
+            // ── Tab Content ──────────────────────
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Upcoming
+                  ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    itemCount: _upcoming.length,
+                    itemBuilder:
+                        (ctx, i) => AppointmentCardWidget(
+                          appointment: _upcoming[i],
+                          onTap:
+                              () => CustomNavigation(
+                                context,
+                                '/appointmentsDetails',
+                              ),
+                          onAction: () {},
+                          onReschedule:
+                              () => CustomNavigation(
+                                context,
+                                '/rescheduleAppointments',
+                              ),
+                          onCancel:
+                              () => showDialog(
+                                context: context,
+                                builder:
+                                    (_) => CancelAppointmentDialog(
+                                      onConfirm: () => Navigator.pop(context),
+                                      onGoBack: () => Navigator.pop(context),
+                                    ),
+                              ),
+                        ),
+                  ),
+                  // Past
+                  const Center(child: Text('No past appointments')),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
