@@ -501,4 +501,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseSelectArea => 'يرجى اختيار منطقة واحدة على الأقل';
+
+  @override
+  String get home => 'الرئيسية';
+
+  @override
+  String get appointments => 'المواعيد';
+
+  @override
+  String get aiAssistant => 'المساعد';
+
+  @override
+  String get health => 'الصحة';
 }
