@@ -156,7 +156,7 @@ class LoginView extends StatelessWidget {
                                         if (_formKey.currentState!.validate()) {
                                           return CustomNavigation(
                                             context,
-                                            '/profile',
+                                            '/patient',
                                           );
                                         }
                                       },

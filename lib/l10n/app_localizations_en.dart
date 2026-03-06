@@ -504,4 +504,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSelectArea => 'Please select at least one area';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get appointments => 'Appointments';
+
+  @override
+  String get aiAssistant => 'AI';
+
+  @override
+  String get health => 'Health';
 }

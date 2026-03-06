@@ -172,5 +172,9 @@
   "uploadNurseLicense": "رفع الترخيص / الشهادة",
 "serviceAreasLabel": "مناطق الخدمة",
 "pleaseSelectServiceType": "يرجى اختيار نوع الخدمة",
-"pleaseSelectArea": "يرجى اختيار منطقة واحدة على الأقل"
+"pleaseSelectArea": "يرجى اختيار منطقة واحدة على الأقل",
+"home": "الرئيسية",
+"appointments": "المواعيد",
+"aiAssistant": "المساعد",
+"health": "الصحة"
 }

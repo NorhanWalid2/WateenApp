@@ -172,5 +172,9 @@
   "uploadNurseLicense": "Upload License/Certification",
 "serviceAreasLabel": "Service Areas",
 "pleaseSelectServiceType": "Please select a service type",
-"pleaseSelectArea": "Please select at least one area"
+"pleaseSelectArea": "Please select at least one area",
+"home": "Home",
+"appointments": "Appointments",
+"aiAssistant": "AI",
+"health": "Health"
 }

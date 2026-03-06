@@ -1069,6 +1069,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select at least one area'**
   String get pleaseSelectArea;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @appointments.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments'**
+  String get appointments;
+
+  /// No description provided for @aiAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI'**
+  String get aiAssistant;
+
+  /// No description provided for @health.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get health;
 }
 
 class _AppLocalizationsDelegate
