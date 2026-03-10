@@ -1,20 +1,5 @@
 import 'package:flutter/material.dart';
-
-class QuickActionModel {
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final Color color;
-  final VoidCallback onTap;
-
-  const QuickActionModel({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.color,
-    required this.onTap,
-  });
-}
+import 'package:wateen_app/features/patient/home/data/models/quick_action_model.dart';
 
 class QuickActionCardWidget extends StatelessWidget {
   final QuickActionModel action;

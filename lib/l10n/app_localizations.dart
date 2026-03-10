@@ -1099,6 +1099,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Messages'**
   String get messages;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning'**
+  String get goodMorning;
+
+  /// No description provided for @nextAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Appointment'**
+  String get nextAppointment;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @medicationReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication Reminder'**
+  String get medicationReminder;
+
+  /// No description provided for @markAsTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Taken'**
+  String get markAsTaken;
+
+  /// No description provided for @remindLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind Later'**
+  String get remindLater;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @myAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'My Appointments'**
+  String get myAppointments;
+
+  /// No description provided for @viewAndManage.
+  ///
+  /// In en, this message translates to:
+  /// **'View & manage'**
+  String get viewAndManage;
+
+  /// No description provided for @bookDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Doctor'**
+  String get bookDoctor;
+
+  /// No description provided for @scheduleAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule appointment'**
+  String get scheduleAppointment;
+
+  /// No description provided for @requestNurse.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Nurse'**
+  String get requestNurse;
+
+  /// No description provided for @homeCareService.
+  ///
+  /// In en, this message translates to:
+  /// **'Home care service'**
+  String get homeCareService;
+
+  /// No description provided for @scanMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Meal'**
+  String get scanMeal;
+
+  /// No description provided for @checkNutrition.
+  ///
+  /// In en, this message translates to:
+  /// **'Check nutrition'**
+  String get checkNutrition;
+
+  /// No description provided for @addVitals.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vitals'**
+  String get addVitals;
+
+  /// No description provided for @logHealthData.
+  ///
+  /// In en, this message translates to:
+  /// **'Log health data'**
+  String get logHealthData;
 }
 
 class _AppLocalizationsDelegate

@@ -519,4 +519,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messages => 'Messages';
+
+  @override
+  String get goodMorning => 'Good Morning';
+
+  @override
+  String get nextAppointment => 'Next Appointment';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get medicationReminder => 'Medication Reminder';
+
+  @override
+  String get markAsTaken => 'Mark as Taken';
+
+  @override
+  String get remindLater => 'Remind Later';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get myAppointments => 'My Appointments';
+
+  @override
+  String get viewAndManage => 'View & manage';
+
+  @override
+  String get bookDoctor => 'Book Doctor';
+
+  @override
+  String get scheduleAppointment => 'Schedule appointment';
+
+  @override
+  String get requestNurse => 'Request Nurse';
+
+  @override
+  String get homeCareService => 'Home care service';
+
+  @override
+  String get scanMeal => 'Scan Meal';
+
+  @override
+  String get checkNutrition => 'Check nutrition';
+
+  @override
+  String get addVitals => 'Add Vitals';
+
+  @override
+  String get logHealthData => 'Log health data';
 }

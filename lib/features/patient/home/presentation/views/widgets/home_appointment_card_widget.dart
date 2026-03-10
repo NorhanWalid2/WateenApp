@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class HomeAppointmentCardWidget extends StatelessWidget {
   final String doctorName;
@@ -18,6 +19,7 @@ class HomeAppointmentCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -42,7 +44,8 @@ class HomeAppointmentCardWidget extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: colorScheme.secondary.withOpacity(0.15),
-                child: Icon(Icons.person_rounded, color: colorScheme.secondary, size: 28),
+                child: Icon(Icons.person_rounded,
+                    color: colorScheme.secondary, size: 28),
               ),
               const SizedBox(width: 12),
               Column(
@@ -50,16 +53,19 @@ class HomeAppointmentCardWidget extends StatelessWidget {
                 children: [
                   Text(
                     doctorName,
-                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   Text(
                     specialty,
-                    style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                    style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.access_time_rounded, size: 14, color: colorScheme.secondary),
+                      Icon(Icons.access_time_rounded,
+                          size: 14, color: colorScheme.secondary),
                       const SizedBox(width: 4),
                       Text(
                         dateTime,
@@ -82,12 +88,15 @@ class HomeAppointmentCardWidget extends StatelessWidget {
                   onPressed: onViewDetails,
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: colorScheme.secondary),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
                   child: Text(
-                    'View Details',
-                    style: TextStyle(color: colorScheme.secondary, fontWeight: FontWeight.w600),
+                    l10n.viewDetails,
+                    style: TextStyle(
+                        color: colorScheme.secondary,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -95,14 +104,17 @@ class HomeAppointmentCardWidget extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: onStart,
-                  icon: const Icon(Icons.videocam_rounded, color: Colors.white, size: 18),
-                  label: const Text(
-                    'Start',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  icon: const Icon(Icons.videocam_rounded,
+                      color: Colors.white, size: 18),
+                  label: Text(
+                    l10n.start,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.secondary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     elevation: 0,
                   ),

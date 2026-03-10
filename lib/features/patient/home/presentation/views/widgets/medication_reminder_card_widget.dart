@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class MedicationReminderCardWidget extends StatelessWidget {
   final String medicationName;
@@ -16,14 +17,18 @@ class MedicationReminderCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xffFFFBEB),
-        //colorScheme.primary,
+        // ✅ بيتغير حسب الثيم
+        color: isDark
+            ? const Color(0xFF2C2410)
+            : const Color(0xFFFFFBEB),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -52,9 +57,13 @@ class MedicationReminderCardWidget extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                'Medication Reminder',
+                l10n.medicationReminder,
                 style: textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
+                  // ✅ لون النص بيتغير حسب الثيم
+                  color: isDark
+                      ? const Color(0xFFFFD95A)
+                      : const Color(0xFF92400E),
                 ),
               ),
             ],
@@ -62,12 +71,19 @@ class MedicationReminderCardWidget extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             medicationName,
-            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDark
+                  ? const Color(0xFFFFD95A)
+                  : const Color(0xFF92400E),
+            ),
           ),
           Text(
             instructions,
             style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+              color: isDark
+                  ? const Color(0xFFB8A060)
+                  : const Color(0xFF78350F),
             ),
           ),
           const SizedBox(height: 14),
@@ -84,9 +100,9 @@ class MedicationReminderCardWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Mark as Taken',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.markAsTaken,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
@@ -107,7 +123,7 @@ class MedicationReminderCardWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
                   child: Text(
-                    'Remind Later',
+                    l10n.remindLater,
                     style: TextStyle(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,

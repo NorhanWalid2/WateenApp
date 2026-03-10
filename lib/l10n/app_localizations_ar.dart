@@ -516,4 +516,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get messages => 'الرسايل';
+
+  @override
+  String get goodMorning => 'صباح الخير';
+
+  @override
+  String get nextAppointment => 'الموعد القادم';
+
+  @override
+  String get viewAll => 'عرض الكل';
+
+  @override
+  String get quickActions => 'الإجراءات السريعة';
+
+  @override
+  String get medicationReminder => 'تذكير الدواء';
+
+  @override
+  String get markAsTaken => 'تم الأخذ';
+
+  @override
+  String get remindLater => 'تذكيري لاحقاً';
+
+  @override
+  String get viewDetails => 'عرض التفاصيل';
+
+  @override
+  String get start => 'ابدأ';
+
+  @override
+  String get myAppointments => 'مواعيدي';
+
+  @override
+  String get viewAndManage => 'عرض وإدارة';
+
+  @override
+  String get bookDoctor => 'حجز دكتور';
+
+  @override
+  String get scheduleAppointment => 'جدولة موعد';
+
+  @override
+  String get requestNurse => 'طلب ممرض';
+
+  @override
+  String get homeCareService => 'خدمة رعاية منزلية';
+
+  @override
+  String get scanMeal => 'مسح الوجبة';
+
+  @override
+  String get checkNutrition => 'فحص التغذية';
+
+  @override
+  String get addVitals => 'إضافة قياسات';
+
+  @override
+  String get logHealthData => 'تسجيل البيانات الصحية';
 }
