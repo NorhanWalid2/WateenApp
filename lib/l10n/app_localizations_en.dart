@@ -516,4 +516,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get health => 'Health';
+
+  @override
+  String get messages => 'Messages';
 }
