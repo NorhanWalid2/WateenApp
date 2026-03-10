@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/ai_assistant_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/health/presentation/views/health_view.dart';
@@ -91,10 +92,8 @@ class _PatientMainLayoutState extends State<PatientMainLayout> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AiAssistantView()),
-          );
+          return CustomNavigation(context, '/aiAssistant');
+       
         },
         backgroundColor: colorScheme.secondary,
         elevation: 4,
