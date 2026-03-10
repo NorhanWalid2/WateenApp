@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/messages/data/models/chat_message_model.dart';
 import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/widgets/chat_bubble_widget.dart';
@@ -141,6 +141,7 @@ class ChatViewState extends State<ChatView> {
   }
 
   void showAttachOptions() {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -166,14 +167,14 @@ class ChatViewState extends State<ChatView> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text('Attach', style: textTheme.titleMedium),
+                  Text(l10n.attach, style: textTheme.titleMedium),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       AttachItemWidget(
                         icon: Icons.camera_alt_rounded,
-                        label: 'Camera',
+                        label: l10n.camera,
                         color: colorScheme.secondary,
                         onTap: () {
                           Navigator.pop(context);
@@ -182,7 +183,7 @@ class ChatViewState extends State<ChatView> {
                       ),
                       AttachItemWidget(
                         icon: Icons.photo_library_rounded,
-                        label: 'Gallery',
+                        label: l10n.gallery,
                         color: Colors.purple,
                         onTap: () {
                           Navigator.pop(context);
@@ -191,7 +192,7 @@ class ChatViewState extends State<ChatView> {
                       ),
                       AttachItemWidget(
                         icon: Icons.insert_drive_file_rounded,
-                        label: 'Document',
+                        label: l10n.document,
                         color: Colors.blue,
                         onTap: () => Navigator.pop(context),
                       ),
@@ -207,6 +208,7 @@ class ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -276,7 +278,7 @@ class ChatViewState extends State<ChatView> {
                 ),
                 Text(
                   widget.conversation.isOnline
-                      ? 'Online'
+                      ? l10n.online
                       : widget.conversation.specialty,
                   style: textTheme.bodySmall?.copyWith(
                     color:

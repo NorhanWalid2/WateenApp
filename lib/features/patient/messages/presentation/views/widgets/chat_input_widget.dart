@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class ChatInputWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -14,6 +15,7 @@ class ChatInputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -32,22 +34,23 @@ class ChatInputWidget extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            // ── Attach ──────────────────────
             GestureDetector(
               onTap: onAttach,
               child: Container(
-                width: 38, height: 38,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.attach_file_rounded,
-                    color: colorScheme.onSurfaceVariant, size: 20),
+                child: Icon(
+                  Icons.attach_file_rounded,
+                  color: colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
               ),
             ),
             const SizedBox(width: 8),
-
-            // ── Text Field ───────────────────
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -62,29 +65,34 @@ class ChatInputWidget extends StatelessWidget {
                   textInputAction: TextInputAction.send,
                   onSubmitted: onSend,
                   decoration: InputDecoration(
-                    hintText: 'Type a message...',
-                    hintStyle: textTheme.bodyMedium
-                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                    hintText: l10n.typeAMessage,
+                    hintStyle: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 8),
-
-            // ── Send ─────────────────────────
             GestureDetector(
               onTap: () => onSend(controller.text),
               child: Container(
-                width: 38, height: 38,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: colorScheme.secondary,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.send_rounded,
-                    color: Colors.white, size: 18),
+                child: const Icon(
+                  Icons.send_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
           ],

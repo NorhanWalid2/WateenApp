@@ -573,4 +573,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get logHealthData => 'تسجيل البيانات الصحية';
+
+  @override
+  String get typeAMessage => 'اكتب رسالة...';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get document => 'مستند';
+
+  @override
+  String get attach => 'إرفاق';
+
+  @override
+  String get online => 'متصل';
+
+  @override
+  String get searchDoctors => 'ابحث عن دكتور...';
+
+  @override
+  String get noConversationsFound => 'لا توجد محادثات';
 }

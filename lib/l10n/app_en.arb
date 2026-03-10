@@ -196,5 +196,13 @@
 "scanMeal": "Scan Meal",
 "checkNutrition": "Check nutrition",
 "addVitals": "Add Vitals",
-"logHealthData": "Log health data"
+"logHealthData": "Log health data",
+"typeAMessage": "Type a message...",
+"camera": "Camera",
+"gallery": "Gallery",
+"document": "Document",
+"attach": "Attach",
+"online": "Online",
+"searchDoctors": "Search doctors...",
+"noConversationsFound": "No conversations found"
 }

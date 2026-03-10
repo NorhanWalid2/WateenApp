@@ -196,5 +196,13 @@
 "scanMeal": "مسح الوجبة",
 "checkNutrition": "فحص التغذية",
 "addVitals": "إضافة قياسات",
-"logHealthData": "تسجيل البيانات الصحية"
+"logHealthData": "تسجيل البيانات الصحية",
+"typeAMessage": "اكتب رسالة...",
+"camera": "الكاميرا",
+"gallery": "المعرض",
+"document": "مستند",
+"attach": "إرفاق",
+"online": "متصل",
+"searchDoctors": "ابحث عن دكتور...",
+"noConversationsFound": "لا توجد محادثات"
 }

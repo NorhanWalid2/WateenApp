@@ -576,4 +576,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logHealthData => 'Log health data';
+
+  @override
+  String get typeAMessage => 'Type a message...';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get document => 'Document';
+
+  @override
+  String get attach => 'Attach';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get searchDoctors => 'Search doctors...';
+
+  @override
+  String get noConversationsFound => 'No conversations found';
 }

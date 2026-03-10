@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/chat_view.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/widgets/conversation_tile_widget.dart';
@@ -74,6 +75,7 @@ class ConversationsViewState extends State<ConversationsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final filtered = filteredConversations;
@@ -88,7 +90,7 @@ class ConversationsViewState extends State<ConversationsView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Messages',
+                l10n.messages,
                 style: textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -105,7 +107,7 @@ class ConversationsViewState extends State<ConversationsView> {
                   onChanged: (v) => setState(() => query = v),
                   style: textTheme.bodyMedium,
                   decoration: InputDecoration(
-                    hintText: 'Search doctors...',
+                    hintText: l10n.searchDoctors,
                     hintStyle: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -132,7 +134,7 @@ class ConversationsViewState extends State<ConversationsView> {
               filtered.isEmpty
                   ? Center(
                     child: Text(
-                      'No conversations found',
+                      l10n.noConversationsFound,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
