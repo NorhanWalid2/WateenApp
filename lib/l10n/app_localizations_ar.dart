@@ -513,4 +513,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get health => 'الصحة';
+
+  @override
+  String get messages => 'الرسايل';
 }
