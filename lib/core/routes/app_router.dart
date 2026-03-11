@@ -8,6 +8,7 @@ import 'package:wateen_app/features/patient/ai_assistant/presentation/views/ai_a
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointment_details_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/reschedule_appointment_view.dart';
+import 'package:wateen_app/features/patient/book_appointment/presentation/views/book_appointment_view.dart';
 import 'package:wateen_app/features/patient/home/presentation/views/home_view.dart';
 import 'package:wateen_app/features/patient/layout/patient_main_layout.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/profile_view.dart';
@@ -44,5 +45,9 @@ final GoRouter router = GoRouter(
       builder: (_, __) => const RescheduleAppointmentView(),
     ),
     GoRoute(path: '/aiAssistant', builder: (_, __) => const AiAssistantView()),
+    GoRoute(
+      path: '/bookAppointment',
+      builder: (_, __) => const BookAppointmentView(),
+    ),
   ],
 );
