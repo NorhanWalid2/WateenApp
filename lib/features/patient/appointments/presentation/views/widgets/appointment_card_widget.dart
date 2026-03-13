@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/appointments/data/models/appointment_model.dart';
 
 class AppointmentCardWidget extends StatelessWidget {
@@ -17,8 +18,42 @@ class AppointmentCardWidget extends StatelessWidget {
     required this.onCancel,
   });
 
+  IconData typeIcon(AppointmentType type) {
+    switch (type) {
+      case AppointmentType.video:
+        return Icons.videocam_rounded;
+      case AppointmentType.inPerson:
+        return Icons.location_on_rounded;
+      case AppointmentType.message:
+        return Icons.chat_bubble_outline_rounded;
+    }
+  }
+
+  IconData actionIcon(AppointmentType type) {
+    switch (type) {
+      case AppointmentType.video:
+        return Icons.video_call_rounded;
+      case AppointmentType.inPerson:
+        return Icons.phone_rounded;
+      case AppointmentType.message:
+        return Icons.chat_bubble_outline_rounded;
+    }
+  }
+
+  String actionLabel(AppointmentType type, AppLocalizations l10n) {
+    switch (type) {
+      case AppointmentType.video:
+        return l10n.joinCall;
+      case AppointmentType.inPerson:
+        return l10n.callDoctor;
+      case AppointmentType.message:
+        return l10n.messageDoctor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -41,7 +76,6 @@ class AppointmentCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Doctor Row ──────────────────────
             Row(
               children: [
                 CircleAvatar(
@@ -61,104 +95,70 @@ class AppointmentCardWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        appointment.doctorName,
-                        style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        appointment.specialty,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
+                      Text(appointment.doctorName,
+                          style: textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(appointment.specialty,
+                          style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant)),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.more_vert_rounded,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                Icon(Icons.more_vert_rounded,
+                    color: colorScheme.onSurfaceVariant),
               ],
             ),
             const SizedBox(height: 12),
 
-            // ── Info Rows ───────────────────────
             Row(
               children: [
-                Icon(
-                  Icons.calendar_today_rounded,
-                  size: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                Icon(Icons.calendar_today_rounded,
+                    size: 14, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 6),
-                Text(
-                  appointment.date,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(appointment.date,
+                    style: textTheme.bodySmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(
-                  Icons.access_time_rounded,
-                  size: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                Icon(Icons.access_time_rounded,
+                    size: 14, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 6),
-                Text(
-                  appointment.time,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(appointment.time,
+                    style: textTheme.bodySmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(
-                  _typeIcon(appointment.type),
-                  size: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                Icon(typeIcon(appointment.type),
+                    size: 14, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 6),
-                Text(
-                  appointment.typeLabel,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(appointment.typeLabel,
+                    style: textTheme.bodySmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
             const SizedBox(height: 14),
 
-            // ── Action Button ───────────────────
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: onAction,
-                icon: Icon(
-                  _actionIcon(appointment.type),
-                  color: Colors.white,
-                  size: 18,
-                ),
+                icon: Icon(actionIcon(appointment.type),
+                    color: Colors.white, size: 18),
                 label: Text(
-                  _actionLabel(appointment.type),
+                  actionLabel(appointment.type, l10n),
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                      color: Colors.white, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.secondary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      borderRadius: BorderRadius.circular(10)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   elevation: 0,
                 ),
@@ -166,28 +166,25 @@ class AppointmentCardWidget extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // ── Reschedule / Cancel ─────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 TextButton(
                   onPressed: onReschedule,
                   child: Text(
-                    'Reschedule',
+                    l10n.reschedule,
                     style: TextStyle(
-                      color: colorScheme.secondary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                        color: colorScheme.secondary,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
                 TextButton(
                   onPressed: onCancel,
                   child: Text(
-                    'Cancel',
+                    l10n.cancel,
                     style: TextStyle(
-                      color: colorScheme.error,
-                      fontWeight: FontWeight.w600,
-                    ),
+                        color: colorScheme.error,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -196,38 +193,5 @@ class AppointmentCardWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _typeIcon(AppointmentType type) {
-    switch (type) {
-      case AppointmentType.video:
-        return Icons.videocam_rounded;
-      case AppointmentType.inPerson:
-        return Icons.location_on_rounded;
-      case AppointmentType.message:
-        return Icons.chat_bubble_outline_rounded;
-    }
-  }
-
-  IconData _actionIcon(AppointmentType type) {
-    switch (type) {
-      case AppointmentType.video:
-        return Icons.video_call_rounded;
-      case AppointmentType.inPerson:
-        return Icons.phone_rounded;
-      case AppointmentType.message:
-        return Icons.chat_bubble_outline_rounded;
-    }
-  }
-
-  String _actionLabel(AppointmentType type) {
-    switch (type) {
-      case AppointmentType.video:
-        return 'Join Call';
-      case AppointmentType.inPerson:
-        return 'Call Doctor';
-      case AppointmentType.message:
-        return 'Message Doctor';
-    }
   }
 }

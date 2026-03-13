@@ -473,7 +473,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactSupportSubtitle => 'Get help from our team';
 
   @override
-  String get goBack => 'Go Back?';
+  String get goBack => 'Go Back';
 
   @override
   String get goBackContent => 'Are you sure? Your progress will be kept.';
@@ -600,4 +600,202 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noConversationsFound => 'No conversations found';
+
+  @override
+  String get aiHealthAssistant => 'AI Health Assistant';
+
+  @override
+  String get suggestedQuestions => 'Suggested questions';
+
+  @override
+  String get suggestionHeadache => 'I have a headache';
+
+  @override
+  String get suggestionBloodPressure => 'Check my blood pressure';
+
+  @override
+  String get suggestionMealCalories => 'Calculate meal calories';
+
+  @override
+  String get suggestionMedication => 'Medication reminder';
+
+  @override
+  String get typeYourMessage => 'Type your message...';
+
+  @override
+  String get upcoming => 'Upcoming';
+
+  @override
+  String get past => 'Past';
+
+  @override
+  String get noPastAppointments => 'No past appointments';
+
+  @override
+  String get rescheduleAppointment => 'Reschedule Appointment';
+
+  @override
+  String get reasonForRescheduling => 'Reason for Rescheduling';
+
+  @override
+  String get reasonForReschedulingSubtitle =>
+      'Please select the reason for rescheduling your appointment';
+
+  @override
+  String get reasonScheduleClash => 'I have a schedule clash';
+
+  @override
+  String get reasonNotAvailable => 'I\'m not available on the scheduled time';
+
+  @override
+  String get reasonChangeDoctor => 'I want to change doctor';
+
+  @override
+  String get reasonWeather => 'Weather conditions';
+
+  @override
+  String get reasonOther => 'Other';
+
+  @override
+  String get availableTime => 'Available Time';
+
+  @override
+  String get appointmentType => 'Appointment Type';
+
+  @override
+  String get messaging => 'Messaging';
+
+  @override
+  String get voiceCall => 'Voice Call';
+
+  @override
+  String get videoCall => 'Video Call';
+
+  @override
+  String get confirmReschedule => 'Confirm Reschedule';
+
+  @override
+  String get appointmentDetails => 'Appointment Details';
+
+  @override
+  String get scheduledAppointment => 'Scheduled Appointment';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get time => 'Time';
+
+  @override
+  String get patientInformation => 'Patient Information';
+
+  @override
+  String get age => 'Age';
+
+  @override
+  String get years => 'Years';
+
+  @override
+  String get problem => 'Problem';
+
+  @override
+  String get yourPackage => 'Your Package';
+
+  @override
+  String get messagingConsultation => 'Messaging Consultation';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get startMessage => 'Start Message (at 10:00 AM)';
+
+  @override
+  String get joinCall => 'Join Call';
+
+  @override
+  String get callDoctor => 'Call Doctor';
+
+  @override
+  String get messageDoctor => 'Message Doctor';
+
+  @override
+  String get reschedule => 'Reschedule';
+
+  @override
+  String get cancelAppointmentTitle => 'Cancel Appointment?';
+
+  @override
+  String get cancelAppointmentSubtitle =>
+      'Are you sure you want to cancel this appointment?';
+
+  @override
+  String get cancellationPolicy => 'Cancellation Policy:';
+
+  @override
+  String get cancellationPolicyDetails =>
+      'You will receive a 70% refund if cancelled more than 24 hours before the appointment. No refund for cancellations within 24 hours.';
+
+  @override
+  String get yesCancel => 'Yes, Cancel';
+
+  @override
+  String get daySun => 'Sun';
+
+  @override
+  String get dayMon => 'Mon';
+
+  @override
+  String get dayTue => 'Tue';
+
+  @override
+  String get dayWed => 'Wed';
+
+  @override
+  String get dayThu => 'Thu';
+
+  @override
+  String get dayFri => 'Fri';
+
+  @override
+  String get daySat => 'Sat';
+
+  @override
+  String get monthJan => 'January';
+
+  @override
+  String get monthFeb => 'February';
+
+  @override
+  String get monthMar => 'March';
+
+  @override
+  String get monthApr => 'April';
+
+  @override
+  String get monthMay => 'May';
+
+  @override
+  String get monthJun => 'June';
+
+  @override
+  String get monthJul => 'July';
+
+  @override
+  String get monthAug => 'August';
+
+  @override
+  String get monthSep => 'September';
+
+  @override
+  String get monthOct => 'October';
+
+  @override
+  String get monthNov => 'November';
+
+  @override
+  String get monthDec => 'December';
 }

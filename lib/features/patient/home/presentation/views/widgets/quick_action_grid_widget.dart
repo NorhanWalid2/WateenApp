@@ -23,14 +23,14 @@ class QuickActionsGridWidget extends StatelessWidget {
         label: l10n.bookDoctor,
         subtitle: l10n.scheduleAppointment,
         color: Colors.green,
-        onTap: () {},
+        onTap: () => CustomNavigation(context, '/bookAppointment'),
       ),
       QuickActionModel(
         icon: Icons.medical_services_rounded,
         label: l10n.requestNurse,
         subtitle: l10n.homeCareService,
         color: Colors.purple,
-        onTap: () {},
+        onTap: () => CustomNavigation(context, '/requestNurse'),
       ),
       QuickActionModel(
         icon: Icons.restaurant_rounded,
