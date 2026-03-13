@@ -795,4 +795,66 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get monthDec => 'ديسمبر';
+
+  @override
+  String get healthTracking => 'متابعة الصحة';
+
+  @override
+  String get recentEntries => 'آخر القراءات';
+
+  @override
+  String get bloodPressureTrend => 'منحنى ضغط الدم';
+
+  @override
+  String get healthInsights => 'تحليلات صحية';
+
+  @override
+  String get addManualEntry => 'إضافة قراءة يدوية';
+
+  @override
+  String get abnormalReadingDetected => 'تم اكتشاف قراءة غير طبيعية';
+
+  @override
+  String get abnormalReadingDetails =>
+      'ضغط دمك كان أعلى من الطبيعي اليوم. يُنصح باستشارة طبيبك.';
+
+  @override
+  String get contactDoctor => 'تواصل مع الدكتور';
+
+  @override
+  String get manualEntry => 'إدخال يدوي';
+
+  @override
+  String get selectVitalType => 'اختر نوع القراءة';
+
+  @override
+  String get notesOptional => 'ملاحظات (اختياري)';
+
+  @override
+  String get addNotes => 'أضف أي ملاحظات إضافية...';
+
+  @override
+  String get submit => 'إرسال';
+
+  @override
+  String get insightBpElevated => 'متوسط ضغط دمك هذا الأسبوع مرتفع قليلاً';
+
+  @override
+  String get insightBloodSugarNormal =>
+      'مستوى السكر في الدم ضمن النطاق الطبيعي';
+
+  @override
+  String get insightHeartRateGood => 'تقلب معدل ضربات القلب جيد';
+
+  @override
+  String get bloodPressure => 'ضغط الدم';
+
+  @override
+  String get bloodSugar => 'سكر الدم';
+
+  @override
+  String get heartRate => 'معدل ضربات القلب';
+
+  @override
+  String get oxygen => 'الأكسجين';
 }

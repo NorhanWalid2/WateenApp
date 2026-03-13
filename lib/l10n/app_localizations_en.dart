@@ -798,4 +798,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthDec => 'December';
+
+  @override
+  String get healthTracking => 'Health Tracking';
+
+  @override
+  String get recentEntries => 'Recent Entries';
+
+  @override
+  String get bloodPressureTrend => 'Blood Pressure Trend';
+
+  @override
+  String get healthInsights => 'Health Insights';
+
+  @override
+  String get addManualEntry => 'Add Manual Entry';
+
+  @override
+  String get abnormalReadingDetected => 'Abnormal Reading Detected';
+
+  @override
+  String get abnormalReadingDetails =>
+      'Your blood pressure was higher than normal today. Consider consulting your doctor.';
+
+  @override
+  String get contactDoctor => 'Contact Doctor';
+
+  @override
+  String get manualEntry => 'Manual Entry';
+
+  @override
+  String get selectVitalType => 'Select Vital Type';
+
+  @override
+  String get notesOptional => 'Notes (Optional)';
+
+  @override
+  String get addNotes => 'Add any additional notes...';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String get insightBpElevated =>
+      'Your average BP this week is slightly elevated';
+
+  @override
+  String get insightBloodSugarNormal =>
+      'Blood sugar levels are within normal range';
+
+  @override
+  String get insightHeartRateGood => 'Heart rate variability is good';
+
+  @override
+  String get bloodPressure => 'Blood Pressure';
+
+  @override
+  String get bloodSugar => 'Blood Sugar';
+
+  @override
+  String get heartRate => 'Heart Rate';
+
+  @override
+  String get oxygen => 'Oxygen';
 }

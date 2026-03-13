@@ -1651,6 +1651,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'December'**
   String get monthDec;
+
+  /// No description provided for @healthTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Tracking'**
+  String get healthTracking;
+
+  /// No description provided for @recentEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Entries'**
+  String get recentEntries;
+
+  /// No description provided for @bloodPressureTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood Pressure Trend'**
+  String get bloodPressureTrend;
+
+  /// No description provided for @healthInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Insights'**
+  String get healthInsights;
+
+  /// No description provided for @addManualEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Manual Entry'**
+  String get addManualEntry;
+
+  /// No description provided for @abnormalReadingDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Abnormal Reading Detected'**
+  String get abnormalReadingDetected;
+
+  /// No description provided for @abnormalReadingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Your blood pressure was higher than normal today. Consider consulting your doctor.'**
+  String get abnormalReadingDetails;
+
+  /// No description provided for @contactDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Doctor'**
+  String get contactDoctor;
+
+  /// No description provided for @manualEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Entry'**
+  String get manualEntry;
+
+  /// No description provided for @selectVitalType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Vital Type'**
+  String get selectVitalType;
+
+  /// No description provided for @notesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (Optional)'**
+  String get notesOptional;
+
+  /// No description provided for @addNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Add any additional notes...'**
+  String get addNotes;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// No description provided for @insightBpElevated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your average BP this week is slightly elevated'**
+  String get insightBpElevated;
+
+  /// No description provided for @insightBloodSugarNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood sugar levels are within normal range'**
+  String get insightBloodSugarNormal;
+
+  /// No description provided for @insightHeartRateGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart rate variability is good'**
+  String get insightHeartRateGood;
+
+  /// No description provided for @bloodPressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood Pressure'**
+  String get bloodPressure;
+
+  /// No description provided for @bloodSugar.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood Sugar'**
+  String get bloodSugar;
+
+  /// No description provided for @heartRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart Rate'**
+  String get heartRate;
+
+  /// No description provided for @oxygen.
+  ///
+  /// In en, this message translates to:
+  /// **'Oxygen'**
+  String get oxygen;
 }
 
 class _AppLocalizationsDelegate

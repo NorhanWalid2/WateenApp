@@ -46,6 +46,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   flutter_bloc: ^9.1.1
   image_picker: ^0.8.9
+  fl_chart: ^1.1.1
 
 dev_dependencies:
  
