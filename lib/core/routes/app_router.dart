@@ -9,6 +9,7 @@ import 'package:wateen_app/features/patient/appointments/presentation/views/appo
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/reschedule_appointment_view.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/views/book_appointment_view.dart';
+import 'package:wateen_app/features/patient/health/presentation/views/health_view.dart';
 import 'package:wateen_app/features/patient/home/presentation/views/home_view.dart';
 import 'package:wateen_app/features/patient/layout/patient_main_layout.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/profile_view.dart';
@@ -63,5 +64,6 @@ final GoRouter router = GoRouter(
         return NurseRequestDetailsView(nurse: nurse);
       },
     ),
+    GoRoute(path: '/addVitals', builder: (_, __) => const HealthView()),
   ],
 );

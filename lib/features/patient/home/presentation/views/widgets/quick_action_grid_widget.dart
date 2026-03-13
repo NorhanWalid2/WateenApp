@@ -44,7 +44,7 @@ class QuickActionsGridWidget extends StatelessWidget {
         label: l10n.addVitals,
         subtitle: l10n.logHealthData,
         color: Colors.red,
-        onTap: () {},
+        onTap: () => CustomNavigation(context, '/addVitals'),
       ),
     ];
   }
