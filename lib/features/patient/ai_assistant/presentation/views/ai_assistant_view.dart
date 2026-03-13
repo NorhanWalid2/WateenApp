@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/ai_assistant/data/models/chat_message_model.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/widgets/attach_option_widget.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/widgets/chat_input_bar_widget.dart';
@@ -15,12 +16,12 @@ class AiAssistantView extends StatefulWidget {
 }
 
 class AiAssistantViewState extends State<AiAssistantView> {
-  final TextEditingController _controller = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final ImagePicker _picker = ImagePicker();
-  bool _isTyping = false;
+  final TextEditingController controller = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final ImagePicker picker = ImagePicker();
+  bool isTyping = false;
 
-  final List<ChatMessage> _messages = [
+  final List<ChatMessage> messages = [
     ChatMessage(
       text: 'Hello! I\'m your AI health assistant. How can I help you today?',
       sender: MessageSender.ai,
@@ -29,25 +30,18 @@ class AiAssistantViewState extends State<AiAssistantView> {
     ),
   ];
 
-  final List<String> _suggestions = [
-    'I have a headache',
-    'Check my blood pressure',
-    'Calculate meal calories',
-    'Medication reminder',
-  ];
-
   @override
   void dispose() {
-    _controller.dispose();
-    _scrollController.dispose();
+    controller.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollToBottom() {
+  void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -59,75 +53,68 @@ class AiAssistantViewState extends State<AiAssistantView> {
     if (text.trim().isEmpty) return;
 
     setState(() {
-      _messages.add(
-        ChatMessage(
-          text: text,
-          sender: MessageSender.user,
-          time: DateTime.now(),
-          type: MessageType.text,
-        ),
-      );
-      _isTyping = true;
+      messages.add(ChatMessage(
+        text: text,
+        sender: MessageSender.user,
+        time: DateTime.now(),
+        type: MessageType.text,
+      ));
+      isTyping = true;
     });
 
-    _controller.clear();
-    _scrollToBottom();
+    controller.clear();
+    scrollToBottom();
 
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       setState(() {
-        _isTyping = false;
-        _messages.add(
-          ChatMessage(
-            text:
-                'I understand your concern. As an AI health assistant, I can provide general health information. However, for specific medical concerns, please consult with your doctor through our appointment system.',
-            sender: MessageSender.ai,
-            time: DateTime.now(),
-            type: MessageType.text,
-          ),
-        );
+        isTyping = false;
+        messages.add(ChatMessage(
+          text:
+              'I understand your concern. As an AI health assistant, I can provide general health information. However, for specific medical concerns, please consult with your doctor through our appointment system.',
+          sender: MessageSender.ai,
+          time: DateTime.now(),
+          type: MessageType.text,
+        ));
       });
-      _scrollToBottom();
+      scrollToBottom();
     });
   }
 
   Future<void> pickImage(ImageSource source) async {
-    final XFile? image = await _picker.pickImage(source: source);
+    final XFile? image = await picker.pickImage(source: source);
     if (image == null) return;
 
     setState(() {
-      _messages.add(
-        ChatMessage(
-          imagePath: image.path,
-          sender: MessageSender.user,
-          time: DateTime.now(),
-          type: MessageType.image,
-        ),
-      );
-      _isTyping = true;
+      messages.add(ChatMessage(
+        imagePath: image.path,
+        sender: MessageSender.user,
+        time: DateTime.now(),
+        type: MessageType.image,
+      ));
+      isTyping = true;
     });
 
-    _scrollToBottom();
+    scrollToBottom();
 
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       setState(() {
-        _isTyping = false;
-        _messages.add(
-          ChatMessage(
-            text:
-                'I can see the image you\'ve shared. For accurate medical analysis, please consult a healthcare professional.',
-            sender: MessageSender.ai,
-            time: DateTime.now(),
-            type: MessageType.text,
-          ),
-        );
+        isTyping = false;
+        messages.add(ChatMessage(
+          text:
+              'I can see the image you\'ve shared. For accurate medical analysis, please consult a healthcare professional.',
+          sender: MessageSender.ai,
+          time: DateTime.now(),
+          type: MessageType.text,
+        ));
       });
-      _scrollToBottom();
+      scrollToBottom();
     });
   }
 
   void showAttachmentOptions() {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -137,66 +124,63 @@ class AiAssistantViewState extends State<AiAssistantView> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(l10n.attach, style: textTheme.titleMedium),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colorScheme.outline,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                  AttachOptionWidget(
+                    icon: Icons.camera_alt_rounded,
+                    label: l10n.camera,
+                    color: colorScheme.secondary,
+                    onTap: () {
+                      Navigator.pop(context);
+                      pickImage(ImageSource.camera);
+                    },
                   ),
-                  const SizedBox(height: 20),
-                  Text('Attach', style: textTheme.titleMedium),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      AttachOptionWidget(
-                        icon: Icons.camera_alt_rounded,
-                        label: 'Camera',
-                        color: colorScheme.secondary,
-                        onTap: () {
-                          Navigator.pop(context);
-                          pickImage(ImageSource.camera);
-                        },
-                      ),
-                      AttachOptionWidget(
-                        icon: Icons.photo_library_rounded,
-                        label: 'Gallery',
-                        color: Colors.purple,
-                        onTap: () {
-                          Navigator.pop(context);
-                          pickImage(ImageSource.gallery);
-                        },
-                      ),
-                      AttachOptionWidget(
-                        icon: Icons.insert_drive_file_rounded,
-                        label: 'Document',
-                        color: Colors.blue,
-                        onTap: () {
-                          Navigator.pop(context);
-                          // TODO: file picker
-                        },
-                      ),
-                    ],
+                  AttachOptionWidget(
+                    icon: Icons.photo_library_rounded,
+                    label: l10n.gallery,
+                    color: Colors.purple,
+                    onTap: () {
+                      Navigator.pop(context);
+                      pickImage(ImageSource.gallery);
+                    },
                   ),
-                  const SizedBox(height: 8),
+                  AttachOptionWidget(
+                    icon: Icons.insert_drive_file_rounded,
+                    label: l10n.document,
+                    color: Colors.blue,
+                    onTap: () => Navigator.pop(context),
+                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 8),
+            ],
           ),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -206,11 +190,8 @@ class AiAssistantViewState extends State<AiAssistantView> {
         backgroundColor: colorScheme.primary,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: colorScheme.onSurface,
-            size: 20,
-          ),
+          icon: Icon(Icons.arrow_back_ios_rounded,
+              color: colorScheme.onSurface, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -222,21 +203,17 @@ class AiAssistantViewState extends State<AiAssistantView> {
                 color: colorScheme.secondary.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.smart_toy_rounded,
-                color: colorScheme.secondary,
-                size: 20,
-              ),
+              child: Icon(Icons.smart_toy_rounded,
+                  color: colorScheme.secondary, size: 20),
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AI Health Assistant',
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  l10n.aiHealthAssistant,
+                  style: textTheme.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 Row(
                   children: [
@@ -250,7 +227,7 @@ class AiAssistantViewState extends State<AiAssistantView> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Online',
+                      l10n.online,
                       style: textTheme.bodySmall?.copyWith(
                         color: Colors.green,
                         fontSize: 11,
@@ -273,21 +250,29 @@ class AiAssistantViewState extends State<AiAssistantView> {
         children: [
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
+              controller: scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
+              itemCount: messages.length + (isTyping ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == _messages.length && _isTyping) {
+                if (index == messages.length && isTyping) {
                   return const TypingIndicatorWidget();
                 }
-                return MessageBubbleWidget(message: _messages[index]);
+                return MessageBubbleWidget(message: messages[index]);
               },
             ),
           ),
-          if (_messages.length == 1)
-            SuggestionsBarWidget(suggestions: _suggestions, onTap: sendMessage),
+          if (messages.length == 1)
+            SuggestionsBarWidget(
+              suggestions: [
+                l10n.suggestionHeadache,
+                l10n.suggestionBloodPressure,
+                l10n.suggestionMealCalories,
+                l10n.suggestionMedication,
+              ],
+              onTap: sendMessage,
+            ),
           ChatInputBarWidget(
-            controller: _controller,
+            controller: controller,
             onSend: sendMessage,
             onAttach: showAttachmentOptions,
           ),

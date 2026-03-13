@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/widgets/appointment_type_chip_widget.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/widgets/calendar_widget.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/widgets/reason_option_widget.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/widgets/time_chip_widget.dart';
+
 class RescheduleAppointmentView extends StatefulWidget {
   const RescheduleAppointmentView({super.key});
 
   @override
-  State<RescheduleAppointmentView> createState() => RescheduleAppointmentViewState();
+  State<RescheduleAppointmentView> createState() =>
+      RescheduleAppointmentViewState();
 }
 
 class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
@@ -18,14 +21,6 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
   String? selectedTime;
   int selectedType = 0;
 
-  final List<String> reasons = [
-    'I have a schedule clash',
-    "I'm not available on the scheduled time",
-    'I want to change doctor',
-    'Weather conditions',
-    'Other',
-  ];
-
   final List<String> times = [
     '09:00 AM', '09:30 AM', '10:00 AM',
     '10:30 AM', '11:00 AM', '11:30 AM',
@@ -35,20 +30,29 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
     '05:30 PM',
   ];
 
-  final List<Map<String, dynamic>> types = [
-    {'label': 'Messaging', 'icon': Icons.chat_bubble_outline_rounded},
-    {'label': 'Voice Call', 'icon': Icons.phone_rounded},
-    {'label': 'Video Call', 'icon': Icons.videocam_rounded},
-  ];
+  List<String> buildReasons(AppLocalizations l10n) => [
+        l10n.reasonScheduleClash,
+        l10n.reasonNotAvailable,
+        l10n.reasonChangeDoctor,
+        l10n.reasonWeather,
+        l10n.reasonOther,
+      ];
+
+  List<Map<String, dynamic>> buildTypes(AppLocalizations l10n) => [
+        {'label': l10n.messaging, 'icon': Icons.chat_bubble_outline_rounded},
+        {'label': l10n.voiceCall, 'icon': Icons.phone_rounded},
+        {'label': l10n.videoCall, 'icon': Icons.videocam_rounded},
+      ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: const Text('Reschedule Appointment'),
+        title: Text(l10n.rescheduleAppointment),
         centerTitle: false,
         elevation: 0,
         bottom: PreferredSize(
@@ -60,14 +64,16 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
           ),
         ),
       ),
-      body: step == 0 ? _buildReasonStep() : _buildDateStep(),
+      body: step == 0
+          ? buildReasonStep(l10n)
+          : buildDateStep(l10n),
     );
   }
 
-  // ── Step 1: Reason ───────────────────────────────────────
-  Widget _buildReasonStep() {
+  Widget buildReasonStep(AppLocalizations l10n) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final reasons = buildReasons(l10n);
 
     return Column(
       children: [
@@ -77,12 +83,14 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Reason for Rescheduling',
-                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text(l10n.reasonForRescheduling,
+                    style: textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 6),
                 Text(
-                  'Please select the reason for rescheduling your appointment',
-                  style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                  l10n.reasonForReschedulingSubtitle,
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 20),
                 ...reasons.asMap().entries.map((e) => ReasonOptionWidget(
@@ -99,19 +107,24 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: selectedReason != null ? () => setState(() => step = 1) : null,
+              onPressed: selectedReason != null
+                  ? () => setState(() => step = 1)
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: selectedReason != null
                     ? colorScheme.secondary
                     : colorScheme.outline.withOpacity(0.3),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
               child: Text(
-                'Next',
+                l10n.next,
                 style: TextStyle(
-                  color: selectedReason != null ? Colors.white : colorScheme.onSurfaceVariant,
+                  color: selectedReason != null
+                      ? Colors.white
+                      : colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -122,10 +135,10 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
     );
   }
 
-  // ── Step 2: Date / Time / Type ───────────────────────────
-  Widget _buildDateStep() {
+  Widget buildDateStep(AppLocalizations l10n) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final types = buildTypes(l10n);
     final bool canConfirm = selectedDate != null && selectedTime != null;
 
     return Column(
@@ -136,7 +149,6 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Calendar
                 CalendarWidget(
                   focusedMonth: focusedMonth,
                   selectedDate: selectedDate,
@@ -145,9 +157,9 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
                 ),
                 const SizedBox(height: 20),
 
-                // Available Time
-                Text('Available Time',
-                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                Text(l10n.availableTime,
+                    style: textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
@@ -162,20 +174,22 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
                 ),
                 const SizedBox(height: 20),
 
-                // Appointment Type
-                Text('Appointment Type',
-                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                Text(l10n.appointmentType,
+                    style: textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Row(
                   children: types.asMap().entries.map((e) {
                     return Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(right: e.key < types.length - 1 ? 8 : 0),
+                        padding: EdgeInsets.only(
+                            right: e.key < types.length - 1 ? 8 : 0),
                         child: AppointmentTypeChipWidget(
                           label: e.value['label'],
                           icon: e.value['icon'],
                           isSelected: selectedType == e.key,
-                          onTap: () => setState(() => selectedType = e.key),
+                          onTap: () =>
+                              setState(() => selectedType = e.key),
                         ),
                       ),
                     );
@@ -197,13 +211,16 @@ class RescheduleAppointmentViewState extends State<RescheduleAppointmentView> {
                     ? colorScheme.secondary
                     : colorScheme.outline.withOpacity(0.3),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
               child: Text(
-                'Confirm Reschedule',
+                l10n.confirmReschedule,
                 style: TextStyle(
-                  color: canConfirm ? Colors.white : colorScheme.onSurfaceVariant,
+                  color: canConfirm
+                      ? Colors.white
+                      : colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),

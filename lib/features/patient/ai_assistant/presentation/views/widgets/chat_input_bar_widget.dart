@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class ChatInputBarWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -14,6 +15,7 @@ class ChatInputBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -32,7 +34,6 @@ class ChatInputBarWidget extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            // ── Attach Button ─────────────────
             GestureDetector(
               onTap: onAttach,
               child: Container(
@@ -47,8 +48,6 @@ class ChatInputBarWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-
-            // ── Text Field ────────────────────
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -63,7 +62,7 @@ class ChatInputBarWidget extends StatelessWidget {
                   textInputAction: TextInputAction.send,
                   onSubmitted: onSend,
                   decoration: InputDecoration(
-                    hintText: 'Type your message...',
+                    hintText: l10n.typeYourMessage,
                     hintStyle: textTheme.bodyMedium
                         ?.copyWith(color: colorScheme.onSurfaceVariant),
                     border: InputBorder.none,
@@ -74,8 +73,6 @@ class ChatInputBarWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-
-            // ── Send Button ───────────────────
             GestureDetector(
               onTap: () => onSend(controller.text),
               child: Container(

@@ -470,7 +470,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contactSupportSubtitle => 'احصل على مساعدة من فريقنا';
 
   @override
-  String get goBack => 'الرجوع؟';
+  String get goBack => 'رجوع';
 
   @override
   String get goBackContent => 'هل أنت متأكد؟ سيتم الاحتفاظ بتقدمك.';
@@ -516,4 +516,283 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get messages => 'الرسايل';
+
+  @override
+  String get goodMorning => 'صباح الخير';
+
+  @override
+  String get nextAppointment => 'الموعد القادم';
+
+  @override
+  String get viewAll => 'عرض الكل';
+
+  @override
+  String get quickActions => 'الإجراءات السريعة';
+
+  @override
+  String get medicationReminder => 'تذكير الدواء';
+
+  @override
+  String get markAsTaken => 'تم الأخذ';
+
+  @override
+  String get remindLater => 'تذكيري لاحقاً';
+
+  @override
+  String get viewDetails => 'عرض التفاصيل';
+
+  @override
+  String get start => 'ابدأ';
+
+  @override
+  String get myAppointments => 'مواعيدي';
+
+  @override
+  String get viewAndManage => 'عرض وإدارة';
+
+  @override
+  String get bookDoctor => 'حجز دكتور';
+
+  @override
+  String get scheduleAppointment => 'جدولة موعد';
+
+  @override
+  String get requestNurse => 'طلب ممرض';
+
+  @override
+  String get homeCareService => 'خدمة رعاية منزلية';
+
+  @override
+  String get scanMeal => 'مسح الوجبة';
+
+  @override
+  String get checkNutrition => 'فحص التغذية';
+
+  @override
+  String get addVitals => 'إضافة قياسات';
+
+  @override
+  String get logHealthData => 'تسجيل البيانات الصحية';
+
+  @override
+  String get typeAMessage => 'اكتب رسالة...';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get document => 'مستند';
+
+  @override
+  String get attach => 'إرفاق';
+
+  @override
+  String get online => 'متصل';
+
+  @override
+  String get searchDoctors => 'ابحث عن دكتور...';
+
+  @override
+  String get noConversationsFound => 'لا توجد محادثات';
+
+  @override
+  String get aiHealthAssistant => 'المساعد الصحي الذكي';
+
+  @override
+  String get suggestedQuestions => 'أسئلة مقترحة';
+
+  @override
+  String get suggestionHeadache => 'عندي صداع';
+
+  @override
+  String get suggestionBloodPressure => 'تحقق من ضغط دمي';
+
+  @override
+  String get suggestionMealCalories => 'احسب سعرات الوجبة';
+
+  @override
+  String get suggestionMedication => 'تذكير الدواء';
+
+  @override
+  String get typeYourMessage => 'اكتب رسالتك...';
+
+  @override
+  String get upcoming => 'القادمة';
+
+  @override
+  String get past => 'السابقة';
+
+  @override
+  String get noPastAppointments => 'لا توجد مواعيد سابقة';
+
+  @override
+  String get rescheduleAppointment => 'إعادة جدولة الموعد';
+
+  @override
+  String get reasonForRescheduling => 'سبب إعادة الجدولة';
+
+  @override
+  String get reasonForReschedulingSubtitle =>
+      'يرجى اختيار سبب إعادة جدولة موعدك';
+
+  @override
+  String get reasonScheduleClash => 'لدي تعارض في الجدول';
+
+  @override
+  String get reasonNotAvailable => 'لست متاحاً في الوقت المحدد';
+
+  @override
+  String get reasonChangeDoctor => 'أريد تغيير الدكتور';
+
+  @override
+  String get reasonWeather => 'ظروف الطقس';
+
+  @override
+  String get reasonOther => 'أخرى';
+
+  @override
+  String get availableTime => 'الأوقات المتاحة';
+
+  @override
+  String get appointmentType => 'نوع الموعد';
+
+  @override
+  String get messaging => 'مراسلة';
+
+  @override
+  String get voiceCall => 'مكالمة صوتية';
+
+  @override
+  String get videoCall => 'مكالمة فيديو';
+
+  @override
+  String get confirmReschedule => 'تأكيد إعادة الجدولة';
+
+  @override
+  String get appointmentDetails => 'تفاصيل الموعد';
+
+  @override
+  String get scheduledAppointment => 'الموعد المجدول';
+
+  @override
+  String get date => 'التاريخ';
+
+  @override
+  String get time => 'الوقت';
+
+  @override
+  String get patientInformation => 'معلومات المريض';
+
+  @override
+  String get age => 'العمر';
+
+  @override
+  String get years => 'سنة';
+
+  @override
+  String get problem => 'المشكلة';
+
+  @override
+  String get yourPackage => 'باقتك';
+
+  @override
+  String get messagingConsultation => 'استشارة عبر الرسائل';
+
+  @override
+  String get duration => 'المدة';
+
+  @override
+  String get minutes => 'دقيقة';
+
+  @override
+  String get startMessage => 'ابدأ المراسلة (الساعة 10:00 صباحاً)';
+
+  @override
+  String get joinCall => 'انضم للمكالمة';
+
+  @override
+  String get callDoctor => 'اتصل بالدكتور';
+
+  @override
+  String get messageDoctor => 'راسل الدكتور';
+
+  @override
+  String get reschedule => 'إعادة جدولة';
+
+  @override
+  String get cancelAppointmentTitle => 'إلغاء الموعد؟';
+
+  @override
+  String get cancelAppointmentSubtitle =>
+      'هل أنت متأكد أنك تريد إلغاء هذا الموعد؟';
+
+  @override
+  String get cancellationPolicy => 'سياسة الإلغاء:';
+
+  @override
+  String get cancellationPolicyDetails =>
+      'ستحصل على استرداد 70% إذا تم الإلغاء قبل 24 ساعة من الموعد. لا يوجد استرداد للإلغاءات خلال 24 ساعة.';
+
+  @override
+  String get yesCancel => 'نعم، إلغاء';
+
+  @override
+  String get daySun => 'أحد';
+
+  @override
+  String get dayMon => 'إثن';
+
+  @override
+  String get dayTue => 'ثلا';
+
+  @override
+  String get dayWed => 'أرب';
+
+  @override
+  String get dayThu => 'خمي';
+
+  @override
+  String get dayFri => 'جمع';
+
+  @override
+  String get daySat => 'سبت';
+
+  @override
+  String get monthJan => 'يناير';
+
+  @override
+  String get monthFeb => 'فبراير';
+
+  @override
+  String get monthMar => 'مارس';
+
+  @override
+  String get monthApr => 'أبريل';
+
+  @override
+  String get monthMay => 'مايو';
+
+  @override
+  String get monthJun => 'يونيو';
+
+  @override
+  String get monthJul => 'يوليو';
+
+  @override
+  String get monthAug => 'أغسطس';
+
+  @override
+  String get monthSep => 'سبتمبر';
+
+  @override
+  String get monthOct => 'أكتوبر';
+
+  @override
+  String get monthNov => 'نوفمبر';
+
+  @override
+  String get monthDec => 'ديسمبر';
 }

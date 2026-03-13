@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/l10n/app_localizations.dart';
 
 class GreetingCardWidget extends StatelessWidget {
   final String name;
@@ -8,6 +9,7 @@ class GreetingCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
@@ -32,7 +34,7 @@ class GreetingCardWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Good Morning',
+                l10n.goodMorning,
                 style: textTheme.bodyMedium?.copyWith(
                   color: Colors.white70,
                   fontWeight: FontWeight.w400,
@@ -49,9 +51,7 @@ class GreetingCardWidget extends StatelessWidget {
             ],
           ),
           GestureDetector(
-            onTap: () {
-              return CustomNavigation(context, '/settings');
-            },
+            onTap: () => CustomNavigation(context, '/settings'),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.2),

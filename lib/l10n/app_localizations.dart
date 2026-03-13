@@ -1007,7 +1007,7 @@ abstract class AppLocalizations {
   /// No description provided for @goBack.
   ///
   /// In en, this message translates to:
-  /// **'Go Back?'**
+  /// **'Go Back'**
   String get goBack;
 
   /// No description provided for @goBackContent.
@@ -1099,6 +1099,558 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Messages'**
   String get messages;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning'**
+  String get goodMorning;
+
+  /// No description provided for @nextAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Appointment'**
+  String get nextAppointment;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @medicationReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication Reminder'**
+  String get medicationReminder;
+
+  /// No description provided for @markAsTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Taken'**
+  String get markAsTaken;
+
+  /// No description provided for @remindLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind Later'**
+  String get remindLater;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @myAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'My Appointments'**
+  String get myAppointments;
+
+  /// No description provided for @viewAndManage.
+  ///
+  /// In en, this message translates to:
+  /// **'View & manage'**
+  String get viewAndManage;
+
+  /// No description provided for @bookDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Doctor'**
+  String get bookDoctor;
+
+  /// No description provided for @scheduleAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule appointment'**
+  String get scheduleAppointment;
+
+  /// No description provided for @requestNurse.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Nurse'**
+  String get requestNurse;
+
+  /// No description provided for @homeCareService.
+  ///
+  /// In en, this message translates to:
+  /// **'Home care service'**
+  String get homeCareService;
+
+  /// No description provided for @scanMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Meal'**
+  String get scanMeal;
+
+  /// No description provided for @checkNutrition.
+  ///
+  /// In en, this message translates to:
+  /// **'Check nutrition'**
+  String get checkNutrition;
+
+  /// No description provided for @addVitals.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vitals'**
+  String get addVitals;
+
+  /// No description provided for @logHealthData.
+  ///
+  /// In en, this message translates to:
+  /// **'Log health data'**
+  String get logHealthData;
+
+  /// No description provided for @typeAMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get typeAMessage;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @document.
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get document;
+
+  /// No description provided for @attach.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach'**
+  String get attach;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @searchDoctors.
+  ///
+  /// In en, this message translates to:
+  /// **'Search doctors...'**
+  String get searchDoctors;
+
+  /// No description provided for @noConversationsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations found'**
+  String get noConversationsFound;
+
+  /// No description provided for @aiHealthAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Health Assistant'**
+  String get aiHealthAssistant;
+
+  /// No description provided for @suggestedQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested questions'**
+  String get suggestedQuestions;
+
+  /// No description provided for @suggestionHeadache.
+  ///
+  /// In en, this message translates to:
+  /// **'I have a headache'**
+  String get suggestionHeadache;
+
+  /// No description provided for @suggestionBloodPressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Check my blood pressure'**
+  String get suggestionBloodPressure;
+
+  /// No description provided for @suggestionMealCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate meal calories'**
+  String get suggestionMealCalories;
+
+  /// No description provided for @suggestionMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication reminder'**
+  String get suggestionMedication;
+
+  /// No description provided for @typeYourMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message...'**
+  String get typeYourMessage;
+
+  /// No description provided for @upcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get upcoming;
+
+  /// No description provided for @past.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get past;
+
+  /// No description provided for @noPastAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'No past appointments'**
+  String get noPastAppointments;
+
+  /// No description provided for @rescheduleAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule Appointment'**
+  String get rescheduleAppointment;
+
+  /// No description provided for @reasonForRescheduling.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for Rescheduling'**
+  String get reasonForRescheduling;
+
+  /// No description provided for @reasonForReschedulingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the reason for rescheduling your appointment'**
+  String get reasonForReschedulingSubtitle;
+
+  /// No description provided for @reasonScheduleClash.
+  ///
+  /// In en, this message translates to:
+  /// **'I have a schedule clash'**
+  String get reasonScheduleClash;
+
+  /// No description provided for @reasonNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m not available on the scheduled time'**
+  String get reasonNotAvailable;
+
+  /// No description provided for @reasonChangeDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to change doctor'**
+  String get reasonChangeDoctor;
+
+  /// No description provided for @reasonWeather.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather conditions'**
+  String get reasonWeather;
+
+  /// No description provided for @reasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reasonOther;
+
+  /// No description provided for @availableTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Time'**
+  String get availableTime;
+
+  /// No description provided for @appointmentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment Type'**
+  String get appointmentType;
+
+  /// No description provided for @messaging.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging'**
+  String get messaging;
+
+  /// No description provided for @voiceCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Call'**
+  String get voiceCall;
+
+  /// No description provided for @videoCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Call'**
+  String get videoCall;
+
+  /// No description provided for @confirmReschedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Reschedule'**
+  String get confirmReschedule;
+
+  /// No description provided for @appointmentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment Details'**
+  String get appointmentDetails;
+
+  /// No description provided for @scheduledAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Appointment'**
+  String get scheduledAppointment;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @patientInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Information'**
+  String get patientInformation;
+
+  /// No description provided for @age.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get age;
+
+  /// No description provided for @years.
+  ///
+  /// In en, this message translates to:
+  /// **'Years'**
+  String get years;
+
+  /// No description provided for @problem.
+  ///
+  /// In en, this message translates to:
+  /// **'Problem'**
+  String get problem;
+
+  /// No description provided for @yourPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Package'**
+  String get yourPackage;
+
+  /// No description provided for @messagingConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging Consultation'**
+  String get messagingConsultation;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes'**
+  String get minutes;
+
+  /// No description provided for @startMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Message (at 10:00 AM)'**
+  String get startMessage;
+
+  /// No description provided for @joinCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Call'**
+  String get joinCall;
+
+  /// No description provided for @callDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Doctor'**
+  String get callDoctor;
+
+  /// No description provided for @messageDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Message Doctor'**
+  String get messageDoctor;
+
+  /// No description provided for @reschedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule'**
+  String get reschedule;
+
+  /// No description provided for @cancelAppointmentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Appointment?'**
+  String get cancelAppointmentTitle;
+
+  /// No description provided for @cancelAppointmentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this appointment?'**
+  String get cancelAppointmentSubtitle;
+
+  /// No description provided for @cancellationPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation Policy:'**
+  String get cancellationPolicy;
+
+  /// No description provided for @cancellationPolicyDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'You will receive a 70% refund if cancelled more than 24 hours before the appointment. No refund for cancellations within 24 hours.'**
+  String get cancellationPolicyDetails;
+
+  /// No description provided for @yesCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, Cancel'**
+  String get yesCancel;
+
+  /// No description provided for @daySun.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get daySun;
+
+  /// No description provided for @dayMon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get dayMon;
+
+  /// No description provided for @dayTue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get dayTue;
+
+  /// No description provided for @dayWed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get dayWed;
+
+  /// No description provided for @dayThu.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get dayThu;
+
+  /// No description provided for @dayFri.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get dayFri;
+
+  /// No description provided for @daySat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get daySat;
+
+  /// No description provided for @monthJan.
+  ///
+  /// In en, this message translates to:
+  /// **'January'**
+  String get monthJan;
+
+  /// No description provided for @monthFeb.
+  ///
+  /// In en, this message translates to:
+  /// **'February'**
+  String get monthFeb;
+
+  /// No description provided for @monthMar.
+  ///
+  /// In en, this message translates to:
+  /// **'March'**
+  String get monthMar;
+
+  /// No description provided for @monthApr.
+  ///
+  /// In en, this message translates to:
+  /// **'April'**
+  String get monthApr;
+
+  /// No description provided for @monthMay.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get monthMay;
+
+  /// No description provided for @monthJun.
+  ///
+  /// In en, this message translates to:
+  /// **'June'**
+  String get monthJun;
+
+  /// No description provided for @monthJul.
+  ///
+  /// In en, this message translates to:
+  /// **'July'**
+  String get monthJul;
+
+  /// No description provided for @monthAug.
+  ///
+  /// In en, this message translates to:
+  /// **'August'**
+  String get monthAug;
+
+  /// No description provided for @monthSep.
+  ///
+  /// In en, this message translates to:
+  /// **'September'**
+  String get monthSep;
+
+  /// No description provided for @monthOct.
+  ///
+  /// In en, this message translates to:
+  /// **'October'**
+  String get monthOct;
+
+  /// No description provided for @monthNov.
+  ///
+  /// In en, this message translates to:
+  /// **'November'**
+  String get monthNov;
+
+  /// No description provided for @monthDec.
+  ///
+  /// In en, this message translates to:
+  /// **'December'**
+  String get monthDec;
 }
 
 class _AppLocalizationsDelegate
