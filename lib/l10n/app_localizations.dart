@@ -1771,6 +1771,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Oxygen'**
   String get oxygen;
+
+  /// No description provided for @registerSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully!'**
+  String get registerSuccess;
 }
 
 class _AppLocalizationsDelegate

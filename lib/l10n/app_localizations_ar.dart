@@ -857,4 +857,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get oxygen => 'الأكسجين';
+
+  @override
+  String get registerSuccess => 'تم إنشاء الحساب بنجاح!';
 }

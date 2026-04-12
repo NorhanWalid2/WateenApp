@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/enums/user_role.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
+import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:wateen_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_signup_form_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_signup_form_widget.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/patient_signup_form_widget.dart';
@@ -91,10 +94,30 @@ class _SignupViewState extends State<SignupView>
                         ),
                         const SizedBox(height: 24),
                         switch (role) {
-                          UserRole.doctor => DoctorSignUpFormWidget(),
+                          UserRole.doctor => BlocProvider(
+                            create: (_) => AuthCubit(),
+                            child: BlocListener<AuthCubit, AuthState>(
+                              listener: (context, state) {
+                                if (state is AuthSuccess) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('✅ تم التسجيل بنجاح!'),
+                                    ),
+                                  );
+                                  context.go('/login');
+                                } else if (state is AuthFailure) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.message)),
+                                  );
+                                }
+                              },
+                              child: DoctorSignUpFormWidget(),
+                            ),
+                          ),
                           UserRole.nurse => NurseSignupFormWidget(),
                           UserRole.patient => PatientSignupFormWidget(),
                         },
+
                         const SizedBox(height: 24),
                       ],
                     ),

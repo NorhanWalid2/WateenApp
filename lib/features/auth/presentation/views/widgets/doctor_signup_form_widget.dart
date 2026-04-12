@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
+import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step1.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step2.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step3.dart';
@@ -85,22 +87,31 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
     if (confirmed == true) setState(() => _currentStep--);
   }
 
-  void _onContinue() {
-    switch (_currentStep) {
-      case 0:
-        if (_step1Key.currentState!.validate()) setState(() => _currentStep++);
-        break;
-      case 1:
-        if (_step2Key.currentState!.validate()) setState(() => _currentStep++);
-        break;
-      case 2:
-        setState(() => _currentStep++);
-        break;
-      case 3:
-        // TODO: Submit
-        break;
-    }
+ void _onContinue() {
+  switch (_currentStep) {
+    case 0:
+      if (_step1Key.currentState!.validate()) setState(() => _currentStep++);
+      break;
+    case 1:
+      if (_step2Key.currentState!.validate()) setState(() => _currentStep++);
+      break;
+    case 2:
+      setState(() => _currentStep++);
+      break;
+    case 3:
+      context.read<AuthCubit>().registerDoctor(
+        fullName: _fullNameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        password: _passwordController.text,
+        confirmPassword: _confirmPasswordController.text,
+        specialization: _specializationController.text.trim(),
+        licenseNumber: _licenseNumberController.text.trim(),
+        bio: _hospitalController.text.trim(),
+      );
+      break;
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +212,7 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
           hospital: _hospitalController.text,
           homeVisits: _homeVisits,
           uploadedFileName: _uploadedFileName,
+          
         );
       default:
         return const SizedBox();
