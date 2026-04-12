@@ -861,4 +861,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get oxygen => 'Oxygen';
+
+  @override
+  String get registerSuccess => 'Account created successfully!';
 }

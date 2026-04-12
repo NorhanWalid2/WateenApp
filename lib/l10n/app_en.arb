@@ -278,5 +278,6 @@
 "bloodPressure": "Blood Pressure",
 "bloodSugar": "Blood Sugar",
 "heartRate": "Heart Rate",
-"oxygen": "Oxygen"
+"oxygen": "Oxygen",
+"registerSuccess": "Account created successfully!"
 }

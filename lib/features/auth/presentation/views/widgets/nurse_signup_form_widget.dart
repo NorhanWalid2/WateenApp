@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
+import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step1.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step2.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step3.dart';
@@ -98,7 +100,16 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
         setState(() => _currentStep++);
         break;
       case 3:
-        // TODO: Submit
+        context.read<AuthCubit>().registerNurse(
+          fullName: _fullNameController.text.trim(),
+          email: _emailController.text.trim(),
+          phone: _phoneController.text.trim(),
+          password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
+          licenseNumber: _licenseNumberController.text.trim(),
+          specialization: _selectedServiceType ?? '',
+          experienceYears: int.tryParse(_experienceController.text.trim()) ?? 0,
+        );
         break;
     }
   }

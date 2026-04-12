@@ -278,5 +278,6 @@
 "bloodPressure": "ضغط الدم",
 "bloodSugar": "سكر الدم",
 "heartRate": "معدل ضربات القلب",
-"oxygen": "الأكسجين"
+"oxygen": "الأكسجين",
+"registerSuccess": "تم إنشاء الحساب بنجاح!"
 }
