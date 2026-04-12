@@ -114,7 +114,26 @@ class _SignupViewState extends State<SignupView>
                               child: DoctorSignUpFormWidget(),
                             ),
                           ),
-                          UserRole.nurse => NurseSignupFormWidget(),
+                          UserRole.nurse => BlocProvider(
+                            create: (_) => AuthCubit(),
+                            child: BlocListener<AuthCubit, AuthState>(
+                              listener: (context, state) {
+                                if (state is AuthSuccess) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('✅ تم التسجيل بنجاح!'),
+                                    ),
+                                  );
+                                  context.go('/login');
+                                } else if (state is AuthFailure) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.message)),
+                                  );
+                                }
+                              },
+                              child: NurseSignupFormWidget(),
+                            ),
+                          ),
                           UserRole.patient => PatientSignupFormWidget(),
                         },
 

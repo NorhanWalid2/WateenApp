@@ -123,7 +123,7 @@ class AuthCubit extends Cubit<AuthState> {
       final nameParts = fullName.trim().split(' ');
       final firstName = nameParts.first;
       final lastName =
-          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : firstName;
 
       await _dio.post(
         "/api/Auth/register/nurse",
