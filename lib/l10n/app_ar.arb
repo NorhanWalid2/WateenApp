@@ -279,5 +279,7 @@
 "bloodSugar": "سكر الدم",
 "heartRate": "معدل ضربات القلب",
 "oxygen": "الأكسجين",
-"registerSuccess": "تم إنشاء الحساب بنجاح!"
+"registerSuccess": "تم إنشاء الحساب بنجاح!",
+"errorGeneral": "حدث خطأ، حاولي تاني",
+"errorInvalidCredentials": "البريد الإلكتروني أو كلمة المرور غلط"
 }

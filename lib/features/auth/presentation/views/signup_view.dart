@@ -111,9 +111,13 @@ class _SignupViewState extends State<SignupView>
                                     '/login',
                                   );
                                 } else if (state is AuthFailure) {
+                                  final msg =
+                                      state.message == 'errorGeneral'
+                                          ? l10n.errorGeneral
+                                          : state.message;
                                   showToastMessage(
                                     context,
-                                    state.message,
+                                    msg,
                                     ToastType.error,
                                   );
                                 }
@@ -168,8 +172,7 @@ String _getTitle(UserRole role, AppLocalizations l10n) {
     case UserRole.doctor:
       return l10n.doctorRegistration;
     case UserRole.nurse:
-      return l10n
-          .patientRegistration; // ← غيري لـ nurseRegistration لو أضفتيه في ARB
+      return l10n.nurseRegistration;
     case UserRole.patient:
       return l10n.patientRegistration;
   }

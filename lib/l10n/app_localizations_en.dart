@@ -864,4 +864,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerSuccess => 'Account created successfully!';
+
+  @override
+  String get errorGeneral => 'Something went wrong, please try again';
+
+  @override
+  String get errorInvalidCredentials => 'Invalid email or password';
 }
