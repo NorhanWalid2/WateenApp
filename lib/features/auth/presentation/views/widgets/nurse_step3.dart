@@ -85,27 +85,7 @@ class NurseStep3 extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFFBE6),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFFFE58F)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('📋 ', style: TextStyle(fontSize: 16)),
-                Expanded(
-                  child: Text(
-                    l10n.yourAccountWillBe,
-                    style: textTheme.bodySmall
-                        ?.copyWith(color: const Color(0xFF7D6200)),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ,
         ],
       ),
     );

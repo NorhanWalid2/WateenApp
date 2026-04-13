@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
- import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
+import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_card.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
@@ -35,8 +35,14 @@ class NurseStep2 extends StatelessWidget {
   ];
 
   static const List<String> _serviceAreas = [
-    'Riyadh - North', 'Riyadh - South', 'Riyadh - East', 'Riyadh - West',
-    'Jeddah - North', 'Jeddah - South', 'Dammam', 'Khobar',
+    'Riyadh - North',
+    'Riyadh - South',
+    'Riyadh - East',
+    'Riyadh - West',
+    'Jeddah - North',
+    'Jeddah - South',
+    'Dammam',
+    'Khobar',
   ];
 
   @override
@@ -58,23 +64,31 @@ class NurseStep2 extends StatelessWidget {
             Text(
               l10n.serviceType,
               style: textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurfaceVariant),
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
               value: selectedServiceType,
-              hint: Text(l10n.selectYourServiceType,
-                  style: TextStyle(
-                      fontSize: 14, color: colorScheme.onSurfaceVariant)),
-              items: _serviceTypes
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e, style: const TextStyle(fontSize: 14)),
-                      ))
-                  .toList(),
+              hint: Text(
+                l10n.selectYourServiceType,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              items:
+                  _serviceTypes
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e, style: const TextStyle(fontSize: 14)),
+                        ),
+                      )
+                      .toList(),
               onChanged: onServiceTypeChanged,
-              validator: (val) =>
-                  val == null ? l10n.pleaseSelectServiceType : null,
+              validator:
+                  (val) => val == null ? l10n.pleaseSelectServiceType : null,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.transparent,
@@ -83,8 +97,10 @@ class NurseStep2 extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: colorScheme.secondary, width: 1.5),
+                  borderSide: BorderSide(
+                    color: colorScheme.secondary,
+                    width: 1.5,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 errorBorder: OutlineInputBorder(
@@ -93,8 +109,10 @@ class NurseStep2 extends StatelessWidget {
                 ),
               ),
               dropdownColor: colorScheme.surface,
-              icon: Icon(Icons.keyboard_arrow_down_rounded,
-                  color: colorScheme.onSurfaceVariant),
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
 
             const SizedBox(height: 14),
@@ -113,59 +131,57 @@ class NurseStep2 extends StatelessWidget {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 14),
-            CustomTextFormFieldWidget(
-              title: l10n.consultationFee,
-              hintText: 'e.g., 150',
-              controller: hourlyRateController,
-              myValidator: (_) => null,
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
 
             // ── Service Areas ────────────────────
             Text(
               l10n.serviceAreasLabel,
-              style: textTheme.bodyLarge
-                  ?.copyWith(color: colorScheme.onSurfaceVariant),
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _serviceAreas.map((area) {
-                final isSelected = selectedAreas.contains(area);
-                return GestureDetector(
-                  onTap: () => onAreaToggled(area),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colorScheme.secondary.withOpacity(0.12)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isSelected
-                            ? colorScheme.secondary
-                            : colorScheme.outline,
-                        width: 1.5,
+              children:
+                  _serviceAreas.map((area) {
+                    final isSelected = selectedAreas.contains(area);
+                    return GestureDetector(
+                      onTap: () => onAreaToggled(area),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? colorScheme.secondary.withOpacity(0.12)
+                                  : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? colorScheme.secondary
+                                    : colorScheme.outline,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Text(
+                          area,
+                          style: textTheme.bodySmall?.copyWith(
+                            color:
+                                isSelected
+                                    ? colorScheme.secondary
+                                    : colorScheme.onSurfaceVariant,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      area,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: isSelected
-                            ? colorScheme.secondary
-                            : colorScheme.onSurfaceVariant,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+                    );
+                  }).toList(),
             ),
 
             if (selectedAreas.isEmpty)
@@ -173,8 +189,9 @@ class NurseStep2 extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   l10n.pleaseSelectArea,
-                  style: textTheme.bodySmall
-                      ?.copyWith(color: colorScheme.error),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.error,
+                  ),
                 ),
               ),
           ],

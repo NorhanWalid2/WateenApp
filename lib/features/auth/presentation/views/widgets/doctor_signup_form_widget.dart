@@ -4,7 +4,6 @@ import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step1.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step2.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/doctor_step4.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_progress_bar.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
@@ -18,7 +17,7 @@ class DoctorSignUpFormWidget extends StatefulWidget {
 
 class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
   int _currentStep = 0;
-  final int _totalSteps = 4;
+  final int _totalSteps = 3;
 
   // ── Step 1 ───────────────────────────────────
   final _step1Key = GlobalKey<FormState>();
@@ -87,31 +86,29 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
     if (confirmed == true) setState(() => _currentStep--);
   }
 
- void _onContinue() {
-  switch (_currentStep) {
-    case 0:
-      if (_step1Key.currentState!.validate()) setState(() => _currentStep++);
-      break;
-    case 1:
-      if (_step2Key.currentState!.validate()) setState(() => _currentStep++);
-      break;
-    case 2:
-      setState(() => _currentStep++);
-      break;
-    case 3:
-      context.read<AuthCubit>().registerDoctor(
-        fullName: _fullNameController.text.trim(),
-        email: _emailController.text.trim(),
-        phone: _phoneController.text.trim(),
-        password: _passwordController.text,
-        confirmPassword: _confirmPasswordController.text,
-        specialization: _specializationController.text.trim(),
-        licenseNumber: _licenseNumberController.text.trim(),
-        bio: _hospitalController.text.trim(),
-      );
-      break;
+  void _onContinue() {
+    switch (_currentStep) {
+      case 0:
+        if (_step1Key.currentState!.validate()) setState(() => _currentStep++);
+        break;
+      case 1:
+        if (_step2Key.currentState!.validate()) setState(() => _currentStep++);
+        break;
+
+      case 2:
+        context.read<AuthCubit>().registerDoctor(
+          fullName: _fullNameController.text.trim(),
+          email: _emailController.text.trim(),
+          phone: _phoneController.text.trim(),
+          password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
+          specialization: _specializationController.text.trim(),
+          licenseNumber: _licenseNumberController.text.trim(),
+          bio: _hospitalController.text.trim(),
+        );
+        break;
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -196,12 +193,8 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
           homeVisits: _homeVisits,
           onHomeVisitsChanged: (v) => setState(() => _homeVisits = v),
         );
+
       case 2:
-        return DoctorStep3(
-          uploadedFileName: _uploadedFileName,
-          onFileUploaded: (name) => setState(() => _uploadedFileName = name),
-        );
-      case 3:
         return DoctorStep4(
           fullName: _fullNameController.text,
           email: _emailController.text,
@@ -212,7 +205,6 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
           hospital: _hospitalController.text,
           homeVisits: _homeVisits,
           uploadedFileName: _uploadedFileName,
-          
         );
       default:
         return const SizedBox();

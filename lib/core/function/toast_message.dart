@@ -3,18 +3,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 enum ToastType { success, error }
 
-void showToastMessage(
-  BuildContext context,
-  String msg,
-  ToastType type,
-) {
+void showToastMessage(BuildContext context, String msg, ToastType type) {
   final overlay = Overlay.of(context);
   final entry = OverlayEntry(
-    builder:
-        (_) => _ToastWidget(
-          message: msg,
-          type: type,
-        ),
+    builder: (_) => _ToastWidget(message: msg, type: type),
   );
 
   overlay.insert(entry);
@@ -58,9 +50,11 @@ class _ToastWidgetState extends State<_ToastWidget>
   @override
   Widget build(BuildContext context) {
     final isSuccess = widget.type == ToastType.success;
-    final color = isSuccess
-        ? const Color(0xFF1D9E75)  // أخضر للنجاح
-        : const Color(0xFFE7000B); // أحمر الـ app للخطأ
+    final colorScheme = Theme.of(context).colorScheme;
+    final color =
+        isSuccess
+            ? colorScheme.secondary
+            : colorScheme.error; // أحمر الـ app للخطأ
 
     return Positioned(
       top: 0,

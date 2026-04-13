@@ -114,7 +114,7 @@ class _RoleViewState extends State<RoleView> {
                 colorScheme: colorScheme,
                 firstText: l10n.alreadyhaveanaccount,
                 secondText: l10n.signIn,
-                onTap: () => CustomNavigation(context, '/login'),
+                onTap: () => CustomReplacementNavigation(context, '/login'),
               ),
 
               const SizedBox(height: 8),

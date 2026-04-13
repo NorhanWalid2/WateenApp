@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/function/toast_message.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
@@ -8,6 +7,7 @@ import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:wateen_app/features/auth/presentation/views/widgets/drop_down_field.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 
 class PatientSignupFormWidget extends StatefulWidget {
@@ -106,7 +106,7 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
         listener: (context, state) {
           if (state is AuthSuccess) {
             showToastMessage(context, l10n.registerSuccess, ToastType.success);
-            CustomNavigation(context, '/login');
+            CustomReplacementNavigation(context, '/login');
           } else if (state is AuthFailure) {
             showToastMessage(context, state.message, ToastType.error);
           }
@@ -216,7 +216,7 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: _DropdownField(
+                            child: DropdownField(
                               label: l10n.gender,
                               hint: l10n.gender,
                               value: _selectedGender,
@@ -228,7 +228,7 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
                         ],
                       ),
                       const SizedBox(height: 15),
-                      _DropdownField(
+                      DropdownField(
                         label: l10n.bloodType,
                         hint: l10n.selectBloodType,
                         value: _selectedBloodType,
@@ -334,82 +334,6 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
           );
         },
       ),
-    );
-  }
-}
-
-class _DropdownField extends StatelessWidget {
-  final String label;
-  final String hint;
-  final String? value;
-  final List<String> items;
-  final ValueChanged<String?> onChanged;
-
-  const _DropdownField({
-    required this.label,
-    required this.hint,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: textTheme.bodyLarge?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<String>(
-          value: value,
-          hint: Text(
-            hint,
-            style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
-          ),
-          items:
-              items
-                  .map(
-                    (e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e, style: const TextStyle(fontSize: 14)),
-                    ),
-                  )
-                  .toList(),
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.transparent,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: colorScheme.onTertiary, width: 1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: colorScheme.outlineVariant,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: colorScheme.error, width: 1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          dropdownColor: colorScheme.surface,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
     );
   }
 }
