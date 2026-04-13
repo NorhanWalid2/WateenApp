@@ -4,7 +4,6 @@ import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step1.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step2.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step3.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/nurse_step4.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/step_progress_bar.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
@@ -18,7 +17,7 @@ class NurseSignupFormWidget extends StatefulWidget {
 
 class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
   int _currentStep = 0;
-  final int _totalSteps = 4;
+  final int _totalSteps = 3;
 
   // ── Step 1 ───────────────────────────────────
   final _step1Key = GlobalKey<FormState>();
@@ -96,10 +95,8 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
           setState(() {});
         }
         break;
+
       case 2:
-        setState(() => _currentStep++);
-        break;
-      case 3:
         context.read<AuthCubit>().registerNurse(
           fullName: _fullNameController.text.trim(),
           email: _emailController.text.trim(),
@@ -207,12 +204,8 @@ class _NurseSignupFormWidgetState extends State<NurseSignupFormWidget> {
           selectedAreas: _selectedAreas,
           onAreaToggled: _toggleArea,
         );
+
       case 2:
-        return NurseStep3(
-          uploadedFileName: _uploadedFileName,
-          onFileUploaded: (name) => setState(() => _uploadedFileName = name),
-        );
-      case 3:
         return NurseStep4(
           fullName: _fullNameController.text,
           email: _emailController.text,

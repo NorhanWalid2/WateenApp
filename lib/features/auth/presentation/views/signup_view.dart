@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/enums/user_role.dart';
+import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/core/function/toast_message.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_state.dart';
@@ -99,15 +101,20 @@ class _SignupViewState extends State<SignupView>
                             child: BlocListener<AuthCubit, AuthState>(
                               listener: (context, state) {
                                 if (state is AuthSuccess) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('✅ تم التسجيل بنجاح!'),
-                                    ),
+                                  showToastMessage(
+                                    context,
+                                    l10n.registerSuccess,
+                                    ToastType.success,
                                   );
-                                  context.go('/login');
+                                  CustomReplacementNavigation(
+                                    context,
+                                    '/login',
+                                  );
                                 } else if (state is AuthFailure) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(state.message)),
+                                  showToastMessage(
+                                    context,
+                                    state.message,
+                                    ToastType.error,
                                   );
                                 }
                               },
@@ -119,15 +126,20 @@ class _SignupViewState extends State<SignupView>
                             child: BlocListener<AuthCubit, AuthState>(
                               listener: (context, state) {
                                 if (state is AuthSuccess) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('✅ تم التسجيل بنجاح!'),
-                                    ),
+                                  showToastMessage(
+                                    context,
+                                    l10n.registerSuccess,
+                                    ToastType.success,
                                   );
-                                  context.go('/login');
+                                  CustomReplacementNavigation(
+                                    context,
+                                    '/login',
+                                  );
                                 } else if (state is AuthFailure) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(state.message)),
+                                  showToastMessage(
+                                    context,
+                                    state.message,
+                                    ToastType.error,
                                   );
                                 }
                               },

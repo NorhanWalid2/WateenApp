@@ -91,37 +91,6 @@ class DoctorStep4 extends StatelessWidget {
               ),
 
               const SizedBox(height: 15),
-              Text(l10n.licenseStatus, style: textTheme.titleMedium),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade300),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.green,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      uploadedFileName != null
-                          ? l10n.licenseVerified
-                          : l10n.noLicenseUploaded,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: Colors.green.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -153,6 +122,29 @@ class DoctorStep4 extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+        const SizedBox(height: 15),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.tertiaryContainer,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: colorScheme.tertiary),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('📋 ', style: TextStyle(fontSize: 16)),
+              Expanded(
+                child: Text(
+                  l10n.yourAccountWillBe,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onTertiaryContainer,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],

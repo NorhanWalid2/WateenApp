@@ -51,7 +51,7 @@ abstract class Validator {
 
     final phone = val.trim();
     final isValid = RegExp(r'^\+?\d+$').hasMatch(phone);
-    if (!isValid || phone.length != 13) {
+    if (!isValid || phone.length != 11) {
       return 'Enter a valid phone number';
     }
 
@@ -67,5 +67,4 @@ abstract class Validator {
       return null;
     }
   }
-  
 }
