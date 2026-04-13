@@ -860,4 +860,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get registerSuccess => 'تم إنشاء الحساب بنجاح!';
+
+  @override
+  String get errorGeneral => 'حدث خطأ، حاولي تاني';
+
+  @override
+  String get errorInvalidCredentials => 'البريد الإلكتروني أو كلمة المرور غلط';
 }

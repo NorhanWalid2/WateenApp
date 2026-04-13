@@ -1,3 +1,4 @@
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_state.dart';
@@ -11,6 +12,31 @@ class AuthCubit extends Cubit<AuthState> {
   );
 
   AuthCubit() : super(AuthInitial());
+
+  bool isPasswordVisible = false;
+  bool rememberMe = false;
+
+  void togglePasswordVisibility() {
+    isPasswordVisible = !isPasswordVisible;
+    emit(AuthPasswordVisibilityChanged(isPasswordVisible));
+  }
+
+  void toggleRememberMe(bool value) {
+    rememberMe = value;
+    emit(AuthInitial());
+  }
+
+  // ── Helper ─────────────────────────────────────
+  String _getErrorMsg(DioException e) {
+    if (e.response?.data is Map) {
+      return e.response?.data['message'] ??
+          e.response?.data['errors']?[0] ??
+          'errorGeneral';
+    }
+    return 'errorGeneral';
+  }
+
+  // ── Register Patient ───────────────────────────
   Future<void> registerPatient({
     required String fullName,
     required String email,
@@ -26,11 +52,9 @@ class AuthCubit extends Cubit<AuthState> {
       final lastName =
           nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-      // تحويل الـ gender من عربي لإنجليزي
       final genderEn =
           (gender == 'أنثى' || gender == 'Female') ? 'female' : 'male';
 
-      // تحويل الـ date من DD/MM/YYYY لـ ISO format
       final parts = dateOfBirth.split('/');
       final isoDate = '${parts[2]}-${parts[1]}-${parts[0]}T00:00:00Z';
 
@@ -48,19 +72,13 @@ class AuthCubit extends Cubit<AuthState> {
       );
       emit(AuthSuccess());
     } on DioException catch (e) {
-      print("❌ Status: ${e.response?.statusCode}");
-      print("❌ Data: ${e.response?.data}");
-      final errorMsg =
-          e.response?.data is Map
-              ? (e.response?.data['message'] ?? "حدث خطأ، حاولي تاني")
-              : "حدث خطأ، حاولي تاني";
-      emit(AuthFailure(errorMsg));
+      emit(AuthFailure(_getErrorMsg(e)));
     } catch (e) {
-      print("❌ Unknown: $e");
-      emit(AuthFailure("حدث خطأ، حاولي تاني"));
+      emit(AuthFailure('errorGeneral'));
     }
   }
 
+  // ── Register Doctor ────────────────────────────
   Future<void> registerDoctor({
     required String fullName,
     required String email,
@@ -95,19 +113,13 @@ class AuthCubit extends Cubit<AuthState> {
       );
       emit(AuthSuccess());
     } on DioException catch (e) {
-      print("❌ Status: ${e.response?.statusCode}");
-      print("❌ Data: ${e.response?.data}");
-      final errorMsg =
-          e.response?.data is Map
-              ? (e.response?.data['message'] ?? "حدث خطأ، حاولي تاني")
-              : "حدث خطأ، حاولي تاني";
-      emit(AuthFailure(errorMsg));
+      emit(AuthFailure(_getErrorMsg(e)));
     } catch (e) {
-      print("❌ Unknown: $e");
-      emit(AuthFailure("حدث خطأ، حاولي تاني"));
+      emit(AuthFailure('errorGeneral'));
     }
   }
 
+  // ── Register Nurse ─────────────────────────────
   Future<void> registerNurse({
     required String fullName,
     required String email,
@@ -142,33 +154,32 @@ class AuthCubit extends Cubit<AuthState> {
       );
       emit(AuthSuccess());
     } on DioException catch (e) {
-      print("❌ ERROR: ${e.response?.statusCode}");
-      print("❌ DATA: ${e.response?.data}");
-      emit(AuthFailure(e.response?.data['message'] ?? "حدث خطأ، حاولي تاني"));
+      emit(AuthFailure(_getErrorMsg(e)));
+    } catch (e) {
+      emit(AuthFailure('errorGeneral'));
     }
   }
 
-  Future<void> login(String email, String password) async {
+  // ── Login ──────────────────────────────────────
+  Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
     try {
-      await _dio.post(
+      final response = await _dio.post(
         "/api/Auth/login",
         data: {"email": email, "password": password},
       );
-      emit(AuthSuccess());
+
+      final token = response.data['token'];
+      final jwt = JWT.decode(token);
+      final role =
+          jwt.payload['role'] ??
+          jwt.payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+      emit(AuthLoginSuccess(role: role.toString()));
     } on DioException catch (e) {
-      print("❌ DioException type: ${e.type}");
-      print("❌ Message: ${e.message}");
-      print("❌ Response: ${e.response}");
-      print("❌ Status: ${e.response?.statusCode}");
-      print("❌ Data: ${e.response?.data}");
-
-      final errorMsg =
-          e.response?.data is Map
-              ? (e.response?.data['message'] ?? "حدث خطأ، حاولي تاني")
-              : "حدث خطأ، حاولي تاني";
-
-      emit(AuthFailure(errorMsg));
+      emit(AuthFailure(_getErrorMsg(e)));
+    } catch (e) {
+      emit(AuthFailure('errorGeneral'));
     }
   }
 }

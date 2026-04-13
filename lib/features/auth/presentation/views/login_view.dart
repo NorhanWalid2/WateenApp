@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/core/function/toast_message.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
-import 'package:wateen_app/features/auth/presentation/cubit/login_cubi.dart';
+import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:wateen_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:wateen_app/features/auth/presentation/views/widgets/auth_switch_text.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 
@@ -23,24 +25,33 @@ class LoginView extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocProvider(
-      create: (_) => LoginCubit(),
+      create: (_) => AuthCubit(),
       child: Scaffold(
         body: SafeArea(
-          child: BlocConsumer<LoginCubit, LoginState>(
+          child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
-              if (state is LoginSuccess) {
-                CustomReplacementNavigation(context, '/home');
-              } else if (state is LoginFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.error),
-                    backgroundColor: colorScheme.error,
-                  ),
-                );
+              if (state is AuthLoginSuccess) {
+                switch (state.role.toLowerCase()) {
+                  case 'patient':
+                    CustomReplacementNavigation(context, '/patient');
+                    break;
+                  case 'doctor':
+                    CustomReplacementNavigation(context, '/doctorHome');
+                    break;
+                  case 'nurse':
+                    CustomReplacementNavigation(context, '/nurseHome');
+                    break;
+                }
+              } else if (state is AuthFailure) {
+                final msg =
+                    state.message == 'errorGeneral'
+                        ? l10n.errorGeneral
+                        : state.message;
+                showToastMessage(context, msg, ToastType.error);
               }
             },
             builder: (context, state) {
-              final cubit = context.read<LoginCubit>();
+              final cubit = context.read<AuthCubit>();
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -150,13 +161,13 @@ class LoginView extends StatelessWidget {
                               colorText: colorScheme.primary,
 
                               onTap:
-                                  state is LoginLoading
+                                  state is AuthLoading
                                       ? null
                                       : () {
                                         if (_formKey.currentState!.validate()) {
-                                          return CustomNavigation(
-                                            context,
-                                            '/patient',
+                                          cubit.login(
+                                            email: _emailController.text,
+                                            password: _passwordController.text,
                                           );
                                         }
                                       },

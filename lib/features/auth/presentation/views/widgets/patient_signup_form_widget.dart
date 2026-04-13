@@ -108,7 +108,11 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
             showToastMessage(context, l10n.registerSuccess, ToastType.success);
             CustomReplacementNavigation(context, '/login');
           } else if (state is AuthFailure) {
-            showToastMessage(context, state.message, ToastType.error);
+            final msg =
+                state.message == 'errorGeneral'
+                    ? l10n.errorGeneral
+                    : state.message;
+            showToastMessage(context, msg, ToastType.error);
           }
         },
         builder: (context, state) {

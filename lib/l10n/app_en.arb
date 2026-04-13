@@ -279,5 +279,7 @@
 "bloodSugar": "Blood Sugar",
 "heartRate": "Heart Rate",
 "oxygen": "Oxygen",
-"registerSuccess": "Account created successfully!"
+"registerSuccess": "Account created successfully!",
+"errorGeneral": "Something went wrong, please try again",
+"errorInvalidCredentials": "Invalid email or password"
 }
