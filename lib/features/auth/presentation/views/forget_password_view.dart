@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:wateen_app/core/utls/app_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/utls/app_textstyle.dart';
 import 'widgets/wateen_header_card.dart';
@@ -64,10 +63,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(seconds: 2)); // TODO: real API
     setState(() => _isLoading = false);
-    Navigator.pushReplacementNamed(
-      context,
-      '/reset-password',
-    ); // TODO: your route
+    // TODO: navigate to reset password screen
   }
 
   void _resendCode() {
@@ -107,10 +103,19 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                 onTap:
                     () => _isOtpStep ? _changeEmail() : Navigator.pop(context),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    SvgPicture.asset(AppIcons.assetsIconsBack, height: 20),
-                    const SizedBox(width: 6),
-                    Text('Back', style: AppTextstyle.arimo16(context)),
+                    Icon(
+                      Icons.arrow_back_ios,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                    Text(
+                      'Back',
+                      style: AppTextstyle.arimo16(context).copyWith(
+                        color: Theme.of(context).colorScheme.inverseSurface,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -118,9 +123,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
               const SizedBox(height: 20),
 
               // ── Header Card ──
-              WateenHeaderCard(
-                subtitle: '${AppStrings.resetPassword}\n${AppStrings.wateen}',
-              ),
+              WateenHeaderCard(subtitle: 'Reset your\npassword'),
 
               const SizedBox(height: 32),
 
@@ -161,6 +164,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
 
               const SizedBox(height: 32),
 
+              // ── Contact Support ──
               const ContactSupportText(),
 
               const SizedBox(height: 32),
