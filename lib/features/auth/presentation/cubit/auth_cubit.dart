@@ -1,6 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -170,6 +171,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       final token = response.data['token'];
+      await AppPrefs.setToken(token);
       final jwt = JWT.decode(token);
       final role =
           jwt.payload['role'] ??

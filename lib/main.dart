@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/core/routes/app_router.dart';
 import 'package:wateen_app/core/theming/app_theme.dart';
 import 'package:wateen_app/core/theming/theme_cubit.dart';
 import 'package:wateen_app/core/theming/language_cubit.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 
-void main() {
+void main() async{
+   WidgetsFlutterBinding.ensureInitialized();
+  await AppPrefs.init();
   runApp(
     MultiBlocProvider(
       providers: [
