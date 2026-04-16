@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/features/patient/profile/presentation/cubit/profile_cubit.dart';
+import 'package:wateen_app/features/patient/profile/presentation/cubit/profile_state.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/widgets/profile_header_widget.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/widgets/profile_menu_item_widget.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/widgets/logout_dialog_widget.dart';
@@ -10,29 +13,37 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => ProfileCubit()..fetchPatientProfile(),
+      child: const _ProfileViewBody(),
+    );
+  }
+}
+
+class _ProfileViewBody extends StatelessWidget {
+  const _ProfileViewBody();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final state = context.watch<ProfileCubit>().state;
+
+    final String name = state is ProfileLoaded ? state.profile.fullName : '...';
+    final String email = state is ProfileLoaded ? state.profile.email : '...';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Title ────────────────────────────
           Text(l10n.profile, style: textTheme.headlineMedium),
           const SizedBox(height: 16),
 
-          // ── Profile Header Card ───────────────
-          const ProfileHeaderWidget(
-            name: 'Ahmed Al-Mansouri',
-            email: 'ahmed.mansouri@email.com',
-            userId: 'ID: WAT-12345',
-          ),
-
+          ProfileHeaderWidget(name: name, email: email, ),
           const SizedBox(height: 24),
 
-          // ── Menu Items ────────────────────────
           Container(
             decoration: BoxDecoration(
               color: colorScheme.primary,
@@ -80,46 +91,32 @@ class ProfileView extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // ── Log Out Button ────────────────────
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed:
-                  () => showDialog(
-                    context: context,
-                    builder: (ctx) => const LogoutDialogWidget(),
-                  ),
-              icon: Icon(
-                Icons.logout_rounded,
-                color: colorScheme.error,
-                size: 20,
+              onPressed: () => showDialog(
+                context: context,
+                builder: (ctx) => const LogoutDialogWidget(),
               ),
+              icon: Icon(Icons.logout_rounded, color: colorScheme.error, size: 20),
               label: Text(
                 l10n.logOut,
-                style: TextStyle(
-                  color: colorScheme.error,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.w600),
               ),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 side: BorderSide(color: colorScheme.error, width: 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
 
           const SizedBox(height: 24),
 
-          // ── Version ───────────────────────────
           Center(
             child: Text(
               l10n.version,
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+              style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
             ),
           ),
 
