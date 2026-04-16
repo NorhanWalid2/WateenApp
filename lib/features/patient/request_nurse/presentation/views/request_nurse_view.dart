@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/nurse_model.dart';
+import '../cubit/nurse_cubit.dart';
+import '../cubit/nurse_state.dart';
 import 'widgets/nurse_search_bar_widget.dart';
 import 'widgets/nurse_filter_chip_widget.dart';
 import 'widgets/nurse_list_widget.dart';
@@ -18,53 +21,6 @@ class _RequestNurseViewState extends State<RequestNurseView> {
   String _selectedFilter = 'All';
   String? _selectedNurseId;
 
-  // TODO: replace with real API data
-  final List<NurseModel> _allNurses = [
-    NurseModel(
-      id: '1',
-      name: 'Fatima Al-Rashid',
-      specialty: 'General Care Nurse',
-      rating: 4.9,
-      reviewCount: 156,
-      yearsExperience: 12,
-      hourlyRate: 80,
-      isAvailable: true,
-      initials: 'FA',
-      skills: [
-        'Vital Signs Monitoring',
-        'Medication Administration',
-        'Wound Care',
-      ],
-      completedJobs: 248,
-    ),
-    NurseModel(
-      id: '2',
-      name: 'Sarah Abdullah',
-      specialty: 'Pediatric Nurse',
-      rating: 4.8,
-      reviewCount: 134,
-      yearsExperience: 10,
-      hourlyRate: 90,
-      isAvailable: true,
-      initials: 'SA',
-      skills: ['Child Care', 'Vaccination', 'Pediatric Assessment'],
-      completedJobs: 189,
-    ),
-    NurseModel(
-      id: '3',
-      name: 'Mariam Hassan',
-      specialty: 'ICU Nurse',
-      rating: 4.9,
-      reviewCount: 198,
-      yearsExperience: 15,
-      hourlyRate: 110,
-      isAvailable: true,
-      initials: 'MH',
-      skills: ['Critical Care', 'Post-Surgery Care', 'Ventilator Management'],
-      completedJobs: 312,
-    ),
-  ];
-
   final List<String> _filters = [
     'All',
     'General Care',
@@ -73,8 +29,8 @@ class _RequestNurseViewState extends State<RequestNurseView> {
     'Post-Surgery',
   ];
 
-  List<NurseModel> get _filteredNurses {
-    return _allNurses.where((nurse) {
+  List<NurseModel> _filtered(List<NurseModel> all) {
+    return all.where((nurse) {
       final matchesSearch =
           _searchController.text.isEmpty ||
           nurse.name.toLowerCase().contains(
@@ -90,14 +46,6 @@ class _RequestNurseViewState extends State<RequestNurseView> {
     }).toList();
   }
 
-  NurseModel? get _selectedNurse {
-    try {
-      return _allNurses.firstWhere((n) => n.id == _selectedNurseId);
-    } catch (_) {
-      return null;
-    }
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -106,167 +54,192 @@ class _RequestNurseViewState extends State<RequestNurseView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Container(
-              color: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return BlocProvider(
+      create: (_) => NurseCubit()..fetchNurses(),
+      child: BlocBuilder<NurseCubit, NurseState>(
+        builder: (context, state) {
+          final allNurses =
+              state is NurseLoaded ? state.nurses : <NurseModel>[];
+          final filtered = _filtered(allNurses);
+
+          final NurseModel? selectedNurse =
+              filtered.where((n) => n.id == _selectedNurseId).isNotEmpty
+                  ? filtered.firstWhere((n) => n.id == _selectedNurseId)
+                  : null;
+
+          return Scaffold(
+            backgroundColor: colorScheme.surface,
+            body: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => context.pop(),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.inverseSurface,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Request Nurse',
-                        style: GoogleFonts.dmSerifDisplay(
-                          fontSize: 22,
-                          color: Theme.of(context).colorScheme.inverseSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  NurseSearchBarWidget(
-                    controller: _searchController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 14),
-                  NurseFilterChipWidget(
-                    filters: _filters,
-                    selected: _selectedFilter,
-                    onSelected: (val) => setState(() => _selectedFilter = val),
-                  ),
-                  const SizedBox(height: 14),
-                ],
-              ),
-            ),
-
-            // Section header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 18, 24, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Available Nurses',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.inverseSurface,
-                    ),
-                  ),
+                  // ── Header ──────────────────────────────
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 3,
+                    color: colorScheme.primary,
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        NurseSearchBarWidget(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        const SizedBox(height: 14),
+                        NurseFilterChipWidget(
+                          filters: _filters,
+                          selected: _selectedFilter,
+                          onSelected:
+                              (val) => setState(() => _selectedFilter = val),
+                        ),
+                        const SizedBox(height: 14),
+                      ],
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F3FF),
-                      borderRadius: BorderRadius.circular(20),
+                  ),
+
+                  // ── Section Header ───────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Available Nurses',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.inverseSurface,
+                          ),
+                        ),
+                        if (state is NurseLoaded)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${filtered.length} nurses',
+                              style: TextStyle(
+                                color: colorScheme.secondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                    child: Text(
-                      '${_filteredNurses.length} nurses',
-                      style: const TextStyle(
-                        color: Color(0xFF7C3AED),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                  ),
+
+                  // ── Body ────────────────────────────────
+                  Expanded(
+                    child: switch (state) {
+                      NurseLoading() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      NurseError(message: final msg) => Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.wifi_off_rounded,
+                              size: 48,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              msg,
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextButton(
+                              onPressed:
+                                  () =>
+                                      context.read<NurseCubit>().fetchNurses(),
+                              child: Text(
+                                'Retry',
+                                style: TextStyle(color: colorScheme.secondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _ => SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: NurseListWidget(
+                          nurses: filtered,
+                          selectedNurseId: _selectedNurseId,
+                          onNurseSelected:
+                              (nurse) =>
+                                  setState(() => _selectedNurseId = nurse.id),
+                        ),
+                      ),
+                    },
+                  ),
+
+                  // ── Continue Button ──────────────────────
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                    color: colorScheme.primary,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed:
+                            selectedNurse == null
+                                ? null
+                                : () => context.push(
+                                  '/nurseRequestDetails',
+                                  extra: selectedNurse,
+                                ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.secondary,
+                          disabledBackgroundColor: colorScheme.outlineVariant,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Continue',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.25),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            // Nurses list
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: NurseListWidget(
-                  nurses: _filteredNurses,
-                  selectedNurseId: _selectedNurseId,
-                  onNurseSelected:
-                      (nurse) => setState(() => _selectedNurseId = nurse.id),
-                ),
-              ),
-            ),
-
-            // Continue button
-            Container(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-              color: Theme.of(context).colorScheme.primary,
-              child: SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed:
-                      _selectedNurse == null
-                          ? null
-                          : () => context.push(
-                            '/nurseRequestDetails',
-                            extra: _selectedNurse,
-                          ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7C3AED),
-                    disabledBackgroundColor:
-                        Theme.of(context).colorScheme.outlineVariant,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Continue',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.25),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

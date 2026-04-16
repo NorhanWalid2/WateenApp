@@ -6,12 +6,12 @@ class NurseProfileCardWidget extends StatelessWidget {
 
   const NurseProfileCardWidget({super.key, required this.nurse});
 
-  List<Color> _avatarGradient() {
+  List<Color> _avatarGradient(ColorScheme cs) {
     final gradients = [
-      [const Color(0xFF7C3AED), const Color(0xFFA78BFA)],
-      [const Color(0xFF4F46E5), const Color(0xFF818CF8)],
-      [const Color(0xFF6D28D9), const Color(0xFF8B5CF6)],
-      [const Color(0xFF5B21B6), const Color(0xFF7C3AED)],
+      [cs.secondary, cs.secondary.withOpacity(0.7)],
+      [const Color(0xFFB91C1C), const Color(0xFFEF4444)],
+      [const Color(0xFF991B1B), cs.secondary],
+      [const Color(0xFFDC2626), const Color(0xFFFCA5A5)],
     ];
     final index = nurse.initials.codeUnitAt(0) % gradients.length;
     return gradients[index];
@@ -19,11 +19,13 @@ class NurseProfileCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradient = _avatarGradient();
+    final colorScheme = Theme.of(context).colorScheme;
+    final gradient = _avatarGradient(colorScheme);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: colorScheme.primary,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -36,11 +38,11 @@ class NurseProfileCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top row
+          // ── Top row ─────────────────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Large avatar
+              // Avatar
               Container(
                 width: 68,
                 height: 68,
@@ -76,7 +78,7 @@ class NurseProfileCardWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.inverseSurface,
+                        color: colorScheme.inverseSurface,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -84,88 +86,30 @@ class NurseProfileCardWidget extends StatelessWidget {
                       nurse.specialty,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Theme.of(context).colorScheme.outlineVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.star_rounded,
-                          color: Color(0xFFF59E0B),
-                          size: 14,
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          '${nurse.rating} (${nurse.reviewCount})',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.inverseSurface,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 3,
-                          height: 3,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${nurse.yearsExperience} yrs exp',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '${nurse.yearsExperience} yrs exp',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               ),
 
               // Rate
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Rate',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    'SAR ${nurse.hourlyRate.toInt()}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF7C3AED),
-                      height: 1.1,
-                    ),
-                  ),
-                  const Text(
-                    '/hr',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFF7C3AED),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
 
           const SizedBox(height: 16),
-          Divider(color: Theme.of(context).colorScheme.surface),
+          Divider(color: colorScheme.surface),
           const SizedBox(height: 16),
 
-          // Info grid
+          // ── Info grid ───────────────────────────
           Row(
             children: [
               _InfoItem(
@@ -174,10 +118,10 @@ class NurseProfileCardWidget extends StatelessWidget {
                 valueColor:
                     nurse.isAvailable
                         ? const Color(0xFF16A34A)
-                        : const Color(0xFFEF4444),
+                        : colorScheme.error,
               ),
               const SizedBox(width: 10),
-              _InfoItem(label: 'Service Type', value: 'Home Visit'),
+              const _InfoItem(label: 'Service Type', value: 'Home Visit'),
             ],
           ),
           const SizedBox(height: 10),
@@ -197,45 +141,49 @@ class NurseProfileCardWidget extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Skills
-          Text(
-            'SPECIALIZATIONS',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.outlineVariant,
-              letterSpacing: 0.8,
+          // ── Skills ──────────────────────────────
+          if (nurse.skills.isNotEmpty) ...[
+            Text(
+              'SPECIALIZATIONS',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurfaceVariant,
+                letterSpacing: 0.8,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children:
-                nurse.skills
-                    .map(
-                      (skill) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF5F3FF),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFDDD6FE)),
-                        ),
-                        child: Text(
-                          skill,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF7C3AED),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children:
+                  nurse.skills
+                      .map(
+                        (skill) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondary.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: colorScheme.secondary.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Text(
+                            skill,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.secondary,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                    .toList(),
-          ),
+                      )
+                      .toList(),
+            ),
+          ],
         ],
       ),
     );
@@ -251,11 +199,12 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -265,7 +214,7 @@ class _InfoItem extends StatelessWidget {
               label.toUpperCase(),
               style: TextStyle(
                 fontSize: 10,
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
                 letterSpacing: 0.5,
               ),
@@ -276,8 +225,7 @@ class _InfoItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color:
-                    valueColor ?? Theme.of(context).colorScheme.inverseSurface,
+                color: valueColor ?? colorScheme.inverseSurface,
               ),
             ),
           ],

@@ -11,7 +11,7 @@ class NurseModel {
   final List<String> skills;
   final int completedJobs;
 
-  NurseModel({
+  const NurseModel({
     required this.id,
     required this.name,
     required this.specialty,
@@ -26,61 +26,28 @@ class NurseModel {
   });
 
   factory NurseModel.fromJson(Map<String, dynamic> json) {
-    final fullName =
-        (json['name'] ??
-                json['fullName'] ??
-                json['nurseName'] ??
-                '')
-            .toString();
+    final firstName = json['firstName'] ?? '';
+    final lastName = json['lastName'] ?? '';
+    final fullName = '$firstName $lastName'.trim();
+
+    // Build initials from first letters
+    final initials = [
+      if (firstName.isNotEmpty) firstName[0],
+      if (lastName.isNotEmpty) lastName[0],
+    ].join().toUpperCase();
 
     return NurseModel(
-      id: (json['id'] ?? json['userId'] ?? '').toString(),
+      id: json['id']?.toString() ?? json['nurseId']?.toString() ?? '',
       name: fullName,
-      specialty: (json['specialty'] ??
-              json['serviceType'] ??
-              json['specialization'] ??
-              'Nurse')
-          .toString(),
-      rating: _toDouble(json['rating']),
-      reviewCount: _toInt(json['reviewCount']),
-      yearsExperience: _toInt(
-        json['yearsExperience'] ?? json['experienceYears'],
-      ),
-      hourlyRate: _toDouble(json['hourlyRate'] ?? json['pricePerHour']),
-      isAvailable: json['isAvailable'] ?? json['available'] ?? true,
-      initials: _buildInitials(fullName),
-      skills: _parseSkills(json['skills']),
-      completedJobs: _toInt(
-        json['completedJobs'] ?? json['completedSessions'],
-      ),
+      specialty: json['specialization'] ?? 'General Care',
+      rating: (json['rating'] ?? 0).toDouble(),
+      reviewCount: json['reviewCount'] ?? 0,
+      yearsExperience: json['experienceYears'] ?? 0,
+      hourlyRate: (json['hourlyRate'] ?? 0).toDouble(),
+      isAvailable: json['isActive'] ?? json['isAvailable'] ?? true,
+      initials: initials.isNotEmpty ? initials : 'N',
+      skills: List<String>.from(json['skills'] ?? []),
+      completedJobs: json['completedJobs'] ?? 0,
     );
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value == null) return 0.0;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    return double.tryParse(value.toString()) ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value == null) return 0;
-    if (value is int) return value;
-    return int.tryParse(value.toString()) ?? 0;
-  }
-
-  static List<String> _parseSkills(dynamic value) {
-    if (value == null) return [];
-    if (value is List) {
-      return value.map((e) => e.toString()).toList();
-    }
-    return [];
-  }
-
-  static String _buildInitials(String name) {
-    final parts = name.trim().split(' ').where((e) => e.isNotEmpty).toList();
-    if (parts.isEmpty) return 'N';
-    if (parts.length == 1) return parts.first[0].toUpperCase();
-    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
   }
 }

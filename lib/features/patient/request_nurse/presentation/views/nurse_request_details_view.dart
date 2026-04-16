@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/nurse_model.dart';
+import '../cubit/nurse_cubit.dart';
+import '../cubit/nurse_state.dart';
 import 'widgets/nurse_profile_card_widget.dart';
-import 'widgets/nurse_summary_strip_widget.dart';
 
 class NurseRequestDetailsView extends StatefulWidget {
   final NurseModel nurse;
@@ -16,320 +18,433 @@ class NurseRequestDetailsView extends StatefulWidget {
 
 class _NurseRequestDetailsViewState extends State<NurseRequestDetailsView> {
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  DateTime? _selectedDateTime;
+
+  Future<void> _pickDateTime() async {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(hours: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
+      builder:
+          (context, child) => Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: colorScheme.copyWith(primary: colorScheme.secondary),
+            ),
+            child: child!,
+          ),
+    );
+    if (date == null || !mounted) return;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder:
+          (context, child) => Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: colorScheme.copyWith(primary: colorScheme.secondary),
+            ),
+            child: child!,
+          ),
+    );
+    if (time == null || !mounted) return;
+
+    setState(() {
+      _selectedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
+  }
+
+  String _formatDateTime(DateTime dt) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final ampm = dt.hour >= 12 ? 'PM' : 'AM';
+    return '${dt.day} ${months[dt.month - 1]} ${dt.year}   $hour:$minute $ampm';
+  }
+
+  void _submit(BuildContext context) {
+    if (_addressController.text.trim().isEmpty) {
+      _showError(context, 'Please enter your service address');
+      return;
+    }
+    if (_descriptionController.text.trim().isEmpty) {
+      _showError(context, 'Please enter a service description');
+      return;
+    }
+    if (_selectedDateTime == null) {
+      _showError(context, 'Please select a requested time');
+      return;
+    }
+
+    context.read<NurseCubit>().bookNurse(
+      nurseId: widget.nurse.id,
+      address: _addressController.text.trim(),
+      serviceDescription: _descriptionController.text.trim(),
+      requestedTime: _selectedDateTime!,
+    );
+  }
+
+  void _showError(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
 
   @override
   void dispose() {
     _addressController.dispose();
-    _notesController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Container(
-              color: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 16,
-                        color: Theme.of(context).colorScheme.inverseSurface,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Nurse Request Details',
-                    style: GoogleFonts.dmSerifDisplay(
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.inverseSurface,
-                    ),
-                  ),
-                ],
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return BlocProvider(
+      create: (_) => NurseCubit(),
+      child: BlocConsumer<NurseCubit, NurseState>(
+        listener: (context, state) {
+          if (state is NurseBookingSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Request sent successfully!'),
+                backgroundColor: Color(0xFF16A34A),
+                duration: Duration(seconds: 3),
               ),
-            ),
+            );
+            context.pop();
+            context.pop();
+          } else if (state is NurseBookingError) {
+            _showError(context, state.message);
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is NurseBookingLoading;
 
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Nurse profile card
-                    NurseProfileCardWidget(nurse: widget.nurse),
-                    const SizedBox(height: 20),
-
-                    // Address field
-                    _SectionLabel(label: 'Service Address'),
-                    const SizedBox(height: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.outlineVariant,
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF5F3FF),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.location_on_rounded,
-                                color: Color(0xFF7C3AED),
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 14,
-                                right: 14,
-                                bottom: 14,
-                              ),
-                              child: TextField(
-                                controller: _addressController,
-                                maxLines: 2,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.inverseSurface,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'Enter your full address...',
-                                  hintStyle: TextStyle(
-                                    color:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.outlineVariant,
-                                    fontSize: 14,
-                                  ),
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+          return Scaffold(
+            backgroundColor: colorScheme.surface,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // ── Header ─────────────────────────────────────────
+                  Container(
+                    color: colorScheme.primary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Notes field
-                    _SectionLabel(label: 'Notes for Nurse', optional: true),
-                    const SizedBox(height: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.outlineVariant,
-                          width: 1.5,
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.pop(),
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              size: 16,
+                              color: colorScheme.inverseSurface,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 14),
+                        Text(
+                          'Request Details',
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.inverseSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ── Scrollable Body ────────────────────────────────
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Nurse card
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-                            child: Row(
+                            padding: const EdgeInsets.all(20),
+                            child: NurseProfileCardWidget(nurse: widget.nurse),
+                          ),
+
+                          // Form card — all fields grouped
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
                               children: [
-                                Container(
-                                  width: 36,
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF5F3FF),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.description_rounded,
-                                    color: Color(0xFF7C3AED),
-                                    size: 18,
+                                // Address
+                                _FormField(
+                                  icon: Icons.location_on_rounded,
+                                  label: 'Service Address',
+                                  child: TextField(
+                                    controller: _addressController,
+                                    maxLines: 2,
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.inverseSurface,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter your full address...',
+                                      hintStyle: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(),
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.only(
+                                        left: 5,
+                                        top: 5,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'SPECIAL INSTRUCTIONS',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.outlineVariant,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.5,
+
+                                Divider(
+                                  height: 1,
+                                  color: colorScheme.outline.withOpacity(0.3),
+                                ),
+
+                                // Description
+                                _FormField(
+                                  icon: Icons.medical_services_rounded,
+                                  label: 'Service Description',
+                                  child: TextField(
+                                    controller: _descriptionController,
+                                    maxLines: 3,
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.inverseSurface,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'Describe the care you need (e.g. wound care, medication)...',
+                                      hintStyle: textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(),
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.only(
+                                        left: 5,
+                                        top: 5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                Divider(
+                                  height: 1,
+                                  color: colorScheme.outline.withOpacity(0.3),
+                                ),
+
+                                // Date & Time
+                                _FormField(
+                                  icon: Icons.calendar_today_rounded,
+                                  label: 'Requested Time',
+                                  onTap: _pickDateTime,
+                                  trailing: Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: colorScheme.onSurfaceVariant,
+                                    size: 20,
+                                  ),
+                                  child: Text(
+                                    _selectedDateTime != null
+                                        ? _formatDateTime(_selectedDateTime!)
+                                        : 'Select date and time...',
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color:
+                                          _selectedDateTime != null
+                                              ? colorScheme.inverseSurface
+                                              : colorScheme.onSurfaceVariant,
+                                      fontWeight:
+                                          _selectedDateTime != null
+                                              ? FontWeight.w500
+                                              : FontWeight.w400,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-                            child: TextField(
-                              controller: _notesController,
-                              maxLines: 4,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.inverseSurface,
-                              ),
-                              decoration: InputDecoration(
-                                hintText:
-                                    'Describe any special care requirements, medical conditions or instructions for the nurse...',
-                                hintStyle: TextStyle(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.outlineVariant,
-                                  fontSize: 13,
-                                ),
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ),
+
+                          const SizedBox(height: 20),
                         ],
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
-
-                    // Summary strip
-                    NurseSummaryStripWidget(
-                      nurseName:
-                          widget.nurse.name.split(' ').first +
-                          ' ' +
-                          widget.nurse.name.split(' ').last[0] +
-                          '.',
-                      serviceType: 'Home Visit',
-                      rate: 'SAR ${widget.nurse.hourlyRate.toInt()}/hr',
+                  // ── Confirm Button ─────────────────────────────────
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-
-            // Confirm button
-            Container(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-              color: Theme.of(context).colorScheme.primary,
-              child: SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: connect your API here
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7C3AED),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : () => _submit(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.secondary,
+                          disabledBackgroundColor: colorScheme.outline
+                              .withOpacity(0.5),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child:
+                            isLoading
+                                ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                                : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Confirm Request',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                      ),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Confirm Request',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.25),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 }
 
-// Section Label
-class _SectionLabel extends StatelessWidget {
+// ── Reusable form field row ────────────────────────────────────────────────────
+class _FormField extends StatelessWidget {
+  final IconData icon;
   final String label;
-  final bool optional;
-  const _SectionLabel({required this.label, this.optional = false});
+  final Widget child;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+
+  const _FormField({
+    required this.icon,
+    required this.label,
+    required this.child,
+    this.trailing,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.inverseSurface,
-          ),
-        ),
-        if (optional) ...[
-          const SizedBox(width: 6),
-          Text(
-            '(Optional)',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: Theme.of(context).colorScheme.outlineVariant,
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: colorScheme.secondary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: colorScheme.secondary, size: 18),
             ),
-          ),
-        ],
-      ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label.toUpperCase(),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  child,
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
