@@ -19,32 +19,15 @@ import 'package:wateen_app/features/patient/settings/presentation/views/settings
 import 'package:wateen_app/features/patient/request_nurse/data/models/nurse_model.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/request_nurse_view.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/nurse_request_details_view.dart';
-
-String _getInitialRoute() {
-  // لو مشفش الـ onboarding
-  if (!AppPrefs.seenOnboarding) return '/';
-  
-  // لو عنده token يبقى مسجل دخول
-  if (AppPrefs.token != null) {
-    final jwt = JWT.decode(AppPrefs.token!);
-    final role =
-        jwt.payload['role'] ??
-        jwt.payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    
-    switch (role.toString().toLowerCase()) {
-      case 'patient': return '/patient';
-      case 'doctor': return '/doctorHome';
-      case 'nurse': return '/nurseHome';
-    }
-  }
-  
-  return '/login';
-}
-
-
+import 'package:wateen_app/features/splash/presentation/views/splash_view.dart';
+ 
 final GoRouter router = GoRouter(
-  initialLocation: _getInitialRoute(),
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashView(),
+    ),
     GoRoute(path: '/', builder: (context, state) => const OnboardingView()),
     GoRoute(path: '/role', builder: (context, state) => const RoleView()),
     GoRoute(path: '/signup', builder: (context, state) => const SignupView()),

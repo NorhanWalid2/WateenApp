@@ -43,13 +43,19 @@ dependencies:
   fluttertoast: ^9.0.0
   google_fonts: ^6.3.2
   flutter_svg: ^2.2.2
-  flutter_native_splash: ^2.4.7
+   
   flutter_bloc: ^9.1.1
   image_picker: ^0.8.9
   fl_chart: ^1.1.1
   dio: ^5.9.2
   dart_jsonwebtoken: ^3.4.0
-
+  flutter_launcher_icons: ^0.14.4
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/icon-launcher.png"
+  adaptive_icon_background: "#E7000B"
+  adaptive_icon_foreground: "assets/icons/icon-launcher.png"
 dev_dependencies:
  
   flutter_test:
@@ -62,6 +68,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+ 
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
