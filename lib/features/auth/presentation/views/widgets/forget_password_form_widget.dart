@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/utls/app_strings.dart';
 import 'package:wateen_app/core/utls/app_textstyle.dart';
-import 'package:wateen_app/features/auth/presentation/views/widgets/label_textfield_widget.dart';
+import 'package:wateen_app/features/auth/presentation/views/widgets/text_form_field_widget.dart';
 
 class ForgetPasswordFormWidget extends StatelessWidget {
   final TextEditingController emailController;
@@ -18,8 +18,9 @@ class ForgetPasswordFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Email Form Card ──
+        // ── Form Card ──
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -29,17 +30,28 @@ class ForgetPasswordFormWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LabeledTextFieldWidget(
-                title: AppStrings.emailAddress,
+              // Email label
+              Text(
+                AppStrings.emailAddress,
+                style: AppTextstyle.arimo16(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Email field using existing widget
+              TextFormFieldWidget(
                 icon: Icon(
                   Icons.email_outlined,
                   color: Theme.of(context).colorScheme.outlineVariant,
                 ),
                 hintText: AppStrings.enteryouremail,
               ),
+
               const SizedBox(height: 20),
 
-              // Send Verification Code button
+              // Send button
               SizedBox(
                 width: double.infinity,
                 height: 52,
