@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/utls/app_assets.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
@@ -35,7 +36,10 @@ class _OnboardingViewState extends State<OnboardingView> {
     ),
   ];
 
-  void _goToRole() => CustomReplacementNavigation(context, '/role');
+  void _goToRole()async{
+    await AppPrefs.setSeenOnboarding();
+    CustomReplacementNavigation(context, '/role');
+  } 
 
   void _nextPage(int total) {
     if (_currentIndex < total - 1) {
