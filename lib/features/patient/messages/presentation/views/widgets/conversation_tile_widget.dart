@@ -104,7 +104,7 @@ class ConversationTileWidget extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  
                   Row(
                     children: [
                       Expanded(

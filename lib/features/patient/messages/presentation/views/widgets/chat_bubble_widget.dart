@@ -16,23 +16,14 @@ class ChatBubbleWidget extends StatelessWidget {
   Widget _buildStatusIcon(ColorScheme colorScheme) {
     switch (message.status) {
       case ChatMessageStatus.sent:
-        return Icon(
-          Icons.check_rounded,
-          size: 14,
-          color: Colors.white.withOpacity(0.7),
-        );
+        return Icon(Icons.check_rounded, size: 14,
+            color: Colors.white.withOpacity(0.7));
       case ChatMessageStatus.delivered:
-        return Icon(
-          Icons.done_all_rounded,
-          size: 14,
-          color: Colors.white.withOpacity(0.7),
-        );
+        return Icon(Icons.done_all_rounded, size: 14,
+            color: Colors.white.withOpacity(0.7));
       case ChatMessageStatus.read:
-        return const Icon(
-          Icons.done_all_rounded,
-          size: 14,
-          color: Colors.lightBlueAccent,
-        );
+        return const Icon(Icons.done_all_rounded, size: 14,
+            color: Colors.lightBlueAccent);
     }
   }
 
@@ -40,17 +31,17 @@ class ChatBubbleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isPatient = message.sender == ChatMessageSender.patient;
+    final isMe = message.sender == ChatMessageSender.me; // ← fixed
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment:
-            isPatient ? MainAxisAlignment.end : MainAxisAlignment.start,
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // ── Doctor Avatar ─────────────────
-          if (!isPatient) ...[
+          // ── Other Avatar ─────────────────
+          if (!isMe) ...[
             Container(
               width: 28,
               height: 28,
@@ -78,17 +69,16 @@ class ChatBubbleWidget extends StatelessWidget {
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.72,
               ),
-              padding:
-                  message.type == ChatMessageType.image
-                      ? const EdgeInsets.all(4)
-                      : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: message.type == ChatMessageType.image
+                  ? const EdgeInsets.all(4)
+                  : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: isPatient ? colorScheme.secondary : colorScheme.primary,
+                color: isMe ? colorScheme.secondary : colorScheme.primary,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isPatient ? 16 : 4),
-                  bottomRight: Radius.circular(isPatient ? 4 : 16),
+                  bottomLeft: Radius.circular(isMe ? 16 : 4),
+                  bottomRight: Radius.circular(isMe ? 4 : 16),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -98,57 +88,54 @@ class ChatBubbleWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              child:
-                  message.type == ChatMessageType.image
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          File(message.imagePath!),
-                          width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                      : Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            message.text!,
-                            style: textTheme.bodyMedium?.copyWith(
-                              color:
-                                  isPatient
-                                      ? Colors.white
-                                      : colorScheme.onSurface,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${message.time.hour}:${message.time.minute.toString().padLeft(2, '0')}',
-                                style: textTheme.bodySmall?.copyWith(
-                                  fontSize: 10,
-                                  color:
-                                      isPatient
-                                          ? Colors.white.withOpacity(0.7)
-                                          : colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              if (isPatient) ...[
-                                const SizedBox(width: 4),
-                                _buildStatusIcon(colorScheme),
-                              ],
-                            ],
-                          ),
-                        ],
+              child: message.type == ChatMessageType.image
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        File(message.imagePath!),
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          message.text ?? '',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: isMe
+                                ? Colors.white
+                                : colorScheme.onSurface,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${message.time.hour}:${message.time.minute.toString().padLeft(2, '0')}',
+                              style: textTheme.bodySmall?.copyWith(
+                                fontSize: 10,
+                                color: isMe
+                                    ? Colors.white.withOpacity(0.7)
+                                    : colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            if (isMe) ...[
+                              const SizedBox(width: 4),
+                              _buildStatusIcon(colorScheme),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
             ),
           ),
 
-          if (isPatient) const SizedBox(width: 6),
+          if (isMe) const SizedBox(width: 6),
         ],
       ),
     );

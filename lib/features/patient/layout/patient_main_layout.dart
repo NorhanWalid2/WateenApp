@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/ai_assistant_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/health/presentation/views/health_view.dart';
 import 'package:wateen_app/features/patient/home/presentation/views/home_view.dart';
+import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/profile_view.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/conversations_view.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
@@ -15,31 +17,19 @@ class PatientMainLayout extends StatefulWidget {
   @override
   State<PatientMainLayout> createState() => PatientMainLayoutState();
 }
-
+ 
 class PatientMainLayoutState extends State<PatientMainLayout> {
   int currentIndex = 0;
-
-  // ✅ Key to call refreshProfile() on HomeViewBody
   final GlobalKey<HomeViewBodyState> _homeKey = GlobalKey<HomeViewBodyState>();
 
-  late final List<Widget> screens;
-
-  @override
-  void initState() {
-    super.initState();
-    screens = [
-      HomeView(bodyKey: _homeKey), // ✅ pass the key
-      const AppointmentsView(),
-      const ConversationsView(),
-      const HealthView(),
-      const ProfileView(),
-    ];
-  }
+  // Remove screens from initState entirely
 
   void onNavTap(int index) {
-    // ✅ Refetch name when returning to Home tab from another tab
     if (index == 0 && currentIndex != 0) {
       _homeKey.currentState?.refreshProfile();
+    }
+    if (index == 2) {
+      ChatCubit().loadConversations();
     }
     setState(() => currentIndex = index);
   }
@@ -48,6 +38,18 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
+
+    // Build screens here so BlocProvider has proper context
+    final screens = [
+      HomeView(bodyKey: _homeKey),
+      const AppointmentsView(),
+      BlocProvider(
+        create: (_) => ChatCubit()..loadConversations(),
+        child: const ConversationsView(),
+      ),
+      const HealthView(),
+      const ProfileView(),
+    ];
 
     return Scaffold(
       appBar: PreferredSize(
@@ -59,15 +61,12 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
           ),
         ),
       ),
-
       body: IndexedStack(index: currentIndex, children: screens),
-
       floatingActionButton: FloatingActionButton(
-        onPressed:
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AiAssistantView()),
-            ),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AiAssistantView()),
+        ),
         backgroundColor: colorScheme.secondary,
         elevation: 4,
         shape: const CircleBorder(),
@@ -77,7 +76,6 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
           size: 26,
         ),
       ),
-
       bottomNavigationBar: BottomAppBar(
         color: colorScheme.primary,
         shape: const AutomaticNotchedShape(

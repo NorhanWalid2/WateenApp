@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/core/widgets/language_bottom_sheet.dart';
 import 'package:wateen_app/features/patient/home/data/models/patient_profile_model.dart';
 import 'package:wateen_app/features/patient/profile/presentation/cubit/profile_cubit.dart';
 import 'package:wateen_app/features/patient/profile/presentation/cubit/profile_state.dart';
@@ -109,15 +110,7 @@ class ProfileViewBody extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    ProfileMenuItemWidget(
-                      icon: Icons.people_outline_rounded,
-                      title: l10n.familyMembers,
-                      subtitle: l10n.manageFamilyAccounts,
-                      onTap: () {},
-                    ),
-                    Divider(
-                        height: 1,
-                        color: colorScheme.outline.withOpacity(0.4)),
+             
                     ProfileMenuItemWidget(
                       icon: Icons.history_edu_outlined,
                       title: l10n.medicalHistory,
@@ -140,7 +133,7 @@ class ProfileViewBody extends StatelessWidget {
                       icon: Icons.language_outlined,
                       title: l10n.language,
                       subtitle: l10n.englishArabic,
-                      onTap: () {},
+                      onTap: ()=>LanguageBottomSheet.show(context),
                     ),
                   ],
                 ),

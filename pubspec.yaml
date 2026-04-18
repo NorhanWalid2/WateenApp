@@ -50,6 +50,7 @@ dependencies:
   dio: ^5.9.2
   dart_jsonwebtoken: ^3.4.0
   flutter_launcher_icons: ^0.14.4
+  signalr_netcore: ^1.4.4
 flutter_launcher_icons:
   android: true
   ios: true

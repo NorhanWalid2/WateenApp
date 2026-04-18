@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:wateen_app/features/patient/book_appointment/data/models/book_appointment_model.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_cubit.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_state.dart';
+import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
+import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
+import 'package:wateen_app/features/patient/messages/presentation/views/chat_view.dart';
 import 'widgets/search_bar_widget.dart';
 import 'widgets/specialty_filter_widget.dart';
 import 'widgets/doctors_list_widget.dart';
@@ -218,12 +221,30 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       width: double.infinity,
                       height: 54,
                       child: ElevatedButton(
-                        onPressed:
-                            selectedDoctor == null
-                                ? null
-                                : () {
-                                  // TODO: navigate to schedule appointment
-                                },
+                       onPressed: selectedDoctor == null
+    ? null
+    : () {
+        final conversation = ConversationModel(
+          otherUserId: selectedDoctor.id,
+          doctorName: selectedDoctor.name,
+          specialty: selectedDoctor.specialty,
+          lastMessage: '',
+          time: '',
+          unreadCount: 0,
+          initials: selectedDoctor.initials,
+          color: Colors.blue,
+          isOnline: false,
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: ChatCubit(), // singleton — same instance
+              child: ChatView(conversation: conversation),
+            ),
+          ),
+        ).then((_) => ChatCubit().loadConversations());
+      },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.secondary,
                           disabledBackgroundColor: colorScheme.outlineVariant,
