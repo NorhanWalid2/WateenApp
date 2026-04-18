@@ -188,6 +188,7 @@ class AuthCubit extends Cubit<AuthState> {
 Future<void> login({required String email, required String password}) async {
   emit(AuthLoading());
   try {
+    ChatCubit().clearCache();
     final response = await _dio.post(
       "/api/Auth/login",
       data: {"email": email, "password": password},

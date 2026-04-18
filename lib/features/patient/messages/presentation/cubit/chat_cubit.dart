@@ -184,10 +184,12 @@ Future<void> _refreshConversationsSilently() async {
   }
 
   // ── Clear on logout ───────────────────────────────────────────────
-  void clearCache() {
-    _cache.clear();
-    _currentOtherUserId = null;
-  }
+void clearCache() {
+  _cache.clear();
+  _lastConversations = [];
+  _currentOtherUserId = null;
+  _emit(ChatInitial());
+}
 
   // ── Helper ────────────────────────────────────────────────────────
   String _formatTime(DateTime dt) {
