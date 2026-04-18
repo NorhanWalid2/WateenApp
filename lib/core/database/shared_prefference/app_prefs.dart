@@ -15,4 +15,11 @@ class AppPrefs {
   static String? get token => _prefs.getString('token');
   static Future<void> setToken(String token) => _prefs.setString('token', token);
   static Future<void> clearToken() => _prefs.remove('token');
+
+  static const String _userIdKey = 'userId';
+
+static Future<void> saveUserId(String id) async =>
+    await _prefs.setString(_userIdKey, id);
+
+static String? get userId => _prefs.getString(_userIdKey);
 }

@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/core/services/signalr_service.dart';
+import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -183,29 +185,43 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   // ── Login ──────────────────────────────────────
-  Future<void> login({required String email, required String password}) async {
-    emit(AuthLoading());
-    try {
-      final response = await _dio.post(
-        "/api/Auth/login",
-        data: {"email": email, "password": password},
-      );
+Future<void> login({required String email, required String password}) async {
+  emit(AuthLoading());
+  try {
+    ChatCubit().clearCache();
+    final response = await _dio.post(
+      "/api/Auth/login",
+      data: {"email": email, "password": password},
+    );
 
-      final token = response.data['token'];
-      await AppPrefs.setToken(token);
-      final jwt = JWT.decode(token);
-      final role =
-          jwt.payload['role'] ??
-          jwt.payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    final token = response.data['token'];
+    await AppPrefs.setToken(token);
 
-      emit(AuthLoginSuccess(role: role.toString()));
-    } on DioException catch (e) {
-      emit(AuthFailure(_getErrorMsg(e)));
-    } catch (e) {
-      emit(AuthFailure('errorGeneral'));
-    }
+    // Decode JWT to get role AND userId
+    final jwt = JWT.decode(token);
+    final payload = jwt.payload;
+
+    final role =
+        payload['role'] ??
+        payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    // Extract userId from JWT claims
+    final userId =
+        payload['sub'] ??
+        payload['nameid'] ??
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
+        '';
+
+    await AppPrefs.saveUserId(userId.toString());
+await SignalRService().connect();
+
+    emit(AuthLoginSuccess(role: role.toString()));
+  } on DioException catch (e) {
+    emit(AuthFailure(_getErrorMsg(e)));
+  } catch (e) {
+    emit(AuthFailure('errorGeneral'));
   }
-
+}
   // ── Forgot Password ────────────────────────────────────────────────────────
   Future<void> forgotPassword({required String email}) async {
     emit(AuthLoading());

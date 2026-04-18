@@ -25,7 +25,7 @@ class AppointmentDetailsView extends StatelessWidget {
       unreadCount: 0,
       initials: 'SA',
       color: colorScheme.secondary,
-      isOnline: true,
+      isOnline: true, otherUserId: '',
     );
 
     return Scaffold(
