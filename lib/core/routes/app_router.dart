@@ -22,6 +22,8 @@ import 'package:wateen_app/features/patient/settings/presentation/views/settings
 import 'package:wateen_app/features/patient/request_nurse/data/models/nurse_model.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/request_nurse_view.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/nurse_request_details_view.dart';
+import 'package:wateen_app/features/splash/presentation/views/splash_view.dart';
+ 
 import 'package:wateen_app/features/nurse/home/presentation/views/home_view.dart';
 import 'package:wateen_app/features/nurse/layout/nurse_main_layout.dart';
 
@@ -49,8 +51,17 @@ String _getInitialRoute() {
 }
 
 final GoRouter router = GoRouter(
-  initialLocation: _getInitialRoute(),
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashView(),
+    ),
+    GoRoute(path: '/', builder: (context, state) => const OnboardingView()),
+    GoRoute(path: '/role', builder: (context, state) => const RoleView()),
+    GoRoute(path: '/signup', builder: (context, state) => const SignupView()),
+    GoRoute(path: '/login', builder: (context, state) => LoginView()),
+    GoRoute(path: '/profile', builder: (context, state) => ProfileView()),
     // ── Auth ──────────────────────────────────────
     GoRoute(
       path: '/',

@@ -14,3 +14,6 @@ class AuthLoginSuccess extends AuthState {
   final String role;
   AuthLoginSuccess({required this.role});
 }
+// ── New states ────────────────────────────────────────────────────────────────
+class AuthForgotPasswordSuccess extends AuthState {}
+class AuthResetPasswordSuccess extends AuthState {}

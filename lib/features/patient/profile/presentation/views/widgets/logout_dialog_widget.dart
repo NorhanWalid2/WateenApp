@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 
@@ -79,9 +80,12 @@ class LogoutDialogWidget extends StatelessWidget {
                 // Sure
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      CustomReplacementNavigation(context, '/login');
+                    onPressed: () async {
+                      await AppPrefs.clearToken(); // ← this was missing
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        CustomReplacementNavigation(context, '/login');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.error,

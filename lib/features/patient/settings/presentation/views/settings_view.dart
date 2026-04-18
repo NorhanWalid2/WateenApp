@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/theming/theme_cubit.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/core/widgets/language_bottom_sheet.dart';
@@ -167,8 +168,14 @@ class _SettingsViewState extends State<SettingsView> {
                             icon: Icons.lock_outline_rounded,
                             title: l10n.changePassword,
                             subtitle: l10n.changePasswordSubtitle,
-                            onTap: () {},
+                            onTap:
+                                () => CustomNavigation(
+                                  context,
+                                  '/resetPassword',
+                                  extra: {'email': '', 'token': ''},
+                                ),
                           ),
+
                           divider,
                           SettingsToggleItemWidget(
                             icon: Icons.fingerprint_rounded,

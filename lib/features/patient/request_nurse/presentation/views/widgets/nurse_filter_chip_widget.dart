@@ -14,6 +14,8 @@ class NurseFilterChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SizedBox(
       height: 38,
       child: ListView.separated(
@@ -27,17 +29,17 @@ class NurseFilterChipWidget extends StatelessWidget {
             onTap: () => onSelected(filter),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: isActive
-                    ? const Color(0xFF7C3AED)
-                    : Theme.of(context).colorScheme.primary,
+                    ? colorScheme.secondary
+                    : colorScheme.primary,
                 borderRadius: BorderRadius.circular(50),
                 border: Border.all(
                   color: isActive
-                      ? const Color(0xFF7C3AED)
-                      : Theme.of(context).colorScheme.outlineVariant,
+                      ? colorScheme.secondary
+                      : colorScheme.outlineVariant ?? colorScheme.outline,
                   width: 1.5,
                 ),
               ),
@@ -48,7 +50,7 @@ class NurseFilterChipWidget extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: isActive
                       ? Colors.white
-                      : Theme.of(context).colorScheme.outlineVariant,
+                      : colorScheme.onSurfaceVariant,
                 ),
               ),
             ),

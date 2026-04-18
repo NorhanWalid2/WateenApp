@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class ProfileHeaderWidget extends StatelessWidget {
   final String name;
   final String email;
-  final String userId;
 
   const ProfileHeaderWidget({
     super.key,
     required this.name,
     required this.email,
-    required this.userId,
   });
 
   @override
@@ -63,13 +61,6 @@ class ProfileHeaderWidget extends StatelessWidget {
                   email,
                   style: textTheme.bodySmall?.copyWith(
                     color: Colors.white.withOpacity(0.85),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  userId,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withOpacity(0.7),
                   ),
                 ),
               ],
