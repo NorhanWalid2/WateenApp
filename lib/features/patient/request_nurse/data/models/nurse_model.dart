@@ -26,35 +26,24 @@ class NurseModel {
   });
 
   factory NurseModel.fromJson(Map<String, dynamic> json) {
-    final fullName =
-        (json['name'] ??
-                json['fullName'] ??
-                json['nurseName'] ??
-                '')
-            .toString();
+  final firstName = (json['firstName'] ?? '').toString();
+  final lastName = (json['lastName'] ?? '').toString();
+  final fullName = '$firstName $lastName'.trim();
 
-    return NurseModel(
-      id: (json['id'] ?? json['userId'] ?? '').toString(),
-      name: fullName,
-      specialty: (json['specialty'] ??
-              json['serviceType'] ??
-              json['specialization'] ??
-              'Nurse')
-          .toString(),
-      rating: _toDouble(json['rating']),
-      reviewCount: _toInt(json['reviewCount']),
-      yearsExperience: _toInt(
-        json['yearsExperience'] ?? json['experienceYears'],
-      ),
-      hourlyRate: _toDouble(json['hourlyRate'] ?? json['pricePerHour']),
-      isAvailable: json['isAvailable'] ?? json['available'] ?? true,
-      initials: _buildInitials(fullName),
-      skills: _parseSkills(json['skills']),
-      completedJobs: _toInt(
-        json['completedJobs'] ?? json['completedSessions'],
-      ),
-    );
-  }
+  return NurseModel(
+    id: (json['id'] ?? '').toString(),  // 'id' is the correct field
+    name: fullName,
+    specialty: (json['specialization'] ?? 'Nurse').toString(),
+    rating: _toDouble(json['rating']),
+    reviewCount: _toInt(json['reviewCount']),
+    yearsExperience: _toInt(json['experienceYears']),
+    hourlyRate: _toDouble(json['hourlyRate'] ?? json['pricePerHour']),
+    isAvailable: json['isActive'] ?? true,  // 'isActive' not 'isAvailable'
+    initials: _buildInitials(fullName),
+    skills: _parseSkills(json['skills']),
+    completedJobs: _toInt(json['completedRequests']),  // 'completedRequests'
+  );
+}
 
   static double _toDouble(dynamic value) {
     if (value == null) return 0.0;

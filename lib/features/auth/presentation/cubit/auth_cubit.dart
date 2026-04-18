@@ -96,8 +96,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthFailure('errorGeneral'));
     }
   }
-
-  // ── Register Doctor ────────────────────────────
+// ── Register Doctor ────────────────────────────────────────────────────────
   Future<void> registerDoctor({
     required String fullName,
     required String email,
@@ -106,7 +105,8 @@ class AuthCubit extends Cubit<AuthState> {
     required String confirmPassword,
     required String specialization,
     required String licenseNumber,
-    required String bio,
+    required String workPlace,      // ✅ was "bio" before
+    required String experienceYears, // ✅ was missing
   }) async {
     emit(AuthLoading());
     try {
@@ -115,25 +115,28 @@ class AuthCubit extends Cubit<AuthState> {
       final lastName =
           nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-      await _dio.post(
-        "/api/Auth/register/doctor",
-        data: {
-          "firstName": firstName,
-          "lastName": lastName,
-          "email": email,
-          "password": password,
-          "confirmPassword": confirmPassword,
-          "specialization": specialization,
-          "licenseNumber": licenseNumber,
-          "bio": bio,
-          "doctorPhoneNumber": phone,
-          "availabilitySchedule": "Not specified",
-        },
-      );
+      final body = {
+        "firstName":       firstName,
+        "lastName":        lastName,
+        "email":           email,
+        "password":        password,
+        "confirmPassword": confirmPassword,
+        "specialization":  specialization,
+        "licenseNumber":   licenseNumber,
+        "phoneNumber":     phone,           // ✅ was "doctorPhoneNumber"
+        "workPlace":       workPlace,       // ✅ was "bio"
+        "experienceYears": int.tryParse(experienceYears) ?? 0, // ✅ was missing
+      };
+
+      debugPrint('=== REGISTER DOCTOR: $body');
+
+      await _dio.post("/api/Auth/register/doctor", data: body);
       emit(AuthSuccess());
     } on DioException catch (e) {
+      debugPrint('=== DOCTOR REGISTER ERROR ${e.response?.statusCode}: ${e.response?.data}');
       emit(AuthFailure(_getErrorMsg(e)));
     } catch (e) {
+      debugPrint('=== DOCTOR REGISTER UNEXPECTED: $e');
       emit(AuthFailure('errorGeneral'));
     }
   }
@@ -197,6 +200,50 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthLoginSuccess(role: role.toString()));
     } on DioException catch (e) {
+      emit(AuthFailure(_getErrorMsg(e)));
+    } catch (e) {
+      emit(AuthFailure('errorGeneral'));
+    }
+  }
+
+  // ── Forgot Password ────────────────────────────────────────────────────────
+  Future<void> forgotPassword({required String email}) async {
+    emit(AuthLoading());
+    try {
+      await _dio.post(
+        "/api/Auth/forgot-password",
+        data: {"email": email},
+      );
+      emit(AuthForgotPasswordSuccess());
+    } on DioException catch (e) {
+      debugPrint('=== FORGOT ERROR ${e.response?.statusCode}: ${e.response?.data}');
+      emit(AuthFailure(_getErrorMsg(e)));
+    } catch (e) {
+      emit(AuthFailure('errorGeneral'));
+    }
+  }
+
+  // ── Reset Password ─────────────────────────────────────────────────────────
+  Future<void> resetPassword({
+    required String userId,
+    required String token,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    emit(AuthLoading());
+    try {
+      await _dio.post(
+        "/api/Auth/reset-password",
+        data: {
+          "userId": userId,
+          "token": token,
+          "newPassword": newPassword,
+          "confirmNewPassword": confirmNewPassword,
+        },
+      );
+      emit(AuthResetPasswordSuccess());
+    } on DioException catch (e) {
+      debugPrint('=== RESET ERROR ${e.response?.statusCode}: ${e.response?.data}');
       emit(AuthFailure(_getErrorMsg(e)));
     } catch (e) {
       emit(AuthFailure('errorGeneral'));

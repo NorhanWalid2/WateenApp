@@ -92,12 +92,8 @@ class ProfileViewBody extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // ── Personal Info ────────────────────────────────────
-              if (profile != null) ...[
-                ProfileInfoCardWidget(profile: profile),
-                const SizedBox(height: 24),
-              ],
-
+        
+          
               // ── Menu ─────────────────────────────────────────────
               Container(
                 decoration: BoxDecoration(

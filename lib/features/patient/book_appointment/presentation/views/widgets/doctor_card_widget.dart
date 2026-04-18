@@ -13,14 +13,13 @@ class DoctorCardWidget extends StatelessWidget {
     required this.onTap,
   });
 
-  // Give each doctor a unique gradient based on initials
-  List<Color> _avatarGradient() {
+  List<Color> _avatarGradient(ColorScheme cs) {
     final gradients = [
-      [const Color(0xFF0D9488), const Color(0xFF14B8A6)], // teal
-      [const Color(0xFF3B82F6), const Color(0xFF6366F1)], // blue
-      [const Color(0xFFEC4899), const Color(0xFFF43F5E)], // pink
-      [const Color(0xFFF59E0B), const Color(0xFFF97316)], // amber
-      [const Color(0xFF8B5CF6), const Color(0xFF6366F1)], // violet
+      [cs.secondary, cs.secondary.withOpacity(0.7)],
+      [const Color(0xFFB91C1C), const Color(0xFFEF4444)],
+      [const Color(0xFF991B1B), cs.secondary],
+      [const Color(0xFFDC2626), const Color(0xFFFCA5A5)],
+      [const Color(0xFF7F1D1D), const Color(0xFFB91C1C)],
     ];
     final index = doctor.initials.codeUnitAt(0) % gradients.length;
     return gradients[index];
@@ -28,7 +27,9 @@ class DoctorCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradient = _avatarGradient();
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme   = Theme.of(context).textTheme;
+    final gradient    = _avatarGradient(colorScheme);
 
     return GestureDetector(
       onTap: doctor.isAvailable ? onTap : null,
@@ -36,13 +37,10 @@ class DoctorCardWidget extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color:
-                isSelected
-                    ? Theme.of(context).colorScheme.secondary
-                    : Colors.transparent,
+            color: isSelected ? colorScheme.secondary : Colors.transparent,
             width: 2,
           ),
           boxShadow: [
@@ -54,14 +52,13 @@ class DoctorCardWidget extends StatelessWidget {
           ],
         ),
         child: Opacity(
-          opacity: doctor.isAvailable ? 1.0 : 0.6,
+          opacity: doctor.isAvailable ? 1.0 : 0.5,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Avatar ──
+              // ── Avatar ──────────────────────────────────────────
               Container(
-                width: 52,
-                height: 52,
+                width: 52, height: 52,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: gradient,
@@ -71,176 +68,127 @@ class DoctorCardWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Center(
-                  child: Text(
-                    doctor.initials,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  child: Text(doctor.initials,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          letterSpacing: 0.5)),
                 ),
               ),
 
               const SizedBox(width: 14),
 
-              // ── Info ──
+              // ── Info ─────────────────────────────────────────────
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Name + unavailable badge
+                    // Name + availability
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            doctor.name,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color:
-                                  Theme.of(context).colorScheme.inverseSurface,
-                            ),
-                          ),
+                          child: Text(doctor.name,
+                              style: textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colorScheme.inverseSurface)),
                         ),
                         if (!doctor.isAvailable)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF2F2),
+                              color: colorScheme.error.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: const Color(0xFFFCA5A5),
-                              ),
+                                  color: colorScheme.error.withOpacity(0.3)),
                             ),
-                            child: const Text(
-                              'Not Available',
-                              style: TextStyle(
-                                color: Color(0xFFEF4444),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: Text('Unavailable',
+                                style: TextStyle(
+                                    color: colorScheme.error,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600)),
                           ),
                       ],
                     ),
-
                     const SizedBox(height: 2),
 
                     // Specialty
-                    Text(
-                      doctor.specialty,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                      ),
-                    ),
-
+                    Text(doctor.specialty,
+                        style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant)),
                     const SizedBox(height: 8),
 
                     // Rating + experience
                     Row(
                       children: [
-                        const Icon(
-                          Icons.star_rounded,
-                          color: Color(0xFFF59E0B),
-                          size: 15,
-                        ),
+                        const Icon(Icons.star_rounded,
+                            color: Color(0xFFF59E0B), size: 15),
                         const SizedBox(width: 3),
-                        Text(
-                          doctor.rating.toString(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.inverseSurface,
-                          ),
-                        ),
-                        Text(
-                          ' (${doctor.reviewCount})',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                          ),
-                        ),
+                        Text(doctor.rating.toStringAsFixed(1),
+                            style: textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.inverseSurface)),
+                        Text(' (${doctor.reviewCount})',
+                            style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
                         const SizedBox(width: 8),
                         Container(
-                          width: 3,
-                          height: 3,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
+                            width: 3, height: 3,
+                            decoration: BoxDecoration(
+                                color: colorScheme.onSurfaceVariant,
+                                shape: BoxShape.circle)),
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
+                            color: colorScheme.surface,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: Text(
-                            '${doctor.yearsExperience} yrs exp',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color:
-                                  Theme.of(context).colorScheme.outlineVariant,
-                            ),
-                          ),
+                          child: Text('${doctor.yearsExperience} yrs exp',
+                              style: textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontSize: 11)),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 10),
 
-                    // Fee box
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
+                    // Fee
+                    if (doctor.consultationFee > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondary.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text('Fee  ',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500)),
+                            Text('SAR ',
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    color: colorScheme.secondary,
+                                    fontWeight: FontWeight.w600)),
+                            Text(doctor.consultationFee.toInt().toString(),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: colorScheme.secondary,
+                                    height: 1)),
+                          ],
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF0FDF9),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            'Fee  ',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Color(0xFF6B7280),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Text(
-                            'SAR ',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF0D9488),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            doctor.consultationFee.toInt().toString(),
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF0D9488),
-                              height: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),

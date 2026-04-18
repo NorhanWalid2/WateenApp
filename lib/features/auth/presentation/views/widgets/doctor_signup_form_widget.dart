@@ -95,16 +95,17 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
         if (_step2Key.currentState!.validate()) setState(() => _currentStep++);
         break;
 
-      case 2:
+     case 2:
         context.read<AuthCubit>().registerDoctor(
-          fullName: _fullNameController.text.trim(),
-          email: _emailController.text.trim(),
-          phone: _phoneController.text.trim(),
-          password: _passwordController.text,
+          fullName:        _fullNameController.text.trim(),
+          email:           _emailController.text.trim(),
+          phone:           _phoneController.text.trim(),
+          password:        _passwordController.text,
           confirmPassword: _confirmPasswordController.text,
-          specialization: _specializationController.text.trim(),
-          licenseNumber: _licenseNumberController.text.trim(),
-          bio: _hospitalController.text.trim(),
+          specialization:  _specializationController.text.trim(),
+          licenseNumber:   _licenseNumberController.text.trim(),
+          workPlace:       _hospitalController.text.trim(),   // ✅ was bio
+          experienceYears: _experienceController.text.trim(), // ✅ was missing
         );
         break;
     }

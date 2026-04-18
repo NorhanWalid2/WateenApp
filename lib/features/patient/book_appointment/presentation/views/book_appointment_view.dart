@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/book_appointment_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:wateen_app/features/patient/book_appointment/data/models/book_appointment_model.dart';
+import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_cubit.dart';
+import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_state.dart';
 import 'widgets/search_bar_widget.dart';
 import 'widgets/specialty_filter_widget.dart';
 import 'widgets/doctors_list_widget.dart';
@@ -17,99 +21,24 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
   String _selectedSpecialty = 'All';
   String? _selectedDoctorId;
 
-  // ── Dummy data — replace with your API call ──
-  final List<BookAppointmentModel> _allDoctors = [
-    BookAppointmentModel(
-      id: '1',
-      name: 'Dr. Sarah Johnson',
-      specialty: 'General Physician',
-      rating: 4.8,
-      reviewCount: 127,
-      yearsExperience: 15,
-      consultationFee: 150,
-      isAvailable: true,
-      initials: 'SJ',
-    ),
-    BookAppointmentModel(
-      id: '2',
-      name: 'Dr. Ahmed Hassan',
-      specialty: 'Cardiologist',
-      rating: 4.9,
-      reviewCount: 203,
-      yearsExperience: 20,
-      consultationFee: 250,
-      isAvailable: true,
-      initials: 'AH',
-    ),
-    BookAppointmentModel(
-      id: '3',
-      name: 'Dr. Maria Garcia',
-      specialty: 'Dermatologist',
-      rating: 4.7,
-      reviewCount: 95,
-      yearsExperience: 12,
-      consultationFee: 200,
-      isAvailable: true,
-      initials: 'MG',
-    ),
-    BookAppointmentModel(
-      id: '4',
-      name: 'Dr. Michael Chen',
-      specialty: 'Pediatrician',
-      rating: 4.9,
-      reviewCount: 156,
-      yearsExperience: 18,
-      consultationFee: 180,
-      isAvailable: false,
-      initials: 'MC',
-    ),
-    BookAppointmentModel(
-      id: '5',
-      name: 'Dr. Fatima Al-Sayed',
-      specialty: 'Gynecologist',
-      rating: 4.8,
-      reviewCount: 134,
-      yearsExperience: 14,
-      consultationFee: 220,
-      isAvailable: true,
-      initials: 'FA',
-    ),
-  ];
-
-  final List<String> _specialties = [
-    'All',
-    'General Physician',
-    'Cardiologist',
-    'Dermatologist',
-    'Pediatrician',
-    'Gynecologist',
-  ];
-
-  // ── Filtered list based on search + specialty ──
-  List<BookAppointmentModel> get _filteredDoctors {
-    return _allDoctors.where((doctor) {
-      final matchesSearch =
+  List<BookAppointmentModel> _filtered(List<BookAppointmentModel> all) {
+    return all.where((d) {
+      final matchSearch =
           _searchController.text.isEmpty ||
-          doctor.name.toLowerCase().contains(
-            _searchController.text.toLowerCase(),
-          ) ||
-          doctor.specialty.toLowerCase().contains(
+          d.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+          d.specialty.toLowerCase().contains(
             _searchController.text.toLowerCase(),
           );
-
-      final matchesSpecialty =
-          _selectedSpecialty == 'All' || doctor.specialty == _selectedSpecialty;
-
-      return matchesSearch && matchesSpecialty;
+      final matchSpecialty =
+          _selectedSpecialty == 'All' || d.specialty == _selectedSpecialty;
+      return matchSearch && matchSpecialty;
     }).toList();
   }
 
-  BookAppointmentModel? get _selectedDoctor {
-    try {
-      return _allDoctors.firstWhere((d) => d.id == _selectedDoctorId);
-    } catch (_) {
-      return null;
-    }
+  List<String> _buildSpecialties(List<BookAppointmentModel> doctors) {
+    final specialties =
+        doctors.map((d) => d.specialty).toSet().toList()..sort();
+    return ['All', ...specialties];
   }
 
   @override
@@ -120,178 +49,223 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header ──
-            Container(
-              color: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return BlocProvider(
+      create: (_) => BookAppointmentCubit()..fetchDoctors(),
+      child: BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
+        builder: (context, state) {
+          final allDoctors =
+              state is BookAppointmentLoaded
+                  ? state.doctors
+                  : <BookAppointmentModel>[];
+          final filtered = _filtered(allDoctors);
+          final specialties = _buildSpecialties(allDoctors);
+
+          final selectedDoctor =
+              filtered.where((d) => d.id == _selectedDoctorId).isNotEmpty
+                  ? filtered.firstWhere((d) => d.id == _selectedDoctorId)
+                  : null;
+
+          return Scaffold(
+            backgroundColor: colorScheme.surface,
+            body: SafeArea(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Back + Title
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            size: 16,
-                            color: Theme.of(context).colorScheme.inverseSurface,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Book Appointment',
-                        style: GoogleFonts.dmSerifDisplay(
-                          fontSize: 22,
-                          color: Theme.of(context).colorScheme.inverseSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Search bar
-                  SearchBarWidget(
-                    controller: _searchController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // Specialty filter chips
-                  SpecialtyFilterWidget(
-                    specialties: _specialties,
-                    selected: _selectedSpecialty,
-                    onSelected:
-                        (val) => setState(() => _selectedSpecialty = val),
-                  ),
-
-                  const SizedBox(height: 14),
-                ],
-              ),
-            ),
-
-            // ── Section header ──
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 18, 24, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Available Doctors',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.inverseSurface,
-                    ),
-                  ),
+                  // ── Header ────────────────────────────────────────
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 3,
+                    color: colorScheme.primary,
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => context.pop(),
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surface,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  size: 16,
+                                  color: colorScheme.inverseSurface,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Book Appointment',
+                              style: GoogleFonts.dmSerifDisplay(
+                                fontSize: 22,
+                                color: colorScheme.inverseSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        SearchBarWidget(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        const SizedBox(height: 14),
+                        SpecialtyFilterWidget(
+                          specialties: specialties,
+                          selected: _selectedSpecialty,
+                          onSelected:
+                              (val) => setState(() => _selectedSpecialty = val),
+                        ),
+                        const SizedBox(height: 14),
+                      ],
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFECFDF5),
-                      borderRadius: BorderRadius.circular(20),
+                  ),
+
+                  // ── Section Header ────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Available Doctors',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.inverseSurface,
+                          ),
+                        ),
+                        if (state is BookAppointmentLoaded)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${filtered.length} doctors',
+                              style: TextStyle(
+                                color: colorScheme.secondary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                    child: Text(
-                      '${_filteredDoctors.length} doctors',
-                      style: const TextStyle(
-                        color: Color(0xFF0D9488),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                  ),
+
+                  // ── Body ──────────────────────────────────────────
+                  Expanded(
+                    child: switch (state) {
+                      BookAppointmentLoading() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      BookAppointmentError(:final message) => Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.wifi_off_rounded,
+                              size: 48,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              message,
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextButton(
+                              onPressed:
+                                  () =>
+                                      context
+                                          .read<BookAppointmentCubit>()
+                                          .fetchDoctors(),
+                              child: Text(
+                                'Retry',
+                                style: TextStyle(color: colorScheme.secondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _ => SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: DoctorsListWidget(
+                          doctors: filtered,
+                          selectedDoctorId: _selectedDoctorId,
+                          onDoctorSelected:
+                              (d) => setState(() => _selectedDoctorId = d.id),
+                        ),
+                      ),
+                    },
+                  ),
+
+                  // ── Continue Button ───────────────────────────────
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                    color: colorScheme.primary,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed:
+                            selectedDoctor == null
+                                ? null
+                                : () {
+                                  // TODO: navigate to schedule appointment
+                                },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.secondary,
+                          disabledBackgroundColor: colorScheme.outlineVariant,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Continue',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.25),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            // ── Doctors list ──
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: DoctorsListWidget(
-                  doctors: _filteredDoctors,
-                  selectedDoctorId: _selectedDoctorId,
-                  onDoctorSelected: (doctor) {
-                    setState(() => _selectedDoctorId = doctor.id);
-                  },
-                ),
-              ),
-            ),
-
-            // ── Continue button ──
-            Container(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-              color: Theme.of(context).colorScheme.primary,
-              child: SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed:
-                      _selectedDoctor == null
-                          ? null
-                          : () {
-                            // TODO: navigate to schedule appointment
-                            // Navigator.pushNamed(context, '/schedule-appointment',
-                            //   arguments: _selectedDoctor);
-                          },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D9488),
-                    disabledBackgroundColor:
-                        Theme.of(context).colorScheme.outlineVariant,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Continue',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.25),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
