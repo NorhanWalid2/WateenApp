@@ -15,3 +15,19 @@ class ProfileError extends ProfileState {
   final String message;
   ProfileError(this.message);
 }
+
+class ProfileUpdating extends ProfileState {
+  final PatientProfileModel profile; // keep showing data while updating
+  ProfileUpdating(this.profile);
+}
+
+class ProfileUpdateSuccess extends ProfileState {
+  final PatientProfileModel profile;
+  ProfileUpdateSuccess(this.profile);
+}
+
+class ProfileUpdateError extends ProfileState {
+  final PatientProfileModel profile; // keep showing data on error
+  final String message;
+  ProfileUpdateError(this.profile, this.message);
+}

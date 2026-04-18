@@ -70,13 +70,30 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      // ✅ Validate date picked
+      if (_dobController.text.isEmpty) {
+        showToastMessage(
+          context,
+          'Please select your date of birth',
+          ToastType.error,
+        );
+        return;
+      }
+
+      // ✅ Validate gender selected
+      if (_selectedGender == null) {
+        showToastMessage(context, 'Please select your gender', ToastType.error);
+        return;
+      }
+
       _authCubit.registerPatient(
-        fullName: _fullNameController.text,
-        email: _emailController.text,
+        fullName: _fullNameController.text.trim(),
+        email: _emailController.text.trim(),
         password: _passwordController.text,
         confirmPassword: _confirmPasswordController.text,
-        gender: _selectedGender ?? 'female',
+        gender: _selectedGender!,
         dateOfBirth: _dobController.text,
+        phoneNumber: _phoneController.text.trim(), // ✅ added
       );
     }
   }

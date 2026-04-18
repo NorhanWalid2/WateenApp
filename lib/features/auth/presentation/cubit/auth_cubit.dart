@@ -1,5 +1,6 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'auth_state.dart';
@@ -45,6 +46,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String confirmPassword,
     required String gender,
     required String dateOfBirth,
+    required String phoneNumber,
   }) async {
     emit(AuthLoading());
     try {
@@ -53,11 +55,24 @@ class AuthCubit extends Cubit<AuthState> {
       final lastName =
           nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-      final genderEn =
-          (gender == 'أنثى' || gender == 'Female') ? 'female' : 'male';
+      // ✅ API expects "Male" or "Female" (capitalized)
+      final genderEn = (gender == 'أنثى' || gender.toLowerCase() == 'female')
+          ? 'Female'
+          : 'Male';
 
+      // ✅ Safe date parsing — format is DD/MM/YYYY from date picker
+      if (dateOfBirth.isEmpty || !dateOfBirth.contains('/')) {
+        emit(AuthFailure('Please select your date of birth'));
+        return;
+      }
       final parts = dateOfBirth.split('/');
+      if (parts.length != 3) {
+        emit(AuthFailure('Invalid date format'));
+        return;
+      }
       final isoDate = '${parts[2]}-${parts[1]}-${parts[0]}T00:00:00Z';
+
+      debugPrint('=== REGISTER PATIENT body: firstName=$firstName, lastName=$lastName, gender=$genderEn, dob=$isoDate, phone=$phoneNumber');
 
       await _dio.post(
         "/api/Auth/register/Patient",
@@ -69,12 +84,15 @@ class AuthCubit extends Cubit<AuthState> {
           "confirmPassword": confirmPassword,
           "gender": genderEn,
           "dateOfBirth": isoDate,
+          "phoneNumber": phoneNumber,
         },
       );
       emit(AuthSuccess());
     } on DioException catch (e) {
+      debugPrint('=== REGISTER ERROR ${e.response?.statusCode}: ${e.response?.data}');
       emit(AuthFailure(_getErrorMsg(e)));
     } catch (e) {
+      debugPrint('=== REGISTER UNEXPECTED: $e');
       emit(AuthFailure('errorGeneral'));
     }
   }

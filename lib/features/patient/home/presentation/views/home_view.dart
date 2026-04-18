@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/features/patient/home/presentation/cubit/home_cubit.dart';
 import 'package:wateen_app/features/patient/home/presentation/cubit/home_state.dart';
@@ -11,19 +12,31 @@ import 'package:wateen_app/features/patient/home/presentation/views/widgets/home
 import 'package:wateen_app/features/patient/home/presentation/views/widgets/medication_reminder_card_widget.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  // ✅ bodyKey goes to HomeViewBody, NOT to HomeView itself
+  final GlobalKey<HomeViewBodyState>? bodyKey;
+
+  const HomeView({super.key, this.bodyKey});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => HomeCubit()..fetchPatientProfile(),
-      child: const _HomeViewBody(),
+      child: HomeViewBody(key: bodyKey), // ✅ key only here
     );
   }
 }
 
-class _HomeViewBody extends StatelessWidget {
-  const _HomeViewBody();
+class HomeViewBody extends StatefulWidget {
+  const HomeViewBody({super.key});
+
+  @override
+  State<HomeViewBody> createState() => HomeViewBodyState();
+}
+
+class HomeViewBodyState extends State<HomeViewBody> {
+  void refreshProfile() {
+    context.read<HomeCubit>().fetchPatientProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,22 +44,16 @@ class _HomeViewBody extends StatelessWidget {
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        // Resolve the display name from state
-        final String displayName = switch (state) {
-          HomeLoaded s => s.profile.fullName,
-          _ => '',
-        };
+        final String displayName =
+            state is HomeLoaded ? state.profile.fullName : '';
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Greeting Card ─────────────────────────
-              // Shows a shimmer-style loading placeholder while fetching,
-              // or the real name once loaded, or a fallback on error.
               if (state is HomeLoading)
-                _GreetingShimmer()
+                const GreetingShimmerWidget()
               else
                 GreetingCardWidget(
                   name: displayName.isNotEmpty ? displayName : '...',
@@ -54,7 +61,6 @@ class _HomeViewBody extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // ── Next Appointment ──────────────────────
               SectionHeaderWidget(
                 title: l10n.nextAppointment,
                 actionLabel: l10n.viewAll,
@@ -72,17 +78,18 @@ class _HomeViewBody extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // ── Medication Reminder ───────────────────
               MedicationReminderCardWidget(
                 medicationName: 'Metformin 500mg',
                 instructions: 'Take 1 tablet after breakfast',
-                onMarkAsTaken: () {},
+                onMarkAsTaken: () async {
+                  await AppPrefs.clearToken();
+                  CustomReplacementNavigation(context, '/login');
+                },
                 onRemindLater: () {},
               ),
 
               const SizedBox(height: 20),
 
-              // ── Quick Actions ─────────────────────────
               SectionHeaderWidget(title: l10n.quickActions),
               const SizedBox(height: 12),
               const QuickActionsGridWidget(),
@@ -96,8 +103,9 @@ class _HomeViewBody extends StatelessWidget {
   }
 }
 
-// ── Simple shimmer placeholder for the greeting card ──────────────────────────
-class _GreetingShimmer extends StatelessWidget {
+class GreetingShimmerWidget extends StatelessWidget {
+  const GreetingShimmerWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -120,7 +128,6 @@ class _GreetingShimmer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Fake text lines
           Container(
             height: 12,
             width: 80,

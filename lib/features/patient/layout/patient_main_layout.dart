@@ -19,19 +19,35 @@ class PatientMainLayout extends StatefulWidget {
 class PatientMainLayoutState extends State<PatientMainLayout> {
   int currentIndex = 0;
 
-  final List<Widget> screens = const [
-    HomeView(),
-    AppointmentsView(),
-    ConversationsView(),
-    HealthView(),
-    ProfileView(),
-  ];
+  // ✅ Key to call refreshProfile() on HomeViewBody
+  final GlobalKey<HomeViewBodyState> _homeKey = GlobalKey<HomeViewBodyState>();
+
+  late final List<Widget> screens;
+
+  @override
+  void initState() {
+    super.initState();
+    screens = [
+      HomeView(bodyKey: _homeKey), // ✅ pass the key
+      const AppointmentsView(),
+      const ConversationsView(),
+      const HealthView(),
+      const ProfileView(),
+    ];
+  }
+
+  void onNavTap(int index) {
+    // ✅ Refetch name when returning to Home tab from another tab
+    if (index == 0 && currentIndex != 0) {
+      _homeKey.currentState?.refreshProfile();
+    }
+    setState(() => currentIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -46,29 +62,22 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
 
       body: IndexedStack(index: currentIndex, children: screens),
 
-      // ── FAB على اليمين ──────────────────────
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            onPressed:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AiAssistantView()),
-                ),
-            backgroundColor: colorScheme.secondary,
-            elevation: 4,
-            shape: const CircleBorder(),
-            child: const Icon(
-              Icons.smart_toy_rounded,
-              color: Colors.white,
-              size: 26,
+      floatingActionButton: FloatingActionButton(
+        onPressed:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AiAssistantView()),
             ),
-          ),
-        ],
+        backgroundColor: colorScheme.secondary,
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: const Icon(
+          Icons.smart_toy_rounded,
+          color: Colors.white,
+          size: 26,
+        ),
       ),
 
-      // ── Bottom Nav ──────────────────────────
       bottomNavigationBar: BottomAppBar(
         color: colorScheme.primary,
         shape: const AutomaticNotchedShape(
@@ -86,31 +95,31 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
                 icon: Icons.home_rounded,
                 label: l10n.home,
                 isSelected: currentIndex == 0,
-                onTap: () => setState(() => currentIndex = 0),
+                onTap: () => onNavTap(0),
               ),
               NavItemWidget(
                 icon: Icons.calendar_today_rounded,
                 label: l10n.appointments,
                 isSelected: currentIndex == 1,
-                onTap: () => setState(() => currentIndex = 1),
+                onTap: () => onNavTap(1),
               ),
               NavItemWidget(
                 icon: Icons.chat_bubble_outline_rounded,
                 label: l10n.messages,
                 isSelected: currentIndex == 2,
-                onTap: () => setState(() => currentIndex = 2),
+                onTap: () => onNavTap(2),
               ),
               NavItemWidget(
                 icon: Icons.favorite_rounded,
                 label: l10n.health,
                 isSelected: currentIndex == 3,
-                onTap: () => setState(() => currentIndex = 3),
+                onTap: () => onNavTap(3),
               ),
               NavItemWidget(
                 icon: Icons.person_rounded,
                 label: l10n.profile,
                 isSelected: currentIndex == 4,
-                onTap: () => setState(() => currentIndex = 4),
+                onTap: () => onNavTap(4),
               ),
             ],
           ),
