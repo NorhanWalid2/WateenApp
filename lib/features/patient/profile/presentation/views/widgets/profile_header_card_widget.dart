@@ -26,9 +26,10 @@ class ProfileHeaderCardWidget extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final hasPhoto =
-        profile?.profilePictureUrl != null &&
-        profile!.profilePictureUrl!.isNotEmpty;
+   final hasPhoto =
+    profile?.profilePictureUrl != null &&
+    (profile!.profilePictureUrl!.startsWith('http://') ||
+     profile!.profilePictureUrl!.startsWith('https://'));
 
     return Container(
       padding: const EdgeInsets.all(20),

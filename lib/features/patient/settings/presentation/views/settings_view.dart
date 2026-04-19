@@ -168,12 +168,7 @@ class _SettingsViewState extends State<SettingsView> {
                             icon: Icons.lock_outline_rounded,
                             title: l10n.changePassword,
                             subtitle: l10n.changePasswordSubtitle,
-                            onTap:
-                                () => CustomNavigation(
-                                  context,
-                                  '/resetPassword',
-                                  extra: {'email': '', 'token': ''},
-                                ),
+                            onTap: () => CustomNavigation(context, '/changePassword'),
                           ),
 
                           divider,

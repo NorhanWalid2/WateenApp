@@ -22,4 +22,9 @@ static Future<void> saveUserId(String id) async =>
     await _prefs.setString(_userIdKey, id);
 
 static String? get userId => _prefs.getString(_userIdKey);
+
+static Future<void> saveProfilePicture(String url) async =>
+    await _prefs.setString('profilePictureUrl', url);
+
+static String? get profilePictureUrl => _prefs.getString('profilePictureUrl');
 }

@@ -190,6 +190,7 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
                         hintText: l10n.numberExample,
                         controller: _phoneController,
                         myValidator: Validator.validatePhoneNumber,
+                        keyboardType: TextInputType.numberWithOptions(),
                       ),
                       const SizedBox(height: 15),
                       Row(
@@ -288,6 +289,7 @@ class _PatientSignupFormWidgetState extends State<PatientSignupFormWidget> {
                         hintText: l10n.numberExample,
                         controller: _contactPhoneController,
                         myValidator: Validator.validatePhoneNumber,
+                          keyboardType: TextInputType.numberWithOptions(),
                       ),
                     ],
                   ),

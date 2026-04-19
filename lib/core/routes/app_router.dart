@@ -18,6 +18,7 @@ import 'package:wateen_app/features/patient/health/presentation/views/health_vie
 import 'package:wateen_app/features/patient/home/presentation/views/home_view.dart';
 import 'package:wateen_app/features/patient/layout/patient_main_layout.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/profile_view.dart';
+import 'package:wateen_app/features/patient/settings/presentation/views/change_password_view.dart';
 import 'package:wateen_app/features/patient/settings/presentation/views/settings_view.dart';
 import 'package:wateen_app/features/patient/request_nurse/data/models/nurse_model.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/request_nurse_view.dart';
@@ -83,6 +84,10 @@ final GoRouter router = GoRouter(
       path: '/forgetPassword',
       builder: (context, state) => const ForgetPasswordView(),
     ),
+    GoRoute(
+  path: '/changePassword',
+  builder: (_, __) => const ChangePasswordView(),
+),
 
     // ── Patient ───────────────────────────────────
     GoRoute(

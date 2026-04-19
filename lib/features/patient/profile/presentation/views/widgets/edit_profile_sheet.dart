@@ -202,12 +202,10 @@ class EditProfileSheetState extends State<EditProfileSheet> {
     }
   }
 
-  // ── Convert image to base64 ────────────────────────────────────────────────
-  Future<String?> _imageToBase64() async {
-    if (_pickedImage == null) return null;
-    final bytes = await _pickedImage!.readAsBytes();
-    return 'data:image/jpeg;base64,${base64Encode(bytes)}';
-  }
+bool _isValidUrl(String? url) {
+  if (url == null || url.isEmpty) return false;
+  return url.startsWith('http://') || url.startsWith('https://');
+}
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +220,11 @@ class EditProfileSheetState extends State<EditProfileSheet> {
         },
         builder: (context, state) {
           final isUpdating = state is ProfileUpdating;
-
+  final currentProfile = state is ProfileLoaded ? state.profile
+      : state is ProfileUpdateSuccess ? state.profile
+      : state is ProfileUpdating ? state.profile
+      : widget.profile;
+       final currentPictureUrl = currentProfile.profilePictureUrl;
           return Container(
             decoration: BoxDecoration(
               color: colorScheme.primary,
@@ -289,29 +291,21 @@ class EditProfileSheetState extends State<EditProfileSheet> {
                               color: colorScheme.secondary.withOpacity(0.15),
                               border: Border.all(
                                   color: colorScheme.secondary, width: 2),
-                              image: _pickedImage != null
-                                  ? DecorationImage(
-                                      image: FileImage(_pickedImage!),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : (widget.profile.profilePictureUrl != null &&
-                                          widget.profile.profilePictureUrl!
-                                              .isNotEmpty)
-                                      ? DecorationImage(
-                                          image: NetworkImage(
-                                              widget.profile.profilePictureUrl!),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : null,
+                           image: _pickedImage != null
+        ? DecorationImage(
+            image: FileImage(_pickedImage!),
+            fit: BoxFit.cover,
+          )
+        : _isValidUrl(currentPictureUrl)
+            ? DecorationImage(
+                image: NetworkImage(currentPictureUrl!),
+                fit: BoxFit.cover,
+              )
+            : null,
                             ),
-                            child: (_pickedImage == null &&
-                                    (widget.profile.profilePictureUrl == null ||
-                                        widget.profile.profilePictureUrl!
-                                            .isEmpty))
-                                ? Icon(Icons.person_rounded,
-                                    size: 40,
-                                    color: colorScheme.secondary)
-                                : null,
+                        child: _pickedImage == null && !_isValidUrl(currentPictureUrl)
+      ? Icon(Icons.person_rounded, size: 40, color: colorScheme.secondary)
+      : null,
                           ),
                           // Camera badge
                           Positioned(
@@ -501,20 +495,24 @@ class EditProfileSheetState extends State<EditProfileSheet> {
                     height: 52,
                     child: ElevatedButton(
                       onPressed: isUpdating
-                          ? null
-                          : () async {
-                              final base64Image = await _imageToBase64();
-                              widget.cubit.updatePatientProfile(
-                                firstName: firstNameCtrl.text.trim(),
-                                lastName: lastNameCtrl.text.trim(),
-                                email: emailCtrl.text.trim(),
-                                address: addressCtrl.text.trim(),
-                                dateOfBirth: dobCtrl.text.trim(),
-                                gender: selectedGender,
-                                profilePictureUrl: base64Image,
-                              );
-                            },
-                      style: ElevatedButton.styleFrom(
+    ? null
+    : () async {
+        // 1. Upload picture first if changed
+        if (_pickedImage != null) {
+          await widget.cubit.updateProfilePicture(_pickedImage!);
+        }
+        // 2. Then update profile fields
+        // ignore: use_build_context_synchronously
+        widget.cubit.updatePatientProfile(
+          firstName: firstNameCtrl.text.trim(),
+          lastName: lastNameCtrl.text.trim(),
+          email: emailCtrl.text.trim(),
+          address: addressCtrl.text.trim(),
+          dateOfBirth: dobCtrl.text.trim(),
+          gender: selectedGender,
+        );
+      },
+               style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.secondary,
                         disabledBackgroundColor:
                             colorScheme.outline.withOpacity(0.5),

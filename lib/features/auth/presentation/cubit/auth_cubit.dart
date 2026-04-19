@@ -20,6 +20,19 @@ class AuthCubit extends Cubit<AuthState> {
   bool isPasswordVisible = false;
   bool rememberMe = false;
 
+String _getErrorMsg(DioException e) {
+  debugPrint('=== FULL ERROR: ${e.response?.data}');
+  if (e.response?.data is Map) {
+    return e.response?.data['message'] ??
+        e.response?.data['title'] ??
+        e.response?.data['errors']?.toString() ??
+        'errorGeneral';
+  }
+  if (e.response?.data is String) {
+    return e.response?.data;
+  }
+  return 'errorGeneral';
+}
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
     emit(AuthPasswordVisibilityChanged(isPasswordVisible));
@@ -30,16 +43,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthInitial());
   }
 
-  // ── Helper ─────────────────────────────────────
-  String _getErrorMsg(DioException e) {
-    if (e.response?.data is Map) {
-      return e.response?.data['message'] ??
-          e.response?.data['errors']?[0] ??
-          'errorGeneral';
-    }
-    return 'errorGeneral';
-  }
-
+  
   // ── Register Patient ───────────────────────────
   Future<void> registerPatient({
     required String fullName,
@@ -57,10 +61,9 @@ class AuthCubit extends Cubit<AuthState> {
       final lastName =
           nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-      // ✅ API expects "Male" or "Female" (capitalized)
-      final genderEn = (gender == 'أنثى' || gender.toLowerCase() == 'female')
-          ? 'Female'
-          : 'Male';
+    final genderEn = (gender == 'أنثى' || gender.toLowerCase() == 'female')
+    ? 'female'
+    : 'male';
 
       // ✅ Safe date parsing — format is DD/MM/YYYY from date picker
       if (dateOfBirth.isEmpty || !dateOfBirth.contains('/')) {
@@ -91,10 +94,12 @@ class AuthCubit extends Cubit<AuthState> {
       );
       emit(AuthSuccess());
     } on DioException catch (e) {
-      debugPrint('=== REGISTER ERROR ${e.response?.statusCode}: ${e.response?.data}');
-      emit(AuthFailure(_getErrorMsg(e)));
+     debugPrint('=== REGISTER ERROR ${e.response?.statusCode}: ${e.response?.data}');
+  debugPrint('=== REGISTER ERROR HEADERS: ${e.response?.headers}');
+  emit(AuthFailure(_getErrorMsg(e)));
     } catch (e) {
       debugPrint('=== REGISTER UNEXPECTED: $e');
+       
       emit(AuthFailure('errorGeneral'));
     }
   }
@@ -265,4 +270,31 @@ await SignalRService().connect();
       emit(AuthFailure('errorGeneral'));
     }
   }
+
+Future<void> changePassword({
+  required String currentPassword,
+  required String newPassword,
+  required String confirmNewPassword,
+}) async {
+  emit(AuthLoading());
+  try {
+    final token = AppPrefs.token;
+    await _dio.post(
+      "/api/Auth/change/password",
+      options: Options(headers: {"Authorization": "Bearer $token"}),
+      data: {
+        "currentPassword": currentPassword,
+        "newPassword": newPassword,
+        "confirmNewPassword": confirmNewPassword,
+      },
+    );
+    emit(AuthResetPasswordSuccess());
+  } on DioException catch (e) {
+    debugPrint('=== CHANGE PASSWORD ERROR: ${e.response?.data}');
+    emit(AuthFailure(_getErrorMsg(e)));
+  } catch (e) {
+    emit(AuthFailure('errorGeneral'));
+  }
+}
+
 }

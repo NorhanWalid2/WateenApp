@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 
 class CustomTextFormFieldWidget extends StatefulWidget {
@@ -94,7 +95,11 @@ class _CustomTextFormFieldWidgetState extends State<CustomTextFormFieldWidget> {
               width: 1,
             ),
           ),
-          keyboardType: widget.keyboardType,
+           keyboardType: widget.keyboardType,
+  inputFormatters: widget.keyboardType == TextInputType.phone ||
+          widget.keyboardType == TextInputType.number
+      ? [FilteringTextInputFormatter.digitsOnly]
+      : null,
           controller: widget.controller,
           validator: widget.myValidator,
           onTap: widget.onTap,
