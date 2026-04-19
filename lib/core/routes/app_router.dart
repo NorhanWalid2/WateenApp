@@ -1,6 +1,12 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/features/admin_roles/admin_settings/presentation/views/settings_view.dart';
+import 'package:wateen_app/features/admin_roles/dashboard/presentation/views/dashboard_view.dart';
+import 'package:wateen_app/features/admin_roles/doctors_management/presentation/views/doctors_management_view.dart';
+import 'package:wateen_app/features/admin_roles/homeService_management/presentation/views/home_service_management_view.dart';
+import 'package:wateen_app/features/admin_roles/layout/admin_main_layout.dart';
+import 'package:wateen_app/features/admin_roles/patients_management/presentation/views/patients_management_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/forget_password_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/login_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/role_view.dart';
@@ -23,7 +29,7 @@ import 'package:wateen_app/features/patient/request_nurse/data/models/nurse_mode
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/request_nurse_view.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/nurse_request_details_view.dart';
 import 'package:wateen_app/features/splash/presentation/views/splash_view.dart';
- 
+
 import 'package:wateen_app/features/nurse/home/presentation/views/home_view.dart';
 import 'package:wateen_app/features/nurse/layout/nurse_main_layout.dart';
 
@@ -34,8 +40,7 @@ String _getInitialRoute() {
     final jwt = JWT.decode(AppPrefs.token!);
     final role =
         jwt.payload['role'] ??
-        jwt.payload[
-            'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+        jwt.payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
 
     switch (role.toString().toLowerCase()) {
       case 'patient':
@@ -44,6 +49,8 @@ String _getInitialRoute() {
         return '/doctorHome';
       case 'nurse':
         return '/nurseMain';
+      case 'admin':
+        return '/adminMain';
     }
   }
 
@@ -53,50 +60,26 @@ String _getInitialRoute() {
 final GoRouter router = GoRouter(
   initialLocation: '/splash',
   routes: [
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) => const SplashView(),
-    ),
+    GoRoute(path: '/splash', builder: (context, state) => const SplashView()),
     GoRoute(path: '/', builder: (context, state) => const OnboardingView()),
     GoRoute(path: '/role', builder: (context, state) => const RoleView()),
     GoRoute(path: '/signup', builder: (context, state) => const SignupView()),
     GoRoute(path: '/login', builder: (context, state) => LoginView()),
     GoRoute(path: '/profile', builder: (context, state) => ProfileView()),
     // ── Auth ──────────────────────────────────────
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const OnboardingView(),
-    ),
-    GoRoute(
-      path: '/role',
-      builder: (context, state) => const RoleView(),
-    ),
-    GoRoute(
-      path: '/signup',
-      builder: (context, state) => const SignupView(),
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => LoginView(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const OnboardingView()),
+    GoRoute(path: '/role', builder: (context, state) => const RoleView()),
+    GoRoute(path: '/signup', builder: (context, state) => const SignupView()),
+    GoRoute(path: '/login', builder: (context, state) => LoginView()),
     GoRoute(
       path: '/forgetPassword',
       builder: (context, state) => const ForgetPasswordView(),
     ),
 
     // ── Patient ───────────────────────────────────
-    GoRoute(
-      path: '/patient',
-      builder: (_, __) => const PatientMainLayout(),
-    ),
-    GoRoute(
-      path: '/home',
-      builder: (context, state) => const HomeView(),
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => ProfileView(),
-    ),
+    GoRoute(path: '/patient', builder: (_, __) => const PatientMainLayout()),
+    GoRoute(path: '/home', builder: (context, state) => const HomeView()),
+    GoRoute(path: '/profile', builder: (context, state) => ProfileView()),
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsView(),
@@ -113,10 +96,7 @@ final GoRouter router = GoRouter(
       path: '/rescheduleAppointments',
       builder: (_, __) => const RescheduleAppointmentView(),
     ),
-    GoRoute(
-      path: '/aiAssistant',
-      builder: (_, __) => const AiAssistantView(),
-    ),
+    GoRoute(path: '/aiAssistant', builder: (_, __) => const AiAssistantView()),
     GoRoute(
       path: '/bookAppointment',
       builder: (_, __) => const BookAppointmentView(),
@@ -132,31 +112,38 @@ final GoRouter router = GoRouter(
         return NurseRequestDetailsView(nurse: nurse);
       },
     ),
-    GoRoute(
-      path: '/addVitals',
-      builder: (_, __) => const HealthView(),
-    ),
+    GoRoute(path: '/addVitals', builder: (_, __) => const HealthView()),
 
     // ── Nurse ─────────────────────────────────────
+    GoRoute(path: '/nurseMain', builder: (_, __) => const NurseMainLayout()),
+    GoRoute(path: '/nurseHome', builder: (_, __) => const NurseHomeView()),
+    GoRoute(path: '/activeVisit', builder: (_, __) => const ActiveVisitView()),
+    GoRoute(path: '/nurseReports', builder: (_, __) => const ReportsView()),
     GoRoute(
-      path: '/nurseMain',
-      builder: (_, __) => const NurseMainLayout(),
+      path: '/nurseProfile',
+      builder: (_, __) => const NurseProfileView(),
+    ),
+    // ── Admin ─────────────────────────────────────
+    GoRoute(path: '/adminMain', builder: (_, __) => const AdminMainLayout()),
+    GoRoute(
+      path: '/adminDashboard',
+      builder: (_, __) => const AdminDashboardView(),
     ),
     GoRoute(
-      path: '/nurseHome',
-      builder: (_, __) => const NurseHomeView(),
+      path: '/doctorsManagement',
+      builder: (_, __) => const DoctorsManagementView(),
     ),
     GoRoute(
-  path: '/activeVisit',
-  builder: (_, __) => const ActiveVisitView(),
-),
-GoRoute(
-  path: '/nurseReports',
-  builder: (_, __) => const ReportsView(),
-),
-GoRoute(
-  path: '/nurseProfile',
-  builder: (_, __) => const NurseProfileView(),
-),
+      path: '/patientsManagement',
+      builder: (_, __) => const PatientsManagementView(),
+    ),
+    GoRoute(
+      path: '/homeServiceManagement',
+      builder: (_, __) => const HomeServiceManagementView(),
+    ),
+    GoRoute(
+      path: '/adminSettings',
+      builder: (_, __) => const AdminSettingsView(),
+    ),
   ],
 );
