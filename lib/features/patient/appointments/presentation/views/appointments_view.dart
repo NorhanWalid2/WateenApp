@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/core/function/navigation.dart';
+import 'package:wateen_app/features/patient/appointments/presentation/views/widgets/nurse_requests_view.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/appointments/data/models/appointment_model.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/widgets/appointment_card_widget.dart';
@@ -52,7 +53,7 @@ class AppointmentsViewState extends State<AppointmentsView>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 2, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -89,6 +90,7 @@ class AppointmentsViewState extends State<AppointmentsView>
               tabs: [
                 Tab(text: l10n.upcoming),
                 Tab(text: l10n.past),
+                const Tab(text: 'Nurse Requests'),
               ],
             ),
 
@@ -117,6 +119,7 @@ class AppointmentsViewState extends State<AppointmentsView>
                     ),
                   ),
                   Center(child: Text(l10n.noPastAppointments)),
+                  const NurseRequestsView(),
                 ],
               ),
             ),
