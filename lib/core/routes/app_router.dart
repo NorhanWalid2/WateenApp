@@ -52,6 +52,7 @@ String _getInitialRoute() {
         return '/nurseMain';
       case 'admin':
         return '/adminMain';
+    
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wateen_app/core/widgets/shimmer_widget.dart';
 import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
 import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_state.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
@@ -29,13 +30,13 @@ class ChatViewState extends State<ChatView> {
     context.read<ChatCubit>().loadHistory(widget.conversation.otherUserId);
   }
 
- @override
-void dispose() {
-  ChatCubit().leaveConversation();
-  controller.dispose();
-  scrollController.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    ChatCubit().leaveConversation();
+    controller.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -77,57 +78,58 @@ void dispose() {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.outline,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(l10n.attach, style: textTheme.titleMedium),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  AttachItemWidget(
-                    icon: Icons.camera_alt_rounded,
-                    label: l10n.camera,
-                    color: colorScheme.secondary,
-                    onTap: () {
-                      Navigator.pop(context);
-                      pickImage(ImageSource.camera);
-                    },
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.outline,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                  AttachItemWidget(
-                    icon: Icons.photo_library_rounded,
-                    label: l10n.gallery,
-                    color: Colors.purple,
-                    onTap: () {
-                      Navigator.pop(context);
-                      pickImage(ImageSource.gallery);
-                    },
+                  const SizedBox(height: 20),
+                  Text(l10n.attach, style: textTheme.titleMedium),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      AttachItemWidget(
+                        icon: Icons.camera_alt_rounded,
+                        label: l10n.camera,
+                        color: colorScheme.secondary,
+                        onTap: () {
+                          Navigator.pop(context);
+                          pickImage(ImageSource.camera);
+                        },
+                      ),
+                      AttachItemWidget(
+                        icon: Icons.photo_library_rounded,
+                        label: l10n.gallery,
+                        color: Colors.purple,
+                        onTap: () {
+                          Navigator.pop(context);
+                          pickImage(ImageSource.gallery);
+                        },
+                      ),
+                      AttachItemWidget(
+                        icon: Icons.insert_drive_file_rounded,
+                        label: l10n.document,
+                        color: Colors.blue,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
-                  AttachItemWidget(
-                    icon: Icons.insert_drive_file_rounded,
-                    label: l10n.document,
-                    color: Colors.blue,
-                    onTap: () => Navigator.pop(context),
-                  ),
+                  const SizedBox(height: 8),
                 ],
               ),
-              const SizedBox(height: 8),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -224,9 +226,10 @@ void dispose() {
                           ? l10n.online
                           : widget.conversation.specialty,
                       style: textTheme.bodySmall?.copyWith(
-                        color: widget.conversation.isOnline
-                            ? Colors.green
-                            : colorScheme.onSurfaceVariant,
+                        color:
+                            widget.conversation.isOnline
+                                ? Colors.green
+                                : colorScheme.onSurfaceVariant,
                         fontSize: 11,
                       ),
                     ),
@@ -236,13 +239,17 @@ void dispose() {
             ),
             actions: [
               IconButton(
-                icon: Icon(Icons.videocam_outlined,
-                    color: colorScheme.inverseSurface),
+                icon: Icon(
+                  Icons.videocam_outlined,
+                  color: colorScheme.inverseSurface,
+                ),
                 onPressed: () {},
               ),
               IconButton(
-                icon: Icon(Icons.more_vert_rounded,
-                    color: colorScheme.inverseSurface),
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  color: colorScheme.inverseSurface,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -251,43 +258,74 @@ void dispose() {
             children: [
               // ── Messages list ──────────────────────────────────────
               Expanded(
-                child: isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: colorScheme.secondary,
-                        ),
-                      )
-                    : messages.isEmpty
+                child:
+                    isLoading
+                        ? ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          itemCount: 6,
+                          itemBuilder:
+                              (_, i) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      i % 2 == 0
+                                          ? MainAxisAlignment.end
+                                          : MainAxisAlignment.start,
+                                  children: [
+                                    if (i % 2 != 0) ...[
+                                      const ShimmerWidget(
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 14,
+                                      ),
+                                      const SizedBox(width: 6),
+                                    ],
+                                    ShimmerWidget(
+                                      width: i % 2 == 0 ? 180 : 140,
+                                      height: 44,
+                                      borderRadius: 16,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        )
+                        : messages.isEmpty
                         ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.chat_bubble_outline_rounded,
-                                  size: 48,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                size: 48,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No messages yet.\nSay hello!',
+                                textAlign: TextAlign.center,
+                                style: textTheme.bodyMedium?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'No messages yet.\nSay hello!',
-                                  textAlign: TextAlign.center,
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            controller: scrollController,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            itemCount: messages.length,
-                            itemBuilder: (_, i) => ChatBubbleWidget(
-                              message: messages[i],
-                              conversation: widget.conversation,
-                            ),
+                              ),
+                            ],
                           ),
+                        )
+                        : ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          itemCount: messages.length,
+                          itemBuilder:
+                              (_, i) => ChatBubbleWidget(
+                                message: messages[i],
+                                conversation: widget.conversation,
+                              ),
+                        ),
               ),
 
               // ── Input ─────────────────────────────────────────────

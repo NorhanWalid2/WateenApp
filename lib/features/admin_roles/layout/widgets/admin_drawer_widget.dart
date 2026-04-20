@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/core/utls/app_icons.dart';
+import 'package:wateen_app/core/widgets/app_bar_widget.dart';
+import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
+import 'package:wateen_app/core/services/signalr_service.dart';
 
 class AdminDrawerWidget extends StatelessWidget {
   final int currentIndex;
@@ -14,13 +19,15 @@ class AdminDrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: colorScheme.primary,
       child: SafeArea(
         child: Column(
           children: [
-
-            // ── Header ──
+            // ── Header ───────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               child: Row(
@@ -28,28 +35,16 @@ class AdminDrawerWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Wateen',
-                          style: GoogleFonts.archivo(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
+                       SvgPicture.asset(AppIcons.assetsIconsLogo, width: 32),
+        const SizedBox(width: 8),
+
+        // ── App Name ─────────────────────────
+        Text( 'Wateen', style: textTheme.titleLarge),
+                      const SizedBox(width: 8),
                       Text(
                         'Admin Portal',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Theme.of(context).colorScheme.outlineVariant,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -58,84 +53,64 @@ class AdminDrawerWidget extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                     child: Icon(
                       Icons.close_rounded,
-                      color: Theme.of(context).colorScheme.outlineVariant,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
 
-            Divider(
-              color: Theme.of(context).colorScheme.surface,
-              thickness: 1,
-            ),
-
+            Divider(color: colorScheme.outline.withOpacity(0.3), height: 1),
             const SizedBox(height: 8),
 
-            // ── Nav Items ──
-            _DrawerItem(
+            // ── Nav Items ─────────────────────────────────────────
+            AdminDrawerItemWidget(
               icon: Icons.dashboard_rounded,
               label: 'Dashboard',
               isActive: currentIndex == 0,
-              onTap: () {
-                onItemSelected(0);
-                Navigator.pop(context);
-              },
+              onTap: () { onItemSelected(0); Navigator.pop(context); },
             ),
-            _DrawerItem(
+            AdminDrawerItemWidget(
               icon: Icons.medical_services_rounded,
               label: 'Doctors',
               isActive: currentIndex == 1,
-              onTap: () {
-                onItemSelected(1);
-                Navigator.pop(context);
-              },
+              onTap: () { onItemSelected(1); Navigator.pop(context); },
             ),
-            _DrawerItem(
+            AdminDrawerItemWidget(
               icon: Icons.people_rounded,
               label: 'Patients',
               isActive: currentIndex == 2,
-              onTap: () {
-                onItemSelected(2);
-                Navigator.pop(context);
-              },
+              onTap: () { onItemSelected(2); Navigator.pop(context); },
             ),
-            _DrawerItem(
-              icon: Icons.home_rounded,
+            AdminDrawerItemWidget(
+              icon: Icons.home_outlined,
               label: 'Home Service',
               isActive: currentIndex == 3,
-              onTap: () {
-                onItemSelected(3);
-                Navigator.pop(context);
-              },
+              onTap: () { onItemSelected(3); Navigator.pop(context); },
             ),
-            _DrawerItem(
+            AdminDrawerItemWidget(
               icon: Icons.settings_rounded,
               label: 'Settings',
               isActive: currentIndex == 4,
-              onTap: () {
-                onItemSelected(4);
-                Navigator.pop(context);
-              },
+              onTap: () { onItemSelected(4); Navigator.pop(context); },
             ),
 
             const Spacer(),
 
-            Divider(
-              color: Theme.of(context).colorScheme.surface,
-              thickness: 1,
-            ),
+            Divider(color: colorScheme.outline.withOpacity(0.3), height: 1),
 
-            // ── Log Out ──
-            _DrawerItem(
+            // ── Logout ────────────────────────────────────────────
+            AdminDrawerItemWidget(
               icon: Icons.logout_rounded,
               label: 'Log Out',
               isActive: false,
               isLogout: true,
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                // TODO: connect logout logic
-                context.go('/login');
+                ChatCubit().clearCache();
+                await SignalRService().disconnect();
+                await AppPrefs.clearAll();
+                if (context.mounted) context.go('/login');
               },
             ),
 
@@ -147,14 +122,15 @@ class AdminDrawerWidget extends StatelessWidget {
   }
 }
 
-class _DrawerItem extends StatelessWidget {
+class AdminDrawerItemWidget extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isActive;
   final bool isLogout;
   final VoidCallback onTap;
 
-  const _DrawerItem({
+  const AdminDrawerItemWidget({
+    super.key,
     required this.icon,
     required this.label,
     required this.isActive,
@@ -164,15 +140,15 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isActive
-              ? Theme.of(context).colorScheme.secondary
-              : Colors.transparent,
+          color: isActive ? colorScheme.secondary : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -183,21 +159,20 @@ class _DrawerItem extends StatelessWidget {
               color: isActive
                   ? Colors.white
                   : isLogout
-                      ? Theme.of(context).colorScheme.secondary
-                      : Theme.of(context).colorScheme.outlineVariant,
+                      ? colorScheme.error
+                      : colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 14),
             Text(
               label,
               style: TextStyle(
                 fontSize: 15,
-                fontWeight:
-                    isActive ? FontWeight.w600 : FontWeight.w400,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 color: isActive
                     ? Colors.white
                     : isLogout
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).colorScheme.inverseSurface,
+                        ? colorScheme.error
+                        : colorScheme.inverseSurface,
               ),
             ),
           ],

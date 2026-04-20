@@ -1,413 +1,526 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/dashboard_model.dart';
-import 'widgets/stats_card_widget.dart';
-import 'widgets/pending_approval_card_widget.dart';
-import 'widgets/recent_activity_item_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:wateen_app/core/utls/app_icons.dart';
+import 'package:wateen_app/core/widgets/shimmer%20card%20skeletons.dart';
+import 'package:wateen_app/core/widgets/shimmer_widget.dart';
+import 'package:wateen_app/features/admin_roles/doctors_management/presentation/cubit/admin_doctor_management_cubit.dart';
+import 'package:wateen_app/features/admin_roles/doctors_management/presentation/cubit/admin_doctor_management_state.dart';
+import 'package:wateen_app/features/admin_roles/homeService_management/presentation/cubit/nurse_admin_cubit.dart';
+import 'package:wateen_app/features/admin_roles/homeService_management/presentation/cubit/nurse_admin_state.dart';
+import 'package:wateen_app/features/admin_roles/layout/admin_main_layout.dart';
 import 'widgets/quick_action_button_widget.dart';
+import 'package:wateen_app/features/admin_roles/doctors_management/presentation/views/widgets/pending_doctor_card_widget.dart';
+import 'package:wateen_app/features/admin_roles/homeService_management/presentation/views/widgets/pending_nurse_card_widget.dart';
 
 class AdminDashboardView extends StatelessWidget {
-  const AdminDashboardView({super.key});
+  final ValueChanged<int>? onNavigate; // ← add
 
-  // TODO: replace with real API data
-  static final DashboardStatsModel _stats = DashboardStatsModel(
-    totalPatients: 1248,
-    activeDoctors: 86,
-    homeServices: 145,
-    appointmentsToday: 42,
-    patientsChange: 12,
-    doctorsChange: 8,
-    homeServicesChange: 15,
-    appointmentsChange: -3,
-  );
-
-  static final List<PendingApprovalModel> _pendingApprovals = [
-    PendingApprovalModel(
-      id: '1',
-      name: 'Dr. Sarah Ahmed',
-      role: 'Doctor',
-      specialty: 'Cardiologist',
-      timeAgo: '2 hours ago',
-    ),
-    PendingApprovalModel(
-      id: '2',
-      name: 'Fatima Hassan',
-      role: 'Home Service',
-      specialty: 'Nurse',
-      timeAgo: '5 hours ago',
-    ),
-    PendingApprovalModel(
-      id: '3',
-      name: 'Dr. Mohammed Ali',
-      role: 'Doctor',
-      specialty: 'Pediatrician',
-      timeAgo: '1 day ago',
-    ),
-  ];
-
-  static final List<RecentActivityModel> _activities = [
-    RecentActivityModel(
-      title: 'Doctor Approved',
-      subtitle: 'Dr. Ahmed Khan',
-      timeAgo: '10 minutes ago',
-      type: ActivityType.approved,
-    ),
-    RecentActivityModel(
-      title: 'New Patient Registration',
-      subtitle: 'Ali Hassan',
-      timeAgo: '25 minutes ago',
-      type: ActivityType.registered,
-    ),
-    RecentActivityModel(
-      title: 'Home Service Completed',
-      subtitle: 'Nurse Sarah',
-      timeAgo: '1 hour ago',
-      type: ActivityType.completed,
-    ),
-    RecentActivityModel(
-      title: 'Doctor Rejected',
-      subtitle: 'Dr. John Doe',
-      timeAgo: '2 hours ago',
-      type: ActivityType.rejected,
-    ),
-  ];
+  const AdminDashboardView({super.key, this.onNavigate});
 
   @override
   Widget build(BuildContext context) {
+    return AdminDashboardBody(onNavigate: onNavigate);
+  }
+}
+
+class AdminDashboardBody extends StatelessWidget {
+  final ValueChanged<int>? onNavigate;
+  const AdminDashboardBody({super.key, this.onNavigate});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
-        child: Column(
-          children: [
-            // ── Top Bar ──
-            Container(
-              color: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Wateen Logo
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      'Wateen',
-                      style: GoogleFonts.archivo(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+        child: BlocBuilder<DoctorAdminCubit, DoctorAdminState>(
+          builder: (context, doctorState) {
+            return BlocBuilder<NurseAdminCubit, NurseAdminState>(
+              builder: (context, nurseState) {
+                final pendingDoctors =
+                    doctorState is DoctorAdminLoaded ? doctorState.doctors : [];
+                final pendingNurses =
+                    nurseState is NurseAdminLoaded ? nurseState.nurses : [];
 
-                  // Hamburger menu
-                  GestureDetector(
-                    onTap: () => Scaffold.of(context).openDrawer(),
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.menu_rounded,
-                        color: Theme.of(context).colorScheme.inverseSurface,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Scrollable Content ──
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                final isLoading =
+                    doctorState is DoctorAdminLoading ||
+                    nurseState is NurseAdminLoading;
+                return Column(
                   children: [
-                    // Title
-                    Text(
-                      'Dashboard',
-                      style: GoogleFonts.archivo(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.inverseSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Welcome to Wateen Healthcare Admin Portal',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ── Stats Cards ──
-                    StatsCardWidget(
-                      icon: Icons.people_rounded,
-                      iconColor: const Color(0xFF3B82F6),
-                      iconBgColor: const Color(0xFFEFF6FF),
-                      label: 'Total Patients',
-                      value: _stats.totalPatients.toString(),
-                      changePercent: _stats.patientsChange,
-                    ),
-                    const SizedBox(height: 12),
-                    StatsCardWidget(
-                      icon: Icons.medical_services_rounded,
-                      iconColor: const Color(0xFF16A34A),
-                      iconBgColor: const Color(0xFFECFDF5),
-                      label: 'Active Doctors',
-                      value: _stats.activeDoctors.toString(),
-                      changePercent: _stats.doctorsChange,
-                    ),
-                    const SizedBox(height: 12),
-                    StatsCardWidget(
-                      icon: Icons.home_rounded,
-                      iconColor: const Color(0xFF7C3AED),
-                      iconBgColor: const Color(0xFFF5F3FF),
-                      label: 'Home Services',
-                      value: _stats.homeServices.toString(),
-                      changePercent: _stats.homeServicesChange,
-                    ),
-                    const SizedBox(height: 12),
-                    StatsCardWidget(
-                      icon: Icons.calendar_today_rounded,
-                      iconColor: const Color(0xFFF59E0B),
-                      iconBgColor: const Color(0xFFFFFBEB),
-                      label: 'Appointments Today',
-                      value: _stats.appointmentsToday.toString(),
-                      changePercent: _stats.appointmentsChange,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // ── Pending Approvals ──
                     Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
+                      color: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Wateen Logo
+                          Row(
+                            children: [
+                              SvgPicture.asset(
+                                AppIcons.assetsIconsLogo,
+                                width: 32,
+                              ),
+                              const SizedBox(width: 8),
+
+                              // ── App Name ─────────────────────────
+                              Text('Wateen', style: textTheme.titleLarge),
+                            ],
+                          ),
+
+                          // Hamburger menu
+                          GestureDetector(
+                            onTap: () {
+                              // Find the AdminMainLayout's scaffold key and open drawer
+                              final layoutState =
+                                  context
+                                      .findAncestorStateOfType<
+                                        AdminMainLayoutState
+                                      >();
+                              layoutState?.scaffoldKey.currentState
+                                  ?.openDrawer();
+                            },
+                            child: Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                Icons.menu_rounded,
+                                color: colorScheme.inverseSurface,
+                                size: 20,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Header
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Pending Approvals',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.inverseSurface,
-                                ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ── Title ──────────────────────────────────
+                            Text(
+                              'Dashboard',
+                              style: textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Welcome to Wateen Healthcare Admin Portal',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // ── Pending Count Cards ─────────────────────
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEFF6FF),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.medical_services_rounded,
+                                            color: Color(0xFF3B82F6),
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        isLoading
+                                            ? const ShimmerWidget(
+                                              width: 50,
+                                              height: 28,
+                                            )
+                                            : Text(
+                                              '${pendingDoctors.length}',
+                                              style: textTheme.headlineSmall
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                            ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Pending Doctors',
+                                          style: textTheme.bodySmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(20),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: colorScheme.secondary
+                                                .withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.home_outlined,
+                                            color: colorScheme.secondary,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        isLoading
+                                            ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                            : Text(
+                                              '${pendingNurses.length}',
+                                              style: textTheme.headlineSmall
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                            ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Pending Nurses',
+                                          style: textTheme.bodySmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  '${_pendingApprovals.length} Pending',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+                            // After the count cards Row, add:
+                            if (isLoading) ...[
+                              const ShimmerWidget(width: 120, height: 16),
+                              const SizedBox(height: 12),
+                              const ShimmerListItemWidget(),
+                              const SizedBox(height: 24),
+                              const ShimmerWidget(width: 120, height: 16),
+                              const SizedBox(height: 12),
+                              const ShimmerListItemWidget(),
+                            ],
+                            // ── Pending Doctors ─────────────────────────────────
+                            if (pendingDoctors.isNotEmpty) ...[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Pending Doctors',
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.secondary.withOpacity(
+                                        0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '${pendingDoctors.length} pending',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: colorScheme.secondary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+
+                              // ── Show only first doctor ──────────────────────
+                              PendingDoctorCardWidget(
+                                doctor: pendingDoctors[0],
+                              ),
+
+                              // ── View All button ─────────────────────────────
+                              if (pendingDoctors.length > 1) ...[
+                                const SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: () {
+                                    final layoutState =
+                                        context
+                                            .findAncestorStateOfType<
+                                              AdminMainLayoutState
+                                            >();
+                                    layoutState?.onNavSelected(1);
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: colorScheme.secondary
+                                            .withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'View All ${pendingDoctors.length} Doctors',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: colorScheme.secondary,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Icon(
+                                          Icons.arrow_forward_rounded,
+                                          size: 16,
+                                          color: colorScheme.secondary,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 24),
+                            ],
+
+                            // ── Pending Nurses ──────────────────────────────────
+                            if (pendingNurses.isNotEmpty) ...[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Pending Nurses',
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.secondary.withOpacity(
+                                        0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '${pendingNurses.length} pending',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: colorScheme.secondary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+
+                              // ── Show only first nurse ───────────────────────
+                              PendingNurseCardWidget(nurse: pendingNurses[0]),
+
+                              // ── View All button ─────────────────────────────
+                              if (pendingNurses.length > 1) ...[
+                                const SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: () {
+                                    final layoutState =
+                                        context
+                                            .findAncestorStateOfType<
+                                              AdminMainLayoutState
+                                            >();
+                                    layoutState?.onNavSelected(3);
+                                  },
+
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: colorScheme.secondary
+                                            .withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'View All ${pendingNurses.length} Nurses',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: colorScheme.secondary,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Icon(
+                                          Icons.arrow_forward_rounded,
+                                          size: 16,
+                                          color: colorScheme.secondary,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 24),
+                            ],
+                            // ── Empty state ─────────────────────────────
+                            if (!isLoading &&
+                                pendingDoctors.isEmpty &&
+                                pendingNurses.isEmpty)
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 40,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle_outline_rounded,
+                                        size: 56,
+                                        color: const Color(0xFF16A34A),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'All caught up!',
+                                        style: textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'No pending approvals at the moment',
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
 
-                          const SizedBox(height: 8),
-
-                          // Approval cards
-                          ..._pendingApprovals.map(
-                            (approval) => PendingApprovalCardWidget(
-                              approval: approval,
-                              onApprove: () {
-                                // TODO: connect approve API
-                              },
-                              onReject: () {
-                                // TODO: connect reject API
-                              },
+                            // ── Quick Actions ───────────────────────────
+                            Text(
+                              'Quick Actions',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          // View all
-                          Center(
-                            child: GestureDetector(
+                            const SizedBox(height: 12),
+                            QuickActionButtonWidget(
+                              icon: Icons.medical_services_rounded,
+                              title: 'Review Doctor Applications',
+                              subtitle: '${pendingDoctors.length} pending',
                               onTap: () {
-                                // TODO: navigate to doctors management
+                                final layoutState =
+                                    context
+                                        .findAncestorStateOfType<
+                                          AdminMainLayoutState
+                                        >();
+                                layoutState?.onNavSelected(1);
                               },
-                              child: Text(
-                                'View All Pending',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ── Recent Activities ──
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Header
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Recent Activities',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.inverseSurface,
-                                ),
-                              ),
-                              Icon(
-                                Icons.access_time_rounded,
-                                size: 18,
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.outlineVariant,
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Activity items
-                          ..._activities.map(
-                            (activity) =>
-                                RecentActivityItemWidget(activity: activity),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          // View all
-                          Center(
-                            child: GestureDetector(
+                            const SizedBox(height: 10),
+                            QuickActionButtonWidget(
+                              icon: Icons.home_outlined,
+                              title: 'Review Nurse Applications',
+                              subtitle: '${pendingNurses.length} pending',
                               onTap: () {
-                                // TODO: navigate to activities
+                                final layoutState =
+                                    context
+                                        .findAncestorStateOfType<
+                                          AdminMainLayoutState
+                                        >();
+                                layoutState?.onNavSelected(3);
                               },
-                              child: Text(
-                                'View All Activities',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                              ),
                             ),
-                          ),
-                        ],
+
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // ── Quick Actions ──
-                    Text(
-                      'Quick Actions',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.inverseSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    QuickActionButtonWidget(
-                      icon: Icons.medical_services_rounded,
-                      title: 'Review Doctor Applications',
-                      subtitle: '8 pending',
-                      onTap: () {
-                        // TODO: navigate to doctors management
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    QuickActionButtonWidget(
-                      icon: Icons.home_rounded,
-                      title: 'Review Home Service',
-                      subtitle: '4 pending',
-                      onTap: () {
-                        // TODO: navigate to home service management
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    QuickActionButtonWidget(
-                      icon: Icons.people_rounded,
-                      title: 'Manage Patients',
-                      onTap: () {
-                        // TODO: navigate to patients management
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
                   ],
-                ),
-              ),
-            ),
-          ],
+                );
+              },
+            );
+          },
         ),
       ),
     );

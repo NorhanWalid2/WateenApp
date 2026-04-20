@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/function/navigation.dart';
 import 'package:wateen_app/core/widgets/language_bottom_sheet.dart';
+import 'package:wateen_app/core/widgets/shimmer_widget.dart';
 import 'package:wateen_app/features/patient/home/data/models/patient_profile_model.dart';
 import 'package:wateen_app/features/patient/profile/presentation/cubit/profile_cubit.dart';
 import 'package:wateen_app/features/patient/profile/presentation/cubit/profile_state.dart';
@@ -34,10 +35,11 @@ class ProfileViewBody extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => EditProfileSheet(
-        profile: profile,
-        cubit: cubit, // ✅ pass directly — no BlocProvider needed
-      ),
+      builder:
+          (_) => EditProfileSheet(
+            profile: profile,
+            cubit: cubit, // ✅ pass directly — no BlocProvider needed
+          ),
     );
   }
 
@@ -50,21 +52,27 @@ class ProfileViewBody extends StatelessWidget {
     return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
         if (state is ProfileUpdateSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text('Profile updated successfully!'),
-            backgroundColor: const Color(0xFF16A34A),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Profile updated successfully!'),
+              backgroundColor: const Color(0xFF16A34A),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         } else if (state is ProfileUpdateError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -93,51 +101,133 @@ class ProfileViewBody extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-        
-          
               // ── Menu ─────────────────────────────────────────────
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+              // Replace the menu Container with:
+              isLoading
+                  ? Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-             
-                    ProfileMenuItemWidget(
-                      icon: Icons.history_edu_outlined,
-                      title: l10n.medicalHistory,
-                      subtitle: l10n.viewAndUploadFiles,
-                      onTap: () {},
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: const [
+                              ShimmerWidget(
+                                width: 40,
+                                height: 40,
+                                borderRadius: 10,
+                              ),
+                              SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ShimmerWidget(width: 120, height: 14),
+                                  SizedBox(height: 6),
+                                  ShimmerWidget(width: 80, height: 11),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outline.withOpacity(0.4),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: const [
+                              ShimmerWidget(
+                                width: 40,
+                                height: 40,
+                                borderRadius: 10,
+                              ),
+                              SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ShimmerWidget(width: 100, height: 14),
+                                  SizedBox(height: 6),
+                                  ShimmerWidget(width: 70, height: 11),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outline.withOpacity(0.4),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: const [
+                              ShimmerWidget(
+                                width: 40,
+                                height: 40,
+                                borderRadius: 10,
+                              ),
+                              SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ShimmerWidget(width: 80, height: 14),
+                                  SizedBox(height: 6),
+                                  ShimmerWidget(width: 60, height: 11),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    Divider(
-                        height: 1,
-                        color: colorScheme.outline.withOpacity(0.4)),
-                    ProfileMenuItemWidget(
-                      icon: Icons.settings_outlined,
-                      title: l10n.settings,
-                      subtitle: l10n.appPreferences,
-                      onTap: () => CustomNavigation(context, '/settings'),
+                  )
+                  : Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    Divider(
-                        height: 1,
-                        color: colorScheme.outline.withOpacity(0.4)),
-                    ProfileMenuItemWidget(
-                      icon: Icons.language_outlined,
-                      title: l10n.language,
-                      subtitle: l10n.englishArabic,
-                      onTap: ()=>LanguageBottomSheet.show(context),
+                    child: Column(
+                      children: [
+                        ProfileMenuItemWidget(
+                          icon: Icons.history_edu_outlined,
+                          title: l10n.medicalHistory,
+                          subtitle: l10n.viewAndUploadFiles,
+                          onTap: () {},
+                        ),
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outline.withOpacity(0.4),
+                        ),
+                        ProfileMenuItemWidget(
+                          icon: Icons.settings_outlined,
+                          title: l10n.settings,
+                          subtitle: l10n.appPreferences,
+                          onTap: () => CustomNavigation(context, '/settings'),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outline.withOpacity(0.4),
+                        ),
+                        ProfileMenuItemWidget(
+                          icon: Icons.language_outlined,
+                          title: l10n.language,
+                          subtitle: l10n.englishArabic,
+                          onTap: () => LanguageBottomSheet.show(context),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
 
               const SizedBox(height: 24),
 
@@ -145,23 +235,29 @@ class ProfileViewBody extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (_) => const LogoutDialogWidget(),
+                  onPressed:
+                      () => showDialog(
+                        context: context,
+                        builder: (_) => const LogoutDialogWidget(),
+                      ),
+                  icon: Icon(
+                    Icons.logout_rounded,
+                    color: colorScheme.error,
+                    size: 20,
                   ),
-                  icon: Icon(Icons.logout_rounded,
-                      color: colorScheme.error, size: 20),
                   label: Text(
                     l10n.logOut,
                     style: TextStyle(
-                        color: colorScheme.error,
-                        fontWeight: FontWeight.w600),
+                      color: colorScheme.error,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(color: colorScheme.error, width: 1),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -171,8 +267,9 @@ class ProfileViewBody extends StatelessWidget {
               Center(
                 child: Text(
                   l10n.version,
-                  style: textTheme.bodySmall
-                      ?.copyWith(color: colorScheme.onSurfaceVariant),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
 

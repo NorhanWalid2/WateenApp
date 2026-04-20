@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/core/widgets/shimmer%20card%20skeletons.dart';
 import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
 import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
 import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_state.dart';
@@ -32,15 +33,19 @@ class ConversationsViewState extends State<ConversationsView> {
 
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
-        final conversations = state is ConversationsLoaded
-            ? state.conversations
-            : <ConversationModel>[];
-    
-        final filtered = conversations
-            .where((c) =>
-                c.doctorName.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-    
+        final conversations =
+            state is ConversationsLoaded
+                ? state.conversations
+                : <ConversationModel>[];
+
+        final filtered =
+            conversations
+                .where(
+                  (c) =>
+                      c.doctorName.toLowerCase().contains(query.toLowerCase()),
+                )
+                .toList();
+
         return Column(
           children: [
             // ── Header ───────────────────────────
@@ -50,9 +55,12 @@ class ConversationsViewState extends State<ConversationsView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.messages,
-                      style: textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                  Text(
+                    l10n.messages,
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   Container(
                     height: 44,
@@ -67,86 +75,135 @@ class ConversationsViewState extends State<ConversationsView> {
                       decoration: InputDecoration(
                         hintText: l10n.searchDoctors,
                         hintStyle: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant),
-                        prefixIcon: Icon(Icons.search_rounded,
-                            color: colorScheme.onSurfaceVariant, size: 20),
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 20,
+                        ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-    
+
             // ── Body ─────────────────────────────
-            Expanded(child: _buildBody(context, state, filtered, colorScheme, textTheme, l10n)),
+            Expanded(
+              child: _buildBody(
+                context,
+                state,
+                filtered,
+                colorScheme,
+                textTheme,
+                l10n,
+              ),
+            ),
           ],
         );
       },
     );
   }
 
-  Widget _buildBody(BuildContext context, ChatState state,
-      List<ConversationModel> filtered, ColorScheme colorScheme,
-      TextTheme textTheme, dynamic l10n) {
+  Widget _buildBody(
+    BuildContext context,
+    ChatState state,
+    List<ConversationModel> filtered,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+    dynamic l10n,
+  ) {
     if (state is ConversationsLoading) {
-      return Center(child: CircularProgressIndicator(color: colorScheme.secondary));
+      return ListView.separated(
+        itemCount: 6,
+        separatorBuilder:
+            (_, __) => Divider(
+              height: 1,
+              indent: 76,
+              color: colorScheme.outline.withOpacity(0.2),
+            ),
+        itemBuilder: (_, __) => const ShimmerConversationTileWidget(),
+      );
     }
     if (state is ConversationsError) {
       return Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.wifi_off_rounded, size: 48, color: colorScheme.onSurfaceVariant),
-          const SizedBox(height: 12),
-          Text(state.message, style: TextStyle(color: colorScheme.onSurfaceVariant)),
-          const SizedBox(height: 16),
-          TextButton.icon(
-            onPressed: () => context.read<ChatCubit>().loadConversations(),
-            icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Retry'),
-            style: TextButton.styleFrom(foregroundColor: colorScheme.secondary),
-          ),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.wifi_off_rounded,
+              size: 48,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              state.message,
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 16),
+            TextButton.icon(
+              onPressed: () => context.read<ChatCubit>().loadConversations(),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.secondary,
+              ),
+            ),
+          ],
+        ),
       );
     }
     if (filtered.isEmpty) {
       return Center(
-        child: Text(l10n.noConversationsFound,
-            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+        child: Text(
+          l10n.noConversationsFound,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
       );
     }
-   // Sort: most recent first
-final sorted = [...filtered]..sort((a, b) {
-  if (a.lastDateTime == null && b.lastDateTime == null) return 0;
-  if (a.lastDateTime == null) return 1;
-  if (b.lastDateTime == null) return -1;
-  return b.lastDateTime!.compareTo(a.lastDateTime!); // newest first
-});
+    // Sort: most recent first
+    final sorted = [...filtered]..sort((a, b) {
+      if (a.lastDateTime == null && b.lastDateTime == null) return 0;
+      if (a.lastDateTime == null) return 1;
+      if (b.lastDateTime == null) return -1;
+      return b.lastDateTime!.compareTo(a.lastDateTime!); // newest first
+    });
 
-return ListView.separated(
-  itemCount: sorted.length,
-  separatorBuilder: (_, __) => Divider(
-    height: 1,
-    indent: 76,
-    color: colorScheme.outline.withOpacity(0.2),
-  ),
-  itemBuilder: (_, i) => ConversationTileWidget(
-    conversation: sorted[i],
-    onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: context.read<ChatCubit>(),
-          child: ChatView(conversation: sorted[i]),
-        ),
-      ),
-    ).then((_) {
-      if (context.mounted) {
-        context.read<ChatCubit>().loadConversations();
-      }
-    }),
-  ),
-);
+    return ListView.separated(
+      itemCount: sorted.length,
+      separatorBuilder:
+          (_, __) => Divider(
+            height: 1,
+            indent: 76,
+            color: colorScheme.outline.withOpacity(0.2),
+          ),
+      itemBuilder:
+          (_, i) => ConversationTileWidget(
+            conversation: sorted[i],
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => BlocProvider.value(
+                          value: context.read<ChatCubit>(),
+                          child: ChatView(conversation: sorted[i]),
+                        ),
+                  ),
+                ).then((_) {
+                  if (context.mounted) {
+                    context.read<ChatCubit>().loadConversations();
+                  }
+                }),
+          ),
+    );
   }
 }

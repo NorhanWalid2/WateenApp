@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/core/function/navigation.dart';
 import '../../data/models/nurse_request_model.dart';
 import 'widgets/request_card_widget.dart';
 
@@ -128,17 +130,23 @@ class _NurseHomeViewState extends State<NurseHomeView> {
                       ),
                     ],
                   ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.notifications_none_rounded,
-                      color: Colors.white,
-                      size: 22,
+                  GestureDetector(
+                    onTap: ()async{
+                       await AppPrefs.clearToken();
+                  CustomReplacementNavigation(context, '/login');
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ],

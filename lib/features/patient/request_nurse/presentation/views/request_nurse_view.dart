@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wateen_app/core/widgets/shimmer%20card%20skeletons.dart';
 import '../../data/models/nurse_model.dart';
 import '../cubit/nurse_cubit.dart';
 import '../cubit/nurse_state.dart';
@@ -22,8 +23,7 @@ class _RequestNurseViewState extends State<RequestNurseView> {
   String? _selectedNurseId;
 
   List<String> _buildFilters(List<NurseModel> nurses) {
-    final specialties =
-        nurses.map((n) => n.specialty).toSet().toList()..sort();
+    final specialties = nurses.map((n) => n.specialty).toSet().toList()..sort();
     return ['All', ...specialties];
   }
 
@@ -39,9 +39,7 @@ class _RequestNurseViewState extends State<RequestNurseView> {
           );
       final matchesFilter =
           _selectedFilter == 'All' ||
-          nurse.specialty.toLowerCase().contains(
-            _selectedFilter.toLowerCase(),
-          );
+          nurse.specialty.toLowerCase().contains(_selectedFilter.toLowerCase());
       return matchesSearch && matchesFilter;
     }).toList();
   }
@@ -250,8 +248,11 @@ class _RequestNurseViewState extends State<RequestNurseView> {
     required ColorScheme colorScheme,
   }) {
     if (state is NurseLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: colorScheme.secondary),
+      return ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, __) => const ShimmerNurseCardWidget(),
       );
     }
 

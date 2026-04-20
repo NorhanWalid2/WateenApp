@@ -48,6 +48,7 @@ class _CustomTextFormFieldWidgetState extends State<CustomTextFormFieldWidget> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+           cursorColor: Theme.of(context).colorScheme.secondary, 
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w400,
