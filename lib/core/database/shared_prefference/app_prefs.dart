@@ -6,7 +6,11 @@ class AppPrefs {
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
-
+static Future<void> clearAll() async {
+  final seenOnboarding = _prefs.getBool('seenOnboarding') ?? false;
+  await _prefs.clear();
+  await _prefs.setBool('seenOnboarding', seenOnboarding); // preserve onboarding
+}
   // ── Onboarding ─────────────────────────────
   static bool get seenOnboarding => _prefs.getBool('seenOnboarding') ?? false;
   static Future<void> setSeenOnboarding() => _prefs.setBool('seenOnboarding', true);

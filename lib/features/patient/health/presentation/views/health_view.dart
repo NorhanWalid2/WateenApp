@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/core/widgets/shimmer_widget.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/health/data/models/vital_type_model.dart';
 import 'package:wateen_app/features/patient/health/data/models/vital_entry_model.dart';
 import 'package:wateen_app/features/patient/health/presentation/cubit/health_cubit.dart';
 import 'package:wateen_app/features/patient/health/presentation/cubit/health_state.dart';
-import 'package:wateen_app/features/patient/health/presentation/views/widgets/abnormal_alert_widget.dart';
 import 'package:wateen_app/features/patient/health/presentation/views/widgets/vital_card_widget.dart';
-import 'package:wateen_app/features/patient/health/presentation/views/widgets/recent_entry_widget.dart';
 import 'package:wateen_app/features/patient/health/presentation/views/widgets/manual_entry_sheet.dart';
 import 'package:wateen_app/core/function/toast_message.dart';
 
@@ -259,7 +258,47 @@ class HealthViewBodyState extends State<HealthViewBody> {
           child: Scaffold(
             body:
                 state is HealthLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const ShimmerWidget(
+                            width: 180,
+                            height: 28,
+                            borderRadius: 8,
+                          ),
+                          const SizedBox(height: 16),
+                          GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.6,
+                            children: List.generate(
+                              3,
+                              (_) => const ShimmerWidget(
+                                width: double.infinity,
+                                height: double.infinity,
+                                borderRadius: 16,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const ShimmerWidget(width: 120, height: 16),
+                          const SizedBox(height: 12),
+                          const ShimmerWidget(
+                            width: double.infinity,
+                            height: 120,
+                            borderRadius: 14,
+                          ),
+                        ],
+                      ),
+                    )
                     : SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,

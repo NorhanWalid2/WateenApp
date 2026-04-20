@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wateen_app/core/widgets/shimmer%20card%20skeletons.dart';
 import 'package:wateen_app/features/patient/book_appointment/data/models/book_appointment_model.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_cubit.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_state.dart';
@@ -167,8 +168,11 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                   // ── Body ──────────────────────────────────────────
                   Expanded(
                     child: switch (state) {
-                      BookAppointmentLoading() => const Center(
-                        child: CircularProgressIndicator(),
+                      BookAppointmentLoading() => ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        itemCount: 4,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (_, __) => const ShimmerNurseCardWidget(),
                       ),
                       BookAppointmentError(:final message) => Center(
                         child: Column(
@@ -221,30 +225,37 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       width: double.infinity,
                       height: 54,
                       child: ElevatedButton(
-                       onPressed: selectedDoctor == null
-    ? null
-    : () {
-        final conversation = ConversationModel(
-          otherUserId: selectedDoctor.id,
-          doctorName: selectedDoctor.name,
-          specialty: selectedDoctor.specialty,
-          lastMessage: '',
-          time: '',
-          unreadCount: 0,
-          initials: selectedDoctor.initials,
-          color: Colors.blue,
-          isOnline: false,
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: ChatCubit(), // singleton — same instance
-              child: ChatView(conversation: conversation),
-            ),
-          ),
-        ).then((_) => ChatCubit().loadConversations());
-      },
+                        onPressed:
+                            selectedDoctor == null
+                                ? null
+                                : () {
+                                  final conversation = ConversationModel(
+                                    otherUserId: selectedDoctor.id,
+                                    doctorName: selectedDoctor.name,
+                                    specialty: selectedDoctor.specialty,
+                                    lastMessage: '',
+                                    time: '',
+                                    unreadCount: 0,
+                                    initials: selectedDoctor.initials,
+                                    color: Colors.blue,
+                                    isOnline: false,
+                                  );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) => BlocProvider.value(
+                                            value:
+                                                ChatCubit(), // singleton — same instance
+                                            child: ChatView(
+                                              conversation: conversation,
+                                            ),
+                                          ),
+                                    ),
+                                  ).then(
+                                    (_) => ChatCubit().loadConversations(),
+                                  );
+                                },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.secondary,
                           disabledBackgroundColor: colorScheme.outlineVariant,

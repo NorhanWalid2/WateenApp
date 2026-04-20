@@ -5,6 +5,7 @@ import 'package:wateen_app/core/function/toast_message.dart';
 import 'package:wateen_app/core/widgets/app_bar_widget.dart';
 import 'package:wateen_app/core/widgets/custom_button.dart';
 import 'package:wateen_app/core/widgets/custom_text_form_field.dart';
+import 'package:wateen_app/core/widgets/shimmer_widget.dart';
 import 'package:wateen_app/core/widgets/validator.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:wateen_app/features/auth/presentation/cubit/auth_state.dart';
@@ -39,7 +40,13 @@ class LoginView extends StatelessWidget {
                     CustomReplacementNavigation(context, '/doctorHome');
                     break;
                   case 'nurse':
-                    CustomReplacementNavigation(context, '/nurseHome');
+                    CustomReplacementNavigation(context, '/nurseMain');
+                    break;
+                  case 'admin': // ← add this
+                    CustomReplacementNavigation(
+                      context,
+                      '/adminMain',
+                    ); // ← add this
                     break;
                 }
               } else if (state is AuthFailure) {
@@ -155,23 +162,33 @@ class LoginView extends StatelessWidget {
                             const SizedBox(height: 16),
 
                             // ── Sign In Button ──────
-                            CustomButton(
-                              title: l10n.signIn,
-                              color: colorScheme.secondary,
-                              colorText: colorScheme.primary,
-
-                              onTap:
-                                  state is AuthLoading
-                                      ? null
-                                      : () {
-                                        if (_formKey.currentState!.validate()) {
-                                          cubit.login(
-                                            email: _emailController.text,
-                                            password: _passwordController.text,
-                                          );
-                                        }
-                                      },
-                            ),
+                            // Replace CustomButton with:
+                            state is AuthLoading
+                                ? Container(
+                                  width: double.infinity,
+                                  height: 52,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: const ShimmerWidget(
+                                    width: double.infinity,
+                                    height: 52,
+                                    borderRadius: 14,
+                                  ),
+                                )
+                                : CustomButton(
+                                  title: l10n.signIn,
+                                  color: colorScheme.secondary,
+                                  colorText: colorScheme.primary,
+                                  onTap: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      cubit.login(
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                      );
+                                    }
+                                  },
+                                ),
                           ],
                         ),
                       ),
