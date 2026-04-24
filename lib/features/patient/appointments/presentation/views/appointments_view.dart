@@ -50,11 +50,16 @@ class AppointmentsViewState extends State<AppointmentsView>
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    tabController = TabController(length: 3, vsync: this);
-  }
+@override
+void initState() {
+  super.initState();
+  tabController = TabController(length: 3, vsync: this);
+  tabController.addListener(() {
+    if (tabController.index == 2 && !tabController.indexIsChanging) {
+      setState(() {}); // rebuild NurseRequestsView → re-fetches
+    }
+  });
+}
 
   @override
   void dispose() {
