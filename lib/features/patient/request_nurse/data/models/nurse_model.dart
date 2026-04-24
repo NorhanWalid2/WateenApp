@@ -26,22 +26,35 @@ class NurseModel {
   });
 
   factory NurseModel.fromJson(Map<String, dynamic> json) {
-  final firstName = (json['firstName'] ?? '').toString();
-  final lastName = (json['lastName'] ?? '').toString();
-  final fullName = '$firstName $lastName'.trim();
+  final rawName = (json['fullName'] ??
+          json['name'] ??
+          '${json['firstName'] ?? ''} ${json['lastName'] ?? ''}')
+      .toString()
+      .trim();
+
+  final displayName =
+      rawName.isEmpty ? 'Nurse Unknown' : rawName;
 
   return NurseModel(
-    id: (json['id'] ?? '').toString(),  // 'id' is the correct field
-    name: fullName,
+    id: (json['id'] ?? '').toString(),
+
+    name: displayName,
+
     specialty: (json['specialization'] ?? 'Nurse').toString(),
+
     rating: _toDouble(json['rating']),
     reviewCount: _toInt(json['reviewCount']),
     yearsExperience: _toInt(json['experienceYears']),
+
     hourlyRate: _toDouble(json['hourlyRate'] ?? json['pricePerHour']),
-    isAvailable: json['isActive'] ?? true,  // 'isActive' not 'isAvailable'
-    initials: _buildInitials(fullName),
+
+    isAvailable: json['isActive'] ?? true,
+
+    initials: _buildInitials(displayName),
+
     skills: _parseSkills(json['skills']),
-    completedJobs: _toInt(json['completedRequests']),  // 'completedRequests'
+
+    completedJobs: _toInt(json['completedRequests']),
   );
 }
 

@@ -332,7 +332,9 @@ class NurseRequestCardWidget extends StatelessWidget {
               const SizedBox(height: 16),
 
               // ── Actions ──────────────────────────────────────
+              // In the actions section, replace the status check:
               if (request.status == 0) ...[
+                // ── Pending — show Accept/Reject ────────────────────
                 const SizedBox(height: 16),
                 isActing
                     ? Center(
@@ -394,31 +396,70 @@ class NurseRequestCardWidget extends StatelessWidget {
                         ),
                       ],
                     ),
+              ] else if (request.status == 1) ...[
+                // ── Approved — show Complete Visit button ────────────
+                const SizedBox(height: 16),
+                isActing
+                    ? Center(
+                      child: CircularProgressIndicator(
+                        color: colorScheme.secondary,
+                        strokeWidth: 2,
+                      ),
+                    )
+                    : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showCompleteDialog(context),
+                        icon: const Icon(
+                          Icons.check_circle_outline_rounded,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Mark Visit Complete',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3B82F6),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
               ] else ...[
-                // ── Show completion message when actioned ─────────
+                // ── Completed or Rejected — show info banner ─────────
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                     color:
-                        request.status == 1
-                            ? const Color(0xFFECFDF5)
-                            : const Color(0xFFFEF2F2),
+                        request.status == 2
+                            ? const Color(0xFFEFF6FF)
+                            : request.status == 3
+                            ? const Color(0xFFFEF2F2)
+                            : const Color(0xFFECFDF5),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    request.status == 1
-                        ? '✓ You accepted this request'
-                        : '✗ You rejected this request',
+                    request.status == 2
+                        ? '✓ Visit completed'
+                        : request.status == 3
+                        ? '✗ Request rejected'
+                        : '✓ Request approved',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color:
-                          request.status == 1
-                              ? const Color(0xFF16A34A)
-                              : colorScheme.error,
+                          request.status == 2
+                              ? const Color(0xFF3B82F6)
+                              : request.status == 3
+                              ? colorScheme.error
+                              : const Color(0xFF16A34A),
                     ),
                   ),
                 ),
@@ -430,70 +471,125 @@ class NurseRequestCardWidget extends StatelessWidget {
     );
   }
 
-  // ── Status badge ─────────────────────────────────────
-  Widget _buildStatusBadge() {
-    switch (request.status) {
-      case 1:
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: const Color(0xFFECFDF5),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF16A34A).withOpacity(0.3)),
-          ),
-          child: const Text(
-            'Approved',
-            style: TextStyle(
-              color: Color(0xFF16A34A),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+  void _showCompleteDialog(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Complete Visit'),
+            content: Text(
+              'Mark visit for ${request.patientName ?? "this patient"} as completed?',
             ),
-          ),
-        );
-      case 2:
-        return Builder(
-          builder:
-              (context) => Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEF2F2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.error.withOpacity(0.3),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.read<NurseHomeCubit>().completeRequest(
+                    requestId: request.id,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3B82F6),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text(
-                  'Rejected',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: const Text(
+                  'Complete',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-        );
-      default:
-        return Container(
+            ],
+          ),
+    );
+  }
+
+  // ── Status badge ─────────────────────────────────────
+ Widget _buildStatusBadge() {
+  switch (request.status) {
+    case 1:
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFECFDF5),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF16A34A).withOpacity(0.3)),
+        ),
+        child: const Text(
+          'Approved',
+          style: TextStyle(
+            color: Color(0xFF16A34A),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+
+    case 2: // ← Completed
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
+        ),
+        child: const Text(
+          'Completed',
+          style: TextStyle(
+            color: Color(0xFF3B82F6),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+
+    case 3: // ← Rejected
+      return Builder(
+        builder: (context) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFBEB),
+            color: const Color(0xFFFEF2F2),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.error.withOpacity(0.3),
+            ),
           ),
-          child: const Text(
-            'Pending',
+          child: Text(
+            'Rejected',
             style: TextStyle(
-              color: Color(0xFFF59E0B),
+              color: Theme.of(context).colorScheme.error,
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
           ),
-        );
-    }
+        ),
+      );
+
+    default: // 0 = Pending
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFBEB),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+        ),
+        child: const Text(
+          'Pending',
+          style: TextStyle(
+            color: Color(0xFFF59E0B),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
   }
+}
 
   void _showRejectDialog(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;

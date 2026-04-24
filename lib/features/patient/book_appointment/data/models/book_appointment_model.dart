@@ -22,24 +22,34 @@ class BookAppointmentModel {
   });
 
   factory BookAppointmentModel.fromJson(Map<String, dynamic> json) {
-    final firstName = json['firstName'] ?? '';
-    final lastName  = json['lastName']  ?? '';
-    final fullName  = '$firstName $lastName'.trim();
-    final initials  = [
-      if (firstName.isNotEmpty) firstName[0],
-      if (lastName.isNotEmpty)  lastName[0],
-    ].join().toUpperCase();
+  final rawName = (json['fullName'] ??
+          json['name'] ??
+          '${json['firstName'] ?? ''} ${json['lastName'] ?? ''}')
+      .toString()
+      .trim();
 
-    return BookAppointmentModel(
-      id:               json['id']?.toString() ?? json['doctorId']?.toString() ?? '',
-      name:             fullName.isEmpty ? 'Dr. Unknown' : 'Dr. $fullName',
-      specialty:        json['specialization'] ?? json['specialty'] ?? 'General',
-      rating:           (json['rating']          ?? 0).toDouble(),
-      reviewCount:      json['reviewCount']       ?? 0,
-      yearsExperience:  json['experienceYears']   ?? json['yearsExperience'] ?? 0,
-      consultationFee:  (json['consultationFee']  ?? 0).toDouble(),
-      isAvailable:      json['isAvailable']       ?? true,
-      initials:         initials.isEmpty ? 'DR' : initials,
-    );
-  }
+  final displayName =
+      rawName.isEmpty ? 'Dr. Unknown' : 'Dr. $rawName';
+
+  final parts = rawName.split(' ').where((e) => e.isNotEmpty).toList();
+
+  final initials = parts.length >= 2
+      ? '${parts[0][0]}${parts[1][0]}'.toUpperCase()
+      : parts.isNotEmpty
+          ? parts[0][0].toUpperCase()
+          : 'DR';
+
+  return BookAppointmentModel(
+    id: json['id']?.toString() ?? json['doctorId']?.toString() ?? '',
+    name: displayName,
+    specialty: (json['specialization'] ?? json['specialty'] ?? 'General').toString(),
+    rating: (json['rating'] as num?)?.toDouble() ?? 0,
+    reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
+    yearsExperience:
+        (json['experienceYears'] ?? json['yearsExperience'] as num?)?.toInt() ?? 0,
+    consultationFee: (json['consultationFee'] as num?)?.toDouble() ?? 0,
+    isAvailable: json['isAvailable'] as bool? ?? true,
+    initials: initials,
+  );
+}
 }

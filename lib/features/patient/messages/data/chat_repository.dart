@@ -1,10 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
-import 'models/chat_message_model.dart';
-import 'models/conversation_model.dart';
+import 'package:wateen_app/features/patient/messages/data/models/chat_message_model.dart';
+import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
 
 class ChatRepository {
-  // ── Singleton ────────────────────────────────────────────────────
   static final ChatRepository _instance = ChatRepository._internal();
   factory ChatRepository() => _instance;
   ChatRepository._internal();
@@ -14,41 +13,69 @@ class ChatRepository {
   );
 
   Options get _authOptions => Options(
-    headers: {"Authorization": "Bearer ${AppPrefs.token}"},
-  );
+        headers: {"Authorization": "Bearer ${AppPrefs.token}"},
+      );
 
-  // ── Load history ─────────────────────────────────────────────────
+ List<Map<String, dynamic>> _extractList(dynamic body) {
+  if (body is List) {
+    return body
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+  }
+
+  if (body is Map) {
+    final data = body['data'];
+
+    if (data is List) {
+      return data
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+    }
+  }
+
+  return [];
+}
+
   Future<List<ChatMessageModel>> loadHistory(String otherUserId) async {
     final response = await _dio.get(
       "/api/Chat/$otherUserId/history",
       options: _authOptions,
     );
+
     print('HISTORY RAW: ${response.data}');
 
-    if (response.data == null) return [];
-    final List data = response.data is List ? response.data as List : [];
+    final List data = _extractList(response.data);
+
     return data
-        .map((e) => ChatMessageModel.fromJson(
-              e,
-              currentUserId: AppPrefs.userId ?? '',
-            ))
+        .whereType<Map<String, dynamic>>()
+        .map(
+          (e) => ChatMessageModel.fromJson(
+            e,
+            currentUserId: AppPrefs.userId ?? '',
+          ),
+        )
         .toList();
   }
 
-  // ── Load all conversations ────────────────────────────────────────
-  Future<List<ConversationModel>> loadConversations() async {
-    final response = await _dio.get(
-      "/api/Chat",
-      options: _authOptions,
-    );
-    print('CONVERSATIONS RAW: ${response.data}');
+Future<List<ConversationModel>> loadConversations() async {
+  final response = await _dio.get(
+    "/api/Chat",
+    options: _authOptions,
+  );
 
-    if (response.data == null) return [];
-    final List data = response.data is List ? response.data as List : [];
-    return data.map((e) => ConversationModel.fromJson(e)).toList();
-  }
+  print('CONVERSATIONS RAW: ${response.data}');
 
-  // ── Mark as read ─────────────────────────────────────────────────
+  final data = _extractList(response.data);
+
+  return data
+      .whereType<Map<String, dynamic>>()
+      .map((e) => ConversationModel.fromJson(e))
+      .where((conversation) => conversation.lastMessage.trim().isNotEmpty)
+      .toList();
+}
+
   Future<void> markAsRead(String otherUserId) async {
     await _dio.put(
       "/api/Chat/$otherUserId/read",

@@ -1,6 +1,5 @@
  
-enum NurseRequestStatus { pending, approved, rejected }
-
+enum NurseRequestStatus { pending, approved, completed, rejected }
 class NurseRequestModel {
   final String id;
   final String serviceDescription;
@@ -27,7 +26,8 @@ class NurseRequestModel {
   NurseRequestStatus get status {
     switch (statusCode) {
       case 1: return NurseRequestStatus.approved;
-      case 2: return NurseRequestStatus.rejected;
+       case 2: return NurseRequestStatus.completed;
+      case 3: return NurseRequestStatus.rejected;
       default: return NurseRequestStatus.pending;
     }
   }

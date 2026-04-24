@@ -17,23 +17,44 @@ class NurseCubit extends Cubit<NurseState> {
 
   // ── Fetch all nurses ───────────────────────────────────────────────────────
   Future<void> fetchNurses() async {
-    emit(NurseLoading());
-    try {
-      final token = AppPrefs.token;
-      final response = await _dio.get(
-        "/api/HomeService/Nurses",
-        options: Options(headers: {"Authorization": "Bearer $token"}),
-      );
-     final List data = response.data as List;
-if (data.isNotEmpty) debugPrint('First nurse raw: ${data.first}');
-      final nurses = data.map((e) => NurseModel.fromJson(e)).toList();
-      emit(NurseLoaded(nurses));
-    } on DioException catch (e) {
-      emit(NurseError(_extractError(e)));
-    } catch (_) {
-      emit(NurseError('Something went wrong'));
+  emit(NurseLoading());
+
+  try {
+    final token = AppPrefs.token;
+
+    final response = await _dio.get(
+      "/api/HomeService/Nurses",
+      options: Options(headers: {"Authorization": "Bearer $token"}),
+    );
+
+    debugPrint('NURSES RAW: ${response.data}');
+
+    final body = response.data;
+
+    final List data = body is Map
+        ? (body['data'] as List? ?? [])
+        : (body as List? ?? []);
+
+    if (data.isNotEmpty) {
+      debugPrint('First nurse raw: ${data.first}');
     }
+
+    final nurses = data
+        .whereType<Map>()
+        .map((e) => NurseModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+
+    debugPrint('NURSES COUNT: ${nurses.length}');
+
+    emit(NurseLoaded(nurses));
+  } on DioException catch (e) {
+    emit(NurseError(_extractError(e)));
+  } catch (e, s) {
+    debugPrint('NURSES UNEXPECTED: $e');
+    debugPrintStack(stackTrace: s);
+    emit(NurseError('Something went wrong'));
   }
+}
 
   // ── Book a nurse ───────────────────────────────────────────────────────────
   Future<void> bookNurse({
