@@ -84,6 +84,12 @@ if (sentAt != null && sentAt.isNotEmpty) {
     );
   }
 
+bool get isUrgent => unreadCount > 0;
+
+String get patientName => doctorName;
+
+String get timeAgo => time.isNotEmpty ? time : '';
+
   static String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
