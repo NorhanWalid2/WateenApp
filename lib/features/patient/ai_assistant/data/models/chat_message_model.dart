@@ -1,5 +1,5 @@
 enum MessageType { text, image }
-enum MessageSender { user, ai }
+enum MessageSender { user, ai, doctor }
 
 class ChatMessage {
   final String? text;
