@@ -42,8 +42,9 @@ class ChatMessageModel {
       senderName: (json['senderName'] ?? '').toString(),
       receiverId: (json['receiverId'] ?? '').toString(),
       chatId: (json['chatId'] ?? '').toString(),
-      text: json['messageContent'] as String?,
-      time: DateTime.tryParse(json['sentAt'] ?? '')?.toLocal() ?? DateTime.now(),
+      text: json['messageContent']?.toString() ?? '',
+time: DateTime.tryParse(json['sentAt']?.toString() ?? '')?.toLocal() ??
+    DateTime.now(),
       type: ChatMessageType.text,
       sender: isMe ? ChatMessageSender.me : ChatMessageSender.other,
       status: (json['isRead'] == true)

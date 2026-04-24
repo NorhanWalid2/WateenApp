@@ -30,18 +30,21 @@ class NurseRequestCardWidget extends StatelessWidget {
 
     final statusLabel = switch (request.status) {
       NurseRequestStatus.approved => 'Approved',
+       NurseRequestStatus.completed  => 'Completed', 
       NurseRequestStatus.rejected => 'Rejected',
       NurseRequestStatus.pending  => 'Pending',
     };
 
     final statusColor = switch (request.status) {
       NurseRequestStatus.approved => const Color(0xFF16A34A),
+       NurseRequestStatus.completed  => const Color(0xFF3B82F6),
       NurseRequestStatus.rejected => colorScheme.error,
       NurseRequestStatus.pending  => const Color(0xFFF59E0B),
     };
 
     final statusIcon = switch (request.status) {
       NurseRequestStatus.approved => Icons.check_circle_rounded,
+      NurseRequestStatus.completed  => Icons.task_alt_rounded,
       NurseRequestStatus.rejected => Icons.cancel_rounded,
       NurseRequestStatus.pending  => Icons.access_time_rounded,
     };
@@ -153,6 +156,134 @@ class NurseRequestCardWidget extends StatelessWidget {
             label: 'Requested',
             value: _formatTime(request.requestedTime),
           ),
+
+          // Add at the bottom of the card Column, after the details rows:
+
+const SizedBox(height: 14),
+Divider(height: 1, color: colorScheme.outline.withOpacity(0.2)),
+const SizedBox(height: 14),
+
+// ── Completion Banner ─────────────────────────────────
+if (request.status == NurseRequestStatus.completed)
+  Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFEFF6FF),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: const Color(0xFF3B82F6).withOpacity(0.3),
+      ),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.task_alt_rounded,
+            color: Color(0xFF3B82F6), size: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Visit Completed',
+                style: TextStyle(
+                  color: Color(0xFF3B82F6),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'Your nurse visit has been completed successfully',
+                style: TextStyle(
+                  color: const Color(0xFF3B82F6).withOpacity(0.8),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+
+if (request.status == NurseRequestStatus.rejected)
+  Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFFEF2F2),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: colorScheme.error.withOpacity(0.3)),
+    ),
+    child: Row(
+      children: [
+        Icon(Icons.cancel_rounded, color: colorScheme.error, size: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Request Rejected',
+                style: TextStyle(
+                  color: colorScheme.error,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                'The nurse was unable to accept this request',
+                style: TextStyle(
+                  color: colorScheme.error.withOpacity(0.8),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+
+if (request.status == NurseRequestStatus.approved)
+  Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFECFDF5),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: const Color(0xFF16A34A).withOpacity(0.3)),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.check_circle_rounded,
+            color: Color(0xFF16A34A), size: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Request Approved',
+                style: TextStyle(
+                  color: Color(0xFF16A34A),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Text(
+                'Your nurse is on the way',
+                style: TextStyle(
+                  color: Color(0xFF16A34A),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
         ],
       ),
     );

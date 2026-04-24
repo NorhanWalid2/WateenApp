@@ -3,7 +3,7 @@ import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/core/services/signalr_service.dart';
 import 'package:wateen_app/features/patient/messages/data/models/chat_message_model.dart';
 import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
- 
+
 import '../../data/chat_repository.dart';
 import 'chat_state.dart';
 
@@ -16,7 +16,7 @@ class ChatCubit extends Cubit<ChatState> {
   ChatCubit._internal() : super(ChatInitial()) {
     _registerSignalRCallbacks(); // ← called once when singleton is created
   }
-List<ConversationModel> _lastConversations = [];
+  List<ConversationModel> _lastConversations = [];
   final ChatRepository _repo = ChatRepository();
   final Map<String, List<ChatMessageModel>> _cache = {};
   String? _currentOtherUserId;
@@ -26,73 +26,71 @@ List<ConversationModel> _lastConversations = [];
     if (!isClosed) emit(state);
   }
 
-void _registerSignalRCallbacks() {
-  SignalRService().onMessageReceived = (data) {
-    print('Incoming message: $data');
-    final senderId = (data['senderId'] ?? '').toString();
-    final currentUserId = AppPrefs.userId ?? '';
+  void _registerSignalRCallbacks() {
+    SignalRService().onMessageReceived = (data) {
+      print('Incoming message: $data');
+      final senderId = (data['senderId'] ?? '').toString();
+      final currentUserId = AppPrefs.userId ?? '';
 
-    // ← Skip messages sent by me — already added optimistically
-    if (senderId == currentUserId) return;
+      // ← Skip messages sent by me — already added optimistically
+      if (senderId == currentUserId) return;
 
-    final receiverId = (data['receiverId'] ?? '').toString();
-    final otherUserId = senderId;
+      final receiverId = (data['receiverId'] ?? '').toString();
+      final otherUserId = senderId;
 
-    final msg = ChatMessageModel.fromJson(
-      data,
-      currentUserId: currentUserId,
-    );
+      final msg = ChatMessageModel.fromJson(data, currentUserId: currentUserId);
 
-    _cache.putIfAbsent(otherUserId, () => []);
-    _cache[otherUserId]!.add(msg);
+      _cache.putIfAbsent(otherUserId, () => []);
+      _cache[otherUserId]!.add(msg);
 
-    if (otherUserId == _currentOtherUserId) {
-      _emit(MessageReceived(List.from(_cache[otherUserId]!)));
-    } else {
-      _refreshConversationsSilently();
-    }
-  };
-}
-  Future<void> loadConversations() async {
-  _emit(ConversationsLoading());
-  try {
-    final conversations = await _repo.loadConversations();
-    final enriched = conversations.map((c) {
-      if (c.lastMessage.isEmpty &&
-          _cache.containsKey(c.otherUserId) &&
-          _cache[c.otherUserId]!.isNotEmpty) {
-        final lastMsg = _cache[c.otherUserId]!.last;
-        return ConversationModel(
-          otherUserId: c.otherUserId,
-          doctorName: c.doctorName,
-          specialty: c.specialty,
-          lastMessage: lastMsg.text ?? '',
-          time: _formatTime(lastMsg.time),
-          lastDateTime: lastMsg.time,
-          unreadCount: c.unreadCount,
-          initials: c.initials,
-          color: c.color,
-          isOnline: c.isOnline,
-          profilePictureUrl: c.profilePictureUrl,
-        );
+      if (otherUserId == _currentOtherUserId) {
+        _emit(MessageReceived(List.from(_cache[otherUserId]!)));
+      } else {
+        _refreshConversationsSilently();
       }
-      return c;
-    }).toList();
-    _lastConversations = enriched;
-    _emit(ConversationsLoaded(enriched));
-  } catch (e) {
-    print('loadConversations error: $e');
-    _emit(ConversationsLoaded([]));
+    };
   }
-}
+
+  Future<void> loadConversations() async {
+    _emit(ConversationsLoading());
+    try {
+      final conversations = await _repo.loadConversations();
+      final enriched =
+          conversations.map((c) {
+            if (c.lastMessage.isEmpty &&
+                _cache.containsKey(c.otherUserId) &&
+                _cache[c.otherUserId]!.isNotEmpty) {
+              final lastMsg = _cache[c.otherUserId]!.last;
+              return ConversationModel(
+                otherUserId: c.otherUserId,
+                doctorName: c.doctorName,
+                specialty: c.specialty,
+                lastMessage: lastMsg.text ?? '',
+                time: _formatTime(lastMsg.time),
+                lastDateTime: lastMsg.time,
+                unreadCount: c.unreadCount,
+                initials: c.initials,
+                color: c.color,
+                isOnline: c.isOnline,
+                profilePictureUrl: c.profilePictureUrl,
+              );
+            }
+            return c;
+          }).toList();
+      _lastConversations = enriched;
+      _emit(ConversationsLoaded(enriched));
+    } catch (e) {
+      print('loadConversations error: $e');
+      _emit(ConversationsError('Failed to load conversations'));
+    }
+  }
 
   // ── Step 2: Load chat history ─────────────────────────────────────
   Future<void> loadHistory(String otherUserId) async {
     _currentOtherUserId = otherUserId;
 
     // Show cache immediately if available
-    if (_cache.containsKey(otherUserId) &&
-        _cache[otherUserId]!.isNotEmpty) {
+    if (_cache.containsKey(otherUserId) && _cache[otherUserId]!.isNotEmpty) {
       _emit(MessagesLoaded(List.from(_cache[otherUserId]!)));
       _markAsRead(otherUserId);
       return;
@@ -103,72 +101,85 @@ void _registerSignalRCallbacks() {
       final messages = await _repo.loadHistory(otherUserId);
       _cache[otherUserId] = messages;
       _emit(MessagesLoaded(List.from(messages)));
-      _markAsRead(otherUserId);
+
+      if (messages.isNotEmpty) {
+        _markAsRead(otherUserId);
+      }
     } catch (e) {
       _cache[otherUserId] = [];
       _emit(MessagesLoaded([]));
     }
   }
 
- // ── Step 3: Send message ──────────────────────────────────────────
-Future<void> sendMessage(String receiverId, String content) async {
-  if (content.trim().isEmpty) return;
-  try {
-    // Add optimistically to cache
-    final msg = ChatMessageModel.local(
-      text: content,
-      receiverId: receiverId,
-      currentUserId: AppPrefs.userId ?? '',
-    );
-    _cache.putIfAbsent(receiverId, () => []);
-    _cache[receiverId]!.add(msg);
-    _emit(MessageSent(List.from(_cache[receiverId]!)));
+  // ── Step 3: Send message ──────────────────────────────────────────
+  Future<void> sendMessage(String receiverId, String content) async {
+    if (content.trim().isEmpty) return;
+    try {
+      // Add optimistically to cache
+      final msg = ChatMessageModel.local(
+        text: content,
+        receiverId: receiverId,
+        currentUserId: AppPrefs.userId ?? '',
+      );
+      _cache.putIfAbsent(receiverId, () => []);
+      _cache[receiverId]!.add(msg);
+      _emit(MessageSent(List.from(_cache[receiverId]!)));
 
-    // Send via SignalR
-    await SignalRService().sendMessage(receiverId, content);
+      // Send via SignalR
+      await SignalRService().sendMessage(receiverId, content);
 
-    // Refresh inbox silently (no loading state)
-    _refreshConversationsSilently();
-  } catch (e) {
-    print('Send error: $e');
-    _emit(ChatError('Failed to send message'));
-  }
-}
-// ── Load conversations without emitting loading state ─────────────
-Future<void> _refreshConversationsSilently() async {
-  try {
-    final conversations = await _repo.loadConversations();
-    final enriched = conversations.map((c) {
-      if (c.lastMessage.isEmpty &&
-          _cache.containsKey(c.otherUserId) &&
-          _cache[c.otherUserId]!.isNotEmpty) {
-        final lastMsg = _cache[c.otherUserId]!.last;
-        return ConversationModel(
-          otherUserId: c.otherUserId,
-          doctorName: c.doctorName,
-          specialty: c.specialty,
-          lastMessage: lastMsg.text ?? '',
-          time: _formatTime(lastMsg.time),
-          lastDateTime: lastMsg.time,
-          unreadCount: c.unreadCount,
-          initials: c.initials,
-          color: c.color,
-          isOnline: c.isOnline,
-          profilePictureUrl: c.profilePictureUrl,
-        );
-      }
-      return c;
-    }).toList();
-    // Only emit if we're on conversations screen
-    if (_currentOtherUserId == null) {
-      _emit(ConversationsLoaded(enriched));
+      // Refresh inbox silently (no loading state)
+      _refreshConversationsSilently();
+    } catch (e) {
+      print('Send error: $e');
+      _emit(ChatError('Failed to send message'));
     }
-    // Store for later use
-    _lastConversations = enriched;
-  } catch (e) {
-    print('Silent refresh error: $e');
   }
-}
+
+  // ── Load conversations without emitting loading state ─────────────
+  Future<void> _refreshConversationsSilently() async {
+    try {
+      final conversations = await _repo.loadConversations();
+      final enriched =
+          conversations.map((c) {
+            if (c.lastMessage.isEmpty &&
+                _cache.containsKey(c.otherUserId) &&
+                _cache[c.otherUserId]!.isNotEmpty) {
+              final lastMsg = _cache[c.otherUserId]!.last;
+              return ConversationModel(
+                otherUserId: c.otherUserId,
+                doctorName: c.doctorName,
+                specialty: c.specialty,
+                lastMessage: lastMsg.text ?? '',
+                time: _formatTime(lastMsg.time),
+                lastDateTime: lastMsg.time,
+                unreadCount: c.unreadCount,
+                initials: c.initials,
+                color: c.color,
+                isOnline: c.isOnline,
+                profilePictureUrl: c.profilePictureUrl,
+              );
+            }
+            return c;
+          }).toList();
+      // Only emit if we're on conversations screen
+      if (_currentOtherUserId == null) {
+        _emit(ConversationsLoaded(enriched));
+      }
+      // Store for later use
+      _lastConversations = enriched;
+      final visibleConversations =
+          enriched.where((c) => c.lastMessage.trim().isNotEmpty).toList();
+
+      _lastConversations = visibleConversations;
+
+      if (_currentOtherUserId == null) {
+        _emit(ConversationsLoaded(visibleConversations));
+      }
+    } catch (e) {
+      print('Silent refresh error: $e');
+    }
+  }
 
   // ── Mark as read ──────────────────────────────────────────────────
   Future<void> _markAsRead(String otherUserId) async {
@@ -184,12 +195,12 @@ Future<void> _refreshConversationsSilently() async {
   }
 
   // ── Clear on logout ───────────────────────────────────────────────
-void clearCache() {
-  _cache.clear();
-  _lastConversations = [];
-  _currentOtherUserId = null;
-  _emit(ChatInitial());
-}
+  void clearCache() {
+    _cache.clear();
+    _lastConversations = [];
+    _currentOtherUserId = null;
+    _emit(ChatInitial());
+  }
 
   // ── Helper ────────────────────────────────────────────────────────
   String _formatTime(DateTime dt) {

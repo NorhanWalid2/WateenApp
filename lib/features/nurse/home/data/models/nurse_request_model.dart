@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class NurseHomeRequestModel {
   final String id;
   final String serviceDescription;
@@ -21,6 +23,35 @@ class NurseHomeRequestModel {
     this.patientName,
   });
 
+  // ── Status helpers ────────────────────────────────────────────────
+  String get statusLabel {
+    switch (status) {
+      case 1: return 'Approved';
+      case 2: return 'Completed';
+      case 3: return 'Rejected';
+      default: return 'Pending';
+    }
+  }
+
+  Color statusColor(ColorScheme colorScheme) {
+    switch (status) {
+      case 1: return const Color(0xFF16A34A);
+      case 2: return const Color(0xFF3B82F6);
+      case 3: return colorScheme.error;
+      default: return const Color(0xFFF59E0B);
+    }
+  }
+
+  IconData get statusIcon {
+    switch (status) {
+      case 1: return Icons.check_circle_rounded;
+      case 2: return Icons.task_alt_rounded;
+      case 3: return Icons.cancel_rounded;
+      default: return Icons.access_time_rounded;
+    }
+  }
+
+  // ── Formatted time ────────────────────────────────────────────────
   String get formattedTime {
     try {
       final dt = DateTime.parse(requestedTime).toLocal();
@@ -35,6 +66,21 @@ class NurseHomeRequestModel {
     } catch (_) {
       return requestedTime;
     }
+  }
+
+  // ── Copy with updated status ──────────────────────────────────────
+  NurseHomeRequestModel copyWith({int? status}) {
+    return NurseHomeRequestModel(
+      id: id,
+      serviceDescription: serviceDescription,
+      requestedTime: requestedTime,
+      address: address,
+      status: status ?? this.status,
+      patientId: patientId,
+      nurseId: nurseId,
+      nurseName: nurseName,
+      patientName: patientName,
+    );
   }
 
   factory NurseHomeRequestModel.fromJson(Map<String, dynamic> json) {

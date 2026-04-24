@@ -20,24 +20,37 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       Options(headers: {"Authorization": "Bearer ${AppPrefs.token}"});
 
   Future<void> fetchDoctors() async {
-    emit(BookAppointmentLoading());
-    try {
-      final response = await _dio.get(
-        "/api/Appointment/Doctors",
-        options: _authOptions,
-      );
-      debugPrint('=== DOCTORS RESPONSE: ${response.data}');
-      final List data = response.data as List;
-      final doctors = data
-          .map((e) => BookAppointmentModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      emit(BookAppointmentLoaded(doctors));
-    } on DioException catch (e) {
-      debugPrint('=== DOCTORS ERROR ${e.response?.statusCode}: ${e.response?.data}');
-      emit(BookAppointmentError('Failed to load doctors'));
-    } catch (e) {
-      debugPrint('=== DOCTORS UNEXPECTED: $e');
-      emit(BookAppointmentError('Something went wrong'));
-    }
+  emit(BookAppointmentLoading());
+
+  try {
+    final response = await _dio.get(
+      "/api/Appointment/Doctors",
+      options: _authOptions,
+    );
+
+    debugPrint('=== DOCTORS RESPONSE: ${response.data}');
+
+    final body = response.data;
+
+    final List data = body is Map
+        ? (body['data'] as List? ?? [])
+        : (body as List? ?? []);
+
+    final doctors = data
+        .whereType<Map>()
+        .map((e) => BookAppointmentModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+
+    debugPrint('=== DOCTORS COUNT: ${doctors.length}');
+
+    emit(BookAppointmentLoaded(doctors));
+  } on DioException catch (e) {
+    debugPrint('=== DOCTORS ERROR ${e.response?.statusCode}: ${e.response?.data}');
+    emit(BookAppointmentError('Failed to load doctors'));
+  } catch (e, s) {
+    debugPrint('=== DOCTORS UNEXPECTED: $e');
+    debugPrintStack(stackTrace: s);
+    emit(BookAppointmentError('Something went wrong'));
   }
+}
 }

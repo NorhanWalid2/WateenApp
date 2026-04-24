@@ -78,7 +78,9 @@ if (sentAt != null && sentAt.isNotEmpty) {
       initials: initials,
       color: color,
       isOnline: false,
-      profilePictureUrl: json['otherUserProfilePicture']?.toString(),
+      profilePictureUrl: json['otherUserProfilePicture'] == null
+    ? null
+    : json['otherUserProfilePicture'].toString(),
     );
   }
 

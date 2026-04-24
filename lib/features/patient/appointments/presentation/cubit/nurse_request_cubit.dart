@@ -20,10 +20,18 @@ class NurseRequestsCubit extends Cubit<NurseRequestsState> {
           headers: {"Authorization": "Bearer ${AppPrefs.token}"},
         ),
       );
-      final List data = response.data as List;
-      final requests =
-          data.map((e) => NurseRequestModel.fromJson(e)).toList();
-      emit(NurseRequestsLoaded(requests));
+       print('PATIENT REQUESTS RAW: ${response.data}');
+      final body = response.data;
+
+final List data = body is Map<String, dynamic>
+    ? (body['data'] as List? ?? [])
+    : (body as List? ?? []);
+
+final requests = data
+    .map((e) => NurseRequestModel.fromJson(e as Map<String, dynamic>))
+    .toList();
+
+emit(NurseRequestsLoaded(requests));
     } on DioException catch (e) {
       emit(NurseRequestsError(
         e.response?.data?['message'] ?? 'Failed to load requests',
