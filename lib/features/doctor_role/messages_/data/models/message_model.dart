@@ -1,6 +1,6 @@
 enum MessageFilter { all, unread, urgent }
 
-class ConversationModel {
+class DoctorConversationModel {
   final String id;
   final String patientName;
   final String lastMessage;
@@ -9,7 +9,7 @@ class ConversationModel {
   final bool isUrgent;
   final bool isRead;
 
-  ConversationModel({
+  DoctorConversationModel({
     required this.id,
     required this.patientName,
     required this.lastMessage,

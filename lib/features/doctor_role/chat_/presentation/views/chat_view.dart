@@ -24,35 +24,35 @@ class _DoctorChatViewState extends State<DoctorChatView> {
   final ScrollController _scrollController = ScrollController();
 
   // TODO: replace with real API data
-  final List<ChatMessageModel> _messages = [
-    ChatMessageModel(
+  final List<DoctorChatMessageModel> _messages = [
+    DoctorChatMessageModel(
       id: '1',
       text:
           'Good morning Doctor! I wanted to follow up on my blood pressure readings.',
       sender: MessageSender.patient,
       time: '9:30 AM',
     ),
-    ChatMessageModel(
+    DoctorChatMessageModel(
       id: '2',
       text:
           "Good morning! I'd be happy to help. What readings have you been getting?",
       sender: MessageSender.doctor,
       time: '9:32 AM',
     ),
-    ChatMessageModel(
+    DoctorChatMessageModel(
       id: '3',
       text: 'This morning it was 145/95. Should I be concerned?',
       sender: MessageSender.patient,
       time: '9:35 AM',
     ),
-    ChatMessageModel(
+    DoctorChatMessageModel(
       id: '4',
       text:
           "That's slightly elevated. Have you been taking your medication as prescribed?",
       sender: MessageSender.doctor,
       time: '9:37 AM',
     ),
-    ChatMessageModel(
+    DoctorChatMessageModel(
       id: '5',
       text:
           "Yes, I've been taking it every morning with breakfast as you suggested.",
@@ -66,7 +66,7 @@ class _DoctorChatViewState extends State<DoctorChatView> {
 
     setState(() {
       _messages.add(
-        ChatMessageModel(
+        DoctorChatMessageModel(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           text: _messageController.text.trim(),
           sender: MessageSender.doctor,

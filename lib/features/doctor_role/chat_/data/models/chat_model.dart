@@ -1,12 +1,12 @@
 enum MessageSender { doctor, patient }
 
-class ChatMessageModel {
+class DoctorChatMessageModel {
   final String id;
   final String text;
   final MessageSender sender;
   final String time;
 
-  ChatMessageModel({
+  DoctorChatMessageModel({
     required this.id,
     required this.text,
     required this.sender,

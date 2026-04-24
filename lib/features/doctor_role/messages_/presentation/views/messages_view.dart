@@ -15,8 +15,8 @@ class _DoctorMessagesViewState extends State<DoctorMessagesView> {
   MessageFilter _selectedFilter = MessageFilter.all;
 
   // TODO: replace with real API data
-  final List<ConversationModel> _conversations = [
-    ConversationModel(
+  final List<DoctorConversationModel> _conversations = [
+    DoctorConversationModel(
       id: '1',
       patientName: 'Ahmed Al-Mansouri',
       lastMessage:
@@ -26,7 +26,7 @@ class _DoctorMessagesViewState extends State<DoctorMessagesView> {
       isUrgent: true,
       isRead: false,
     ),
-    ConversationModel(
+    DoctorConversationModel(
       id: '2',
       patientName: 'Fatima Hassan',
       lastMessage:
@@ -36,7 +36,7 @@ class _DoctorMessagesViewState extends State<DoctorMessagesView> {
       isUrgent: false,
       isRead: false,
     ),
-    ConversationModel(
+    DoctorConversationModel(
       id: '3',
       patientName: 'Mohammed Ali',
       lastMessage:
@@ -46,7 +46,7 @@ class _DoctorMessagesViewState extends State<DoctorMessagesView> {
       isUrgent: false,
       isRead: true,
     ),
-    ConversationModel(
+    DoctorConversationModel(
       id: '4',
       patientName: 'Layla Ahmed',
       lastMessage: 'Can I reschedule my appointment to next week?',
@@ -57,7 +57,7 @@ class _DoctorMessagesViewState extends State<DoctorMessagesView> {
     ),
   ];
 
-  List<ConversationModel> get _filteredConversations {
+  List<DoctorConversationModel> get _filteredConversations {
     switch (_selectedFilter) {
       case MessageFilter.unread:
         return _conversations.where((c) => c.unreadCount > 0).toList();

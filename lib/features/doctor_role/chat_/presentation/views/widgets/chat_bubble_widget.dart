@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/features/patient/ai_assistant/data/models/chat_message_model.dart';
-import 'package:wateen_app/features/patient/messages/data/models/chat_message_model.dart';
+import 'package:wateen_app/features/doctor_role/chat_/data/models/chat_model.dart';
 
+ 
+ 
 class ChatBubbleWidget extends StatelessWidget {
-  final ChatMessageModel message;
+  final DoctorChatMessageModel message;
 
   const ChatBubbleWidget({
     super.key,

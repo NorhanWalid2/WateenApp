@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:wateen_app/features/doctor_role/messages_/data/models/message_model.dart';
 //import 'package:go_router/go_router.dart';
-import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
-
+ 
 
 class ConversationCardWidget extends StatelessWidget {
-  final ConversationModel conversation;
+  final DoctorConversationModel conversation;
   final VoidCallback onTap;
 
   const ConversationCardWidget({

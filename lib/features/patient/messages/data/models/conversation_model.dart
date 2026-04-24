@@ -82,11 +82,11 @@ if (sentAt != null && sentAt.isNotEmpty) {
     );
   }
 
-  get isUrgent => null;
+bool get isUrgent => unreadCount > 0;
 
-  get patientName => null;
+String get patientName => doctorName;
 
-  String get timeAgo => null;
+String get timeAgo => time.isNotEmpty ? time : '';
 
   static String _formatTime(DateTime dt) {
     final now = DateTime.now();
