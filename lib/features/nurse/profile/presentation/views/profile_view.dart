@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wateen_app/features/nurse/layout/widgets/nurse_top_bar_widget.dart';
 import '../../data/models/nurse_profile_model.dart';
 import 'widgets/profile_header_widget.dart';
 import 'widgets/contact_info_card_widget.dart';
@@ -10,7 +11,8 @@ import 'widgets/services_card_widget.dart';
 import 'widgets/stats_row_widget.dart';
 
 class NurseProfileView extends StatelessWidget {
-  const NurseProfileView({super.key});
+  final VoidCallback onMenuTap;
+  const NurseProfileView({super.key, required this.onMenuTap});
 
   // TODO: replace with real API data
   static final NurseProfileModel _profile = NurseProfileModel(
@@ -55,19 +57,9 @@ class NurseProfileView extends StatelessWidget {
         days: 'Monday - Tuesday - Wednesday - Thursday',
         hours: '8:00 AM - 6:00 PM',
       ),
-      ScheduleModel(
-        days: 'Friday',
-        hours: '8:00 AM - 2:00 PM',
-      ),
-      ScheduleModel(
-        days: 'Saturday',
-        hours: '9:00 AM - 3:00 PM',
-      ),
-      ScheduleModel(
-        days: 'Sunday',
-        hours: '',
-        isClosed: true,
-      ),
+      ScheduleModel(days: 'Friday', hours: '8:00 AM - 2:00 PM'),
+      ScheduleModel(days: 'Saturday', hours: '9:00 AM - 3:00 PM'),
+      ScheduleModel(days: 'Sunday', hours: '', isClosed: true),
     ],
     servicesOffered: [
       'Vital Monitoring',
@@ -88,7 +80,7 @@ class NurseProfileView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-
+            NurseTopBarWidget(onMenuTap: onMenuTap),
             // ── Header ──
             Container(
               color: Theme.of(context).colorScheme.primary,
@@ -113,7 +105,6 @@ class NurseProfileView extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-
                     // Profile header card
                     ProfileHeaderWidget(
                       profile: _profile,
@@ -144,9 +135,7 @@ class NurseProfileView extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // Services
-                    ServicesCardWidget(
-                      services: _profile.servicesOffered,
-                    ),
+                    ServicesCardWidget(services: _profile.servicesOffered),
                     const SizedBox(height: 16),
 
                     // Stats

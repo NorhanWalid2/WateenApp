@@ -42,8 +42,7 @@ import 'package:wateen_app/features/patient/request_nurse/presentation/views/req
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/nurse_request_details_view.dart';
 import 'package:wateen_app/features/splash/presentation/views/splash_view.dart';
 
-
-import 'package:wateen_app/features/nurse/home/presentation/views/home_view.dart';
+import 'package:wateen_app/features/nurse/home/presentation/views/nurse_home_view.dart';
 import 'package:wateen_app/features/nurse/layout/nurse_main_layout.dart';
 
 String _getInitialRoute() {
@@ -64,9 +63,8 @@ String _getInitialRoute() {
         return '/nurseMain';
       case 'admin':
         return '/adminMain';
-      case 'doctor': 
+      case 'doctor':
         return '/doctorMain';
-    
     }
   }
 
@@ -92,9 +90,9 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const ForgetPasswordView(),
     ),
     GoRoute(
-  path: '/changePassword',
-  builder: (_, __) => const ChangePasswordView(),
-),
+      path: '/changePassword',
+      builder: (_, __) => const ChangePasswordView(),
+    ),
 
     // ── Patient ───────────────────────────────────
     GoRoute(path: '/patient', builder: (_, __) => const PatientMainLayout()),
@@ -135,14 +133,11 @@ final GoRouter router = GoRouter(
     GoRoute(path: '/addVitals', builder: (_, __) => const HealthView()),
 
     // ── Nurse ─────────────────────────────────────
+    // In app_router.dart — make sure nurse route uses NurseMainLayout:
     GoRoute(path: '/nurseMain', builder: (_, __) => const NurseMainLayout()),
-    GoRoute(path: '/nurseHome', builder: (_, __) => const NurseHomeView()),
-    GoRoute(path: '/activeVisit', builder: (_, __) => const ActiveVisitView()),
-    GoRoute(path: '/nurseReports', builder: (_, __) => const ReportsView()),
-    GoRoute(
-      path: '/nurseProfile',
-      builder: (_, __) => const NurseProfileView(),
-    ),
+    
+ 
+   
     // ── Admin ─────────────────────────────────────
     GoRoute(path: '/adminMain', builder: (_, __) => const AdminMainLayout()),
     GoRoute(
@@ -166,61 +161,57 @@ final GoRouter router = GoRouter(
       builder: (_, __) => const AdminSettingsView(),
     ),
     // ── Doctor ─────────────────────────────────────
-    GoRoute(
-      path: '/doctorMain',
-      builder: (_, __) => const DoctorMainLayout(),
-    ),
+    GoRoute(path: '/doctorMain', builder: (_, __) => const DoctorMainLayout()),
     GoRoute(
       path: '/doctorDashboard',
       builder: (_, __) => const DoctorDashboardView(),
     ),
     GoRoute(
-  path: '/doctorPatients',
-  builder: (_, __) => const DoctorPatientsView(),
+      path: '/doctorPatients',
+      builder: (_, __) => const DoctorPatientsView(),
     ),
     GoRoute(
-  path: '/patientDetails',
-  builder: (context, state) {
-    final patient = state.extra as PatientModel;
-    return PatientDetailsView(patient: patient);
+      path: '/patientDetails',
+      builder: (context, state) {
+        final patient = state.extra as PatientModel;
+        return PatientDetailsView(patient: patient);
       },
     ),
     GoRoute(
-  path: '/prescriptions',
-  builder: (context, state) {
-    final patient = state.extra as PatientModel;
-    return PrescriptionsView(patient: patient);
+      path: '/prescriptions',
+      builder: (context, state) {
+        final patient = state.extra as PatientModel;
+        return PrescriptionsView(patient: patient);
       },
     ),
     GoRoute(
-  path: '/checklist',
-  builder: (context, state) {
-    final patient = state.extra as PatientModel;
-    return ChecklistView(patient: patient);
+      path: '/checklist',
+      builder: (context, state) {
+        final patient = state.extra as PatientModel;
+        return ChecklistView(patient: patient);
       },
     ),
     GoRoute(
-  path: '/doctorAppointments',
-  builder: (_, __) => const DoctorAppointmentsView(),
+      path: '/doctorAppointments',
+      builder: (_, __) => const DoctorAppointmentsView(),
     ),
     GoRoute(
-  path: '/doctorMessages',
-  builder: (_, __) => const DoctorMessagesView(),
+      path: '/doctorMessages',
+      builder: (_, __) => const DoctorMessagesView(),
     ),
-GoRoute(
-  path: '/doctorChat',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    return DoctorChatView(
-      patientName: extra['patientName'] as String,
-      patientId: extra['patientId'] as String,
-    );
+    GoRoute(
+      path: '/doctorChat',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return DoctorChatView(
+          patientName: extra['patientName'] as String,
+          patientId: extra['patientId'] as String,
+        );
       },
     ),
     GoRoute(
-  path: '/doctorProfile',
-  builder: (_, __) => const DoctorProfileView(),
+      path: '/doctorProfile',
+      builder: (_, __) => const DoctorProfileView(),
     ),
-
   ],
 );

@@ -6,7 +6,7 @@ import 'package:wateen_app/features/nurse/home/data/models/nurse_request_model.d
 
 class NurseHomeCubit extends Cubit<NurseHomeState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"), // ← https fixed
+    BaseOptions(baseUrl: "http://wateen.runasp.net"),  
   );
 
   NurseHomeCubit() : super(NurseHomeInitial());
@@ -26,57 +26,33 @@ class NurseHomeCubit extends Cubit<NurseHomeState> {
   // ── Fetch all requests ────────────────────────────────────────────
   Future<void> fetchRequests() async {
   emit(NurseHomeLoading());
-
   try {
     final response = await _dio.get(
       "/api/HomeService/NurseRequests",
+      queryParameters: {"pageNumber": 1, "pageSize": 100}, // ← add pagination
       options: _authOptions,
     );
-
-    print('NURSE HOME REQUESTS RAW: ${response.data}');
-
-    final body = response.data;
-
-    final List data = body is Map
-        ? (body['data'] as List? ?? [])
-        : (body as List? ?? []);
-
+    // ← response is now {"data": [...]} not a plain list
+    final List data = (response.data['data'] as List?) ?? [];
     final requests = data
-        .whereType<Map>()
-        .map((e) => NurseHomeRequestModel.fromJson(Map<String, dynamic>.from(e)))
+        .map((e) => NurseHomeRequestModel.fromJson(e))
         .toList()
       ..sort((a, b) {
         if (a.status == 0 && b.status != 0) return -1;
         if (a.status != 0 && b.status == 0) return 1;
-
-        final aTime = DateTime.tryParse(a.requestedTime);
-        final bTime = DateTime.tryParse(b.requestedTime);
-
-        if (aTime == null && bTime == null) return 0;
-        if (aTime == null) return 1;
-        if (bTime == null) return -1;
-
-        return bTime.compareTo(aTime);
+        return b.requestedTime.compareTo(a.requestedTime);
       });
-
-    print('NURSE HOME REQUESTS COUNT: ${requests.length}');
-
     emit(NurseHomeLoaded(requests));
   } on DioException catch (e) {
-      String message = 'Failed to load requests';
-
-  if (e.response?.data is Map) {
-    message = e.response?.data['message']?.toString() ?? message;
-  }
-
-  emit(NurseHomeError(message));
-  } catch (e, s) {
-    print('NURSE HOME REQUESTS ERROR: $e');
-    print(s);
-    emit(NurseHomeError('Something went wrong'));
-  }
+  print('NURSE ERROR: ${e.response?.statusCode} ${e.response?.data} ${e.message}');
+  emit(NurseHomeError(
+    e.response?.data?['message'] ?? 'Failed to load requests',
+  ));
+} catch (e) {
+  print('NURSE UNKNOWN ERROR: $e');
+  emit(NurseHomeError('Something went wrong'));
 }
-
+}
   // ── Accept or reject a request ────────────────────────────────────
   Future<void> updateStatus({
     required String requestId,
