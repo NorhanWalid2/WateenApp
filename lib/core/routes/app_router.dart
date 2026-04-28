@@ -140,10 +140,7 @@ final GoRouter router = GoRouter(
    
     // ── Admin ─────────────────────────────────────
     GoRoute(path: '/adminMain', builder: (_, __) => const AdminMainLayout()),
-    GoRoute(
-      path: '/adminDashboard',
-      builder: (_, __) => const AdminDashboardView(),
-    ),
+   
     GoRoute(
       path: '/doctorsManagement',
       builder: (_, __) => const DoctorsManagementView(),

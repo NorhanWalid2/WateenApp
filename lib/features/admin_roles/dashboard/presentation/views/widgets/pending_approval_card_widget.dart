@@ -82,7 +82,7 @@ class PendingApprovalCardWidget extends StatelessWidget {
             ),
           ),
 
-          // Approve + Reject
+          // Approve + Reject buttons
           Row(
             children: [
               GestureDetector(
@@ -94,7 +94,8 @@ class PendingApprovalCardWidget extends StatelessWidget {
                     color: const Color(0xFFECFDF5),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFF16A34A).withOpacity(0.3),
+                      // Fix #4: withValues instead of withOpacity
+                      color: const Color(0xFF16A34A).withValues(alpha: 0.3),
                     ),
                   ),
                   child: const Icon(
@@ -114,9 +115,11 @@ class PendingApprovalCardWidget extends StatelessWidget {
                     color: const Color(0xFFFEF2F2),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.secondary.withOpacity(0.3),
+                      // Fix #4: withValues instead of withOpacity
+                      color: Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withValues(alpha: 0.3),
                     ),
                   ),
                   child: Icon(
