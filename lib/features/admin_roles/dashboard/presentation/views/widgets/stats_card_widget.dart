@@ -1,120 +1,70 @@
 import 'package:flutter/material.dart';
 
-class StatsCardWidget extends StatelessWidget {
+class AdminStatCardWidget extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
-  final Color iconBgColor;
+  final Color iconBg;
   final String label;
   final String value;
-  final double changePercent;
 
-  const StatsCardWidget({
+  const AdminStatCardWidget({
     super.key,
     required this.icon,
     required this.iconColor,
-    required this.iconBgColor,
+    required this.iconBg,
     required this.label,
     required this.value,
-    required this.changePercent,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isPositive = changePercent >= 0;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: colorScheme.primary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Icon
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-
-          const SizedBox(width: 16),
-
-          // Label + Value
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.inverseSurface,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Change percent
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color:
-                  isPositive
-                      ? const Color(0xFFECFDF5)
-                      : const Color(0xFFFEF2F2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  isPositive
-                      ? Icons.arrow_upward_rounded
-                      : Icons.arrow_downward_rounded,
-                  size: 12,
-                  color:
-                      isPositive
-                          ? const Color(0xFF16A34A)
-                          : Theme.of(context).colorScheme.secondary,
-                ),
-                const SizedBox(width: 2),
-                Text(
-                  '${changePercent.abs()}%',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color:
-                        isPositive
-                            ? const Color(0xFF16A34A)
-                            : Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: iconBg,
+        borderRadius: BorderRadius.circular(12),
       ),
-    );
+      child: Icon(icon, color: iconColor, size: 20),
+    ),
+    const SizedBox(height: 12),
+    Text(
+      value,
+      style: textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+    const SizedBox(height: 4),
+    Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: textTheme.bodySmall?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+      ),
+    ),
+  ],
+),);
+    
   }
 }

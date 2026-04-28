@@ -30,7 +30,8 @@ class QuickActionButtonWidget extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                // Fix #4: withValues instead of withOpacity
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: Colors.white, size: 18),
@@ -53,7 +54,8 @@ class QuickActionButtonWidget extends StatelessWidget {
                     subtitle!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.8),
+                      // Fix #4: withValues instead of withOpacity
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -62,7 +64,8 @@ class QuickActionButtonWidget extends StatelessWidget {
             const Spacer(),
             Icon(
               Icons.arrow_forward_ios_rounded,
-              color: Colors.white.withOpacity(0.7),
+              // Fix #4: withValues instead of withOpacity
+              color: Colors.white.withValues(alpha: 0.7),
               size: 14,
             ),
           ],

@@ -26,22 +26,45 @@ class NurseAdminCubit extends Cubit<NurseAdminState> {
 
   Future<void> fetchPendingNurses() async {
     emit(NurseAdminLoading());
+
     try {
       final response = await _dio.get(
         "/api/Admin/pending/nurses",
         options: _authOptions,
       );
+
       print('PENDING NURSES RAW: ${response.data}');
-      final List data = (response.data['result'] as List?) ?? [];
-      final nurses =
-          data.map((e) => PendingNurseModel.fromJson(e)).toList();
+
+      final body = response.data;
+
+      final List data = body is Map
+          ? ((body['result'] ?? body['data']) as List? ?? [])
+          : (body as List? ?? []);
+
+      final nurses = data
+          .whereType<Map>()
+          .map(
+            (e) => PendingNurseModel.fromJson(
+              Map<String, dynamic>.from(e),
+            ),
+          )
+          .toList();
+
+      print('PENDING NURSES COUNT: ${nurses.length}');
+
       emit(NurseAdminLoaded(nurses));
     } on DioException catch (e) {
       print('NURSES ERROR: ${e.response?.data}');
-      emit(NurseAdminError(
-        e.response?.data?['message'] ?? 'Failed to load nurses',
-      ));
-    } catch (e) {
+
+      final data = e.response?.data;
+      final message = data is Map
+          ? data['message']?.toString() ?? 'Failed to load nurses'
+          : 'Failed to load nurses';
+
+      emit(NurseAdminError(message));
+    } catch (e, s) {
+      print('NURSES UNEXPECTED ERROR: $e');
+      print(s);
       emit(NurseAdminError('Something went wrong'));
     }
   }
@@ -51,26 +74,42 @@ class NurseAdminCubit extends Cubit<NurseAdminState> {
     required bool isAccepted,
   }) async {
     final current = _currentNurses;
+
     emit(NurseAdminActionLoading(current, userId));
+
     try {
       await _dio.post(
-        "/api/Auth/accept-reject",
+        "/api/Admin/accept-reject",
         options: _authOptions,
-        data: {"userId": userId, "isAccepted": isAccepted},
+        data: {
+          "userId": userId,
+          "isAccepted": isAccepted,
+        },
       );
+
       final updated = current.where((n) => n.id != userId).toList();
-      emit(NurseAdminActionSuccess(
-        updated,
-        isAccepted ? 'Nurse approved successfully' : 'Nurse rejected',
-      ));
+
+      emit(
+        NurseAdminActionSuccess(
+          updated,
+          isAccepted
+              ? 'Nurse approved successfully'
+              : 'Nurse rejected',
+        ),
+      );
+
       emit(NurseAdminLoaded(updated));
     } on DioException catch (e) {
-      emit(NurseAdminActionError(
-        current,
-        e.response?.data?['message'] ?? 'Action failed',
-      ));
+      final data = e.response?.data;
+      final message = data is Map
+          ? data['message']?.toString() ?? 'Action failed'
+          : 'Action failed';
+
+      emit(NurseAdminActionError(current, message));
       emit(NurseAdminLoaded(current));
-    } catch (e) {
+    } catch (e, s) {
+      print('NURSE ACTION ERROR: $e');
+      print(s);
       emit(NurseAdminActionError(current, 'Something went wrong'));
       emit(NurseAdminLoaded(current));
     }
