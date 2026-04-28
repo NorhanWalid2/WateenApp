@@ -1,65 +1,71 @@
 class NurseProfileModel {
-  final String name;
-  final String specialty;
-  final double rating;
-  final int reviewCount;
-  final int yearsExperience;
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String userName;
   final String email;
-  final String phone;
-  final String serviceArea;
-  final List<QualificationModel> qualifications;
-  final List<CertificationModel> certifications;
-  final List<ScheduleModel> schedule;
-  final List<String> servicesOffered;
-  final int totalHomeVisits;
-  final int satisfactionPercent;
+  final String phoneNumber;
+  final String profilePictureUrl;
+
+  final String licenseNumber;
+  final String specialization;
+  final int experienceYears;
+  final bool isActive;
+  final int completedRequests;
 
   NurseProfileModel({
-    required this.name,
-    required this.specialty,
-    required this.rating,
-    required this.reviewCount,
-    required this.yearsExperience,
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.userName,
     required this.email,
-    required this.phone,
-    required this.serviceArea,
-    required this.qualifications,
-    required this.certifications,
-    required this.schedule,
-    required this.servicesOffered,
-    required this.totalHomeVisits,
-    required this.satisfactionPercent,
+    required this.phoneNumber,
+    required this.profilePictureUrl,
+    required this.licenseNumber,
+    required this.specialization,
+    required this.experienceYears,
+    required this.isActive,
+    required this.completedRequests,
   });
-}
 
-class QualificationModel {
-  final String title;
-  final String institution;
+  String get fullName {
+    final name = '$firstName $lastName'.trim();
+    return name.isEmpty ? userName : name;
+  }
 
-  QualificationModel({
-    required this.title,
-    required this.institution,
-  });
-}
+  String get initials {
+    final parts = fullName.split(' ').where((e) => e.isNotEmpty).toList();
+    if (parts.isEmpty) return 'N';
+    if (parts.length == 1) return parts.first[0].toUpperCase();
+    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+  }
 
-class CertificationModel {
-  final String title;
-  final String issuedBy;
+  factory NurseProfileModel.fromJson({
+    required Map<String, dynamic> profileJson,
+    required Map<String, dynamic> nurseJson,
+  }) {
+    return NurseProfileModel(
+      id: (profileJson['id'] ?? nurseJson['id'] ?? '').toString(),
+      firstName: (profileJson['firstName'] ?? '').toString(),
+      lastName: (profileJson['lastName'] ?? '').toString(),
+      userName: (profileJson['userName'] ?? '').toString(),
+      email: (profileJson['email'] ?? '').toString(),
+      phoneNumber:
+          (profileJson['phoneNumber'] ?? nurseJson['phoneNumber'] ?? '')
+              .toString(),
+      profilePictureUrl: (profileJson['profilePictureUrl'] ?? '').toString(),
+      licenseNumber: (nurseJson['licenseNumber'] ?? '').toString(),
+      specialization: (nurseJson['specialization'] ?? 'Home Health Aide')
+          .toString(),
+      experienceYears: _toInt(nurseJson['experienceYears']),
+      isActive: nurseJson['isActive'] as bool? ?? false,
+      completedRequests: _toInt(nurseJson['completedRequests']),
+    );
+  }
 
-  CertificationModel({
-    required this.title,
-    required this.issuedBy,
-  });
-}
-
-class ScheduleModel {
-  final String days;
-  final String hours;
-  final bool isClosed;
-
-  ScheduleModel({
-    required this.days,
-    required this.hours,
-    this.isClosed = false,
-  });
+  static int _toInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    return int.tryParse(value.toString()) ?? 0;
+  }
 }
