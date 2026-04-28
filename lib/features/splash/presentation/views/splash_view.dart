@@ -63,7 +63,7 @@ class _SplashViewState extends State<SplashView>
           context.go('/doctorHome');
           break;
         case 'nurse':
-          context.go('/nurseHome');
+          context.go('/nurseMain');
           break;
         default:
           context.go('/login');

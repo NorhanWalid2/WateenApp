@@ -1,173 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:wateen_app/features/nurse/reports/data/models/report_model.dart';
 
-class ReportCardWidget extends StatelessWidget {
-  final ReportModel report;
-  final VoidCallback onViewDetails;
+class PatientReportCardWidget extends StatelessWidget {
+  final ReportModel patient;
 
-  const ReportCardWidget({
-    super.key,
-    required this.report,
-    required this.onViewDetails,
-  });
+  const PatientReportCardWidget({super.key, required this.patient});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: colorScheme.primary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          // ── Name + Status ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                report.patientName,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.inverseSurface,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFECFDF5),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: const Color(0xFF16A34A).withOpacity(0.3),
+          // ── Avatar ──────────────────────────────────────
+          patient.profilePictureUrl != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.network(
+                    patient.profilePictureUrl!,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildInitialsAvatar(
+                        colorScheme, textTheme),
                   ),
+                )
+              : _buildInitialsAvatar(colorScheme, textTheme),
+
+          const SizedBox(width: 12),
+
+          // ── Info ─────────────────────────────────────────
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  patient.fullName,
+                  style: textTheme.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
-                child: Text(
-                  report.status,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF16A34A),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // ── Date ──
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today_rounded,
-                size: 14,
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                report.dateTime,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 6),
-
-          // ── Location ──
-          Row(
-            children: [
-              Icon(
-                Icons.location_on_rounded,
-                size: 14,
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                report.location,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          Divider(color: Theme.of(context).colorScheme.surface, thickness: 1),
-
-          const SizedBox(height: 8),
-
-          // ── Vitals + View Details ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Vitals recorded indicator
-              Row(
-                children: [
-                  Icon(
-                    Icons.show_chart_rounded,
-                    size: 16,
-                    color:
-                        report.vitalsRecorded
-                            ? Theme.of(context).colorScheme.secondary
-                            : Theme.of(context).colorScheme.outlineVariant,
-                  ),
-                  const SizedBox(width: 6),
+                if (patient.gender != null) ...[
+                  const SizedBox(height: 4),
                   Text(
-                    report.vitalsRecorded ? 'Vitals Recorded' : 'No Vitals',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color:
-                          report.vitalsRecorded
-                              ? Theme.of(context).colorScheme.inverseSurface
-                              : Theme.of(context).colorScheme.outlineVariant,
-                    ),
+                    patient.gender!,
+                    style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant),
                   ),
                 ],
-              ),
-
-              // View details
-              GestureDetector(
-                onTap: onViewDetails,
-                child: Row(
-                  children: [
-                    Text(
-                      'View Details',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.secondary,
+                if (patient.address != null) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on_outlined,
+                          size: 12, color: colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          patient.address!,
+                          style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 12,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          // ── Badge ─────────────────────────────────────────
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFECFDF5),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: const Color(0xFF16A34A).withOpacity(0.3)),
+            ),
+            child: const Text(
+              'Served',
+              style: TextStyle(
+                color: Color(0xFF16A34A),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
               ),
-            ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInitialsAvatar(
+      ColorScheme colorScheme, TextTheme textTheme) {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: colorScheme.secondary.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          patient.initials,
+          style: textTheme.titleSmall?.copyWith(
+            color: colorScheme.secondary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
