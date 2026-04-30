@@ -37,7 +37,7 @@ class LoginView extends StatelessWidget {
                     CustomReplacementNavigation(context, '/patient');
                     break;
                   case 'doctor':
-                    CustomReplacementNavigation(context, '/doctorHome');
+                    CustomReplacementNavigation(context, '/doctorMain');
                     break;
                   case 'nurse':
                     CustomReplacementNavigation(context, '/nurseMain');

@@ -51,6 +51,8 @@ dependencies:
   dart_jsonwebtoken: ^3.4.0
   flutter_launcher_icons: ^0.14.4
   signalr_netcore: ^1.4.4
+  url_launcher: ^6.3.2
+  android_intent_plus: ^6.0.0
 flutter_launcher_icons:
   android: true
   ios: true

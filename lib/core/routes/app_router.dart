@@ -16,6 +16,7 @@ import 'package:wateen_app/features/doctor_role/chat_/presentation/views/chat_vi
 import 'package:wateen_app/features/doctor_role/checklist/presentation/views/checklist_view.dart';
 import 'package:wateen_app/features/doctor_role/dashboard/presentation/views/dashboard_view.dart';
 import 'package:wateen_app/features/doctor_role/doc_profile/presentation/views/profile_view.dart';
+import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/views/doctor_calendy_view.dart';
 import 'package:wateen_app/features/doctor_role/layout/doctor_main_layout.dart';
 import 'package:wateen_app/features/doctor_role/messages_/presentation/views/messages_view.dart';
 import 'package:wateen_app/features/doctor_role/patient_details/presentation/views/patient_details_view.dart';
@@ -210,5 +211,9 @@ final GoRouter router = GoRouter(
       path: '/doctorProfile',
       builder: (_, __) => const DoctorProfileView(),
     ),
+    GoRoute(
+  path: '/doctorCalendly',
+  builder: (_, __) => const DoctorCalendlyView(),
+),
   ],
 );
