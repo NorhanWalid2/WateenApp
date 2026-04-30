@@ -13,7 +13,11 @@ import 'package:wateen_app/features/patient/messages/presentation/views/widgets/
 
 class ChatView extends StatefulWidget {
   final ConversationModel conversation;
-  const ChatView({super.key, required this.conversation});
+
+  const ChatView({
+    super.key,
+    required this.conversation,
+  });
 
   @override
   State<ChatView> createState() => ChatViewState();
@@ -38,32 +42,50 @@ class ChatViewState extends State<ChatView> {
     super.dispose();
   }
 
-  void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  ImageProvider? _buildImage(String? path) {
+    if (path == null || path.trim().isEmpty) return null;
+
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return NetworkImage(path);
+    }
+
+    return NetworkImage('http://wateen.runasp.net/$path');
+  }
+
+  void scrollToBottom({bool instant = false}) {
+    Future.delayed(const Duration(milliseconds: 120), () {
+      if (!mounted) return;
+
       if (scrollController.hasClients) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        if (instant) {
+          scrollController.jumpTo(0);
+        } else {
+          scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
       }
     });
   }
 
   void sendMessage(String text) {
     if (text.trim().isEmpty) return;
+
     controller.clear();
+
     context.read<ChatCubit>().sendMessage(
-      widget.conversation.otherUserId,
-      text,
-    );
+          widget.conversation.otherUserId,
+          text,
+        );
+
     scrollToBottom();
   }
 
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await picker.pickImage(source: source);
     if (image == null || !mounted) return;
-    // For now just show locally — image upload API needed for persistence
     setState(() {});
   }
 
@@ -78,62 +100,60 @@ class ChatViewState extends State<ChatView> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(l10n.attach, style: textTheme.titleMedium),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colorScheme.outline,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                  AttachItemWidget(
+                    icon: Icons.camera_alt_rounded,
+                    label: l10n.camera,
+                    color: colorScheme.secondary,
+                    onTap: () {
+                      Navigator.pop(context);
+                      pickImage(ImageSource.camera);
+                    },
                   ),
-                  const SizedBox(height: 20),
-                  Text(l10n.attach, style: textTheme.titleMedium),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      AttachItemWidget(
-                        icon: Icons.camera_alt_rounded,
-                        label: l10n.camera,
-                        color: colorScheme.secondary,
-                        onTap: () {
-                          Navigator.pop(context);
-                          pickImage(ImageSource.camera);
-                        },
-                      ),
-                      AttachItemWidget(
-                        icon: Icons.photo_library_rounded,
-                        label: l10n.gallery,
-                        color: Colors.purple,
-                        onTap: () {
-                          Navigator.pop(context);
-                          pickImage(ImageSource.gallery);
-                        },
-                      ),
-                      AttachItemWidget(
-                        icon: Icons.insert_drive_file_rounded,
-                        label: l10n.document,
-                        color: Colors.blue,
-                        onTap: () => Navigator.pop(context),
-                      ),
-                    ],
+                  AttachItemWidget(
+                    icon: Icons.photo_library_rounded,
+                    label: l10n.gallery,
+                    color: Colors.purple,
+                    onTap: () {
+                      Navigator.pop(context);
+                      pickImage(ImageSource.gallery);
+                    },
                   ),
-                  const SizedBox(height: 8),
+                  AttachItemWidget(
+                    icon: Icons.insert_drive_file_rounded,
+                    label: l10n.document,
+                    color: Colors.blue,
+                    onTap: () => Navigator.pop(context),
+                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 8),
+            ],
           ),
+        ),
+      ),
     );
   }
 
-  // ── Extract messages from any state that carries them ──────────────
   List<ChatMessageModel> _messagesFromState(ChatState state) {
     if (state is MessagesLoaded) return state.messages;
     if (state is MessageSent) return state.messages;
@@ -146,10 +166,23 @@ class ChatViewState extends State<ChatView> {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final avatarImage = _buildImage(widget.conversation.profilePictureUrl);
 
     return BlocConsumer<ChatCubit, ChatState>(
+      buildWhen: (prev, curr) =>
+          curr is MessagesLoading ||
+          curr is MessagesLoaded ||
+          curr is MessageSent ||
+          curr is MessageReceived ||
+          curr is ChatError,
+      listenWhen: (prev, curr) =>
+          curr is MessagesLoaded ||
+          curr is MessageSent ||
+          curr is MessageReceived,
       listener: (context, state) {
-        if (state is MessageReceived || state is MessageSent) {
+        if (state is MessagesLoaded) {
+          scrollToBottom(instant: true);
+        } else if (state is MessageReceived || state is MessageSent) {
           scrollToBottom();
         }
       },
@@ -175,22 +208,20 @@ class ChatViewState extends State<ChatView> {
               children: [
                 Stack(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: widget.conversation.color.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          widget.conversation.initials,
-                          style: textTheme.titleSmall?.copyWith(
-                            color: widget.conversation.color,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor:
+                          widget.conversation.color.withOpacity(0.15),
+                      backgroundImage: avatarImage,
+                      child: avatarImage == null
+                          ? Text(
+                              widget.conversation.initials,
+                              style: textTheme.titleSmall?.copyWith(
+                                color: widget.conversation.color,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          : null,
                     ),
                     if (widget.conversation.isOnline)
                       Positioned(
@@ -226,10 +257,9 @@ class ChatViewState extends State<ChatView> {
                           ? l10n.online
                           : widget.conversation.specialty,
                       style: textTheme.bodySmall?.copyWith(
-                        color:
-                            widget.conversation.isOnline
-                                ? Colors.green
-                                : colorScheme.onSurfaceVariant,
+                        color: widget.conversation.isOnline
+                            ? Colors.green
+                            : colorScheme.onSurfaceVariant,
                         fontSize: 11,
                       ),
                     ),
@@ -256,79 +286,79 @@ class ChatViewState extends State<ChatView> {
           ),
           body: Column(
             children: [
-              // ── Messages list ──────────────────────────────────────
               Expanded(
-                child:
-                    isLoading
-                        ? ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          itemCount: 6,
-                          itemBuilder:
-                              (_, i) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      i % 2 == 0
-                                          ? MainAxisAlignment.end
-                                          : MainAxisAlignment.start,
-                                  children: [
-                                    if (i % 2 != 0) ...[
-                                      const ShimmerWidget(
-                                        width: 28,
-                                        height: 28,
-                                        borderRadius: 14,
-                                      ),
-                                      const SizedBox(width: 6),
-                                    ],
-                                    ShimmerWidget(
-                                      width: i % 2 == 0 ? 180 : 140,
-                                      height: 44,
-                                      borderRadius: 16,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                        )
-                        : messages.isEmpty
-                        ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                child: isLoading
+                    ? ListView.builder(
+                        reverse: true,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        itemCount: 6,
+                        itemBuilder: (_, i) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            mainAxisAlignment: i % 2 == 0
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.chat_bubble_outline_rounded,
-                                size: 48,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'No messages yet.\nSay hello!',
-                                textAlign: TextAlign.center,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                              if (i % 2 != 0) ...[
+                                const ShimmerWidget(
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: 14,
                                 ),
+                                const SizedBox(width: 6),
+                              ],
+                              ShimmerWidget(
+                                width: i % 2 == 0 ? 180 : 140,
+                                height: 44,
+                                borderRadius: 16,
                               ),
                             ],
                           ),
-                        )
-                        : ListView.builder(
-                          controller: scrollController,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          itemCount: messages.length,
-                          itemBuilder:
-                              (_, i) => ChatBubbleWidget(
-                                message: messages[i],
-                                conversation: widget.conversation,
-                              ),
                         ),
-              ),
+                      )
+                    : messages.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.chat_bubble_outline_rounded,
+                                  size: 48,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'No messages yet.\nSay hello!',
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: scrollController,
+                            reverse: true,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            itemCount: messages.length,
+                            itemBuilder: (_, i) {
+                              final reversedMessages =
+                                  messages.reversed.toList();
 
-              // ── Input ─────────────────────────────────────────────
+                              return ChatBubbleWidget(
+                                message: reversedMessages[i],
+                                conversation: widget.conversation,
+                              );
+                            },
+                          ),
+              ),
               ChatInputWidget(
                 controller: controller,
                 onSend: sendMessage,

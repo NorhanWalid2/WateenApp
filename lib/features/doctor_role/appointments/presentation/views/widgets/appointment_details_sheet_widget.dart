@@ -1,6 +1,12 @@
+ 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:wateen_app/features/doctor_role/appointments/data/models/appointment_model.dart';
+import 'package:wateen_app/features/doctor_role/appointments/data/models/doctor_appointment_model.dart';
+import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_cubit.dart';
+import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_state.dart';
+import 'package:wateen_app/features/patient/appointments/data/models/appointment_model.dart' hide AppointmentStatus, AppointmentType;
+
 
 class AppointmentDetailsSheetWidget extends StatelessWidget {
   final DoctorAppointmentModel appointment;
@@ -16,148 +22,244 @@ class AppointmentDetailsSheetWidget extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: BlocBuilder<DoctorAppointmentsCubit, DoctorAppointmentsState>(
+        builder: (context, state) {
+          final isLoading = state is DoctorAppointmentActionLoading &&
+              state.appointmentId == appointment.id;
 
-          // ── Handle + Title + Close ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Appointment Details',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.inverseSurface,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Icon(
-                  Icons.close_rounded,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          // ── Patient header card ──
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  appointment.patientName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${appointment.patientAge} years old',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.white.withOpacity(0.85),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: navigate to patient details
-                  },
-                  child: Text(
-                    'View medical history →',
+              // ── Title + Close ──
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Appointment Details',
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.9),
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white.withOpacity(0.9),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Patient header card ──
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      appointment.patientName,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      appointment.patientAge > 0
+                          ? '${appointment.patientAge} years old'
+                          : '',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.85),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        // Navigate to patient details
+                      },
+                      child: Text(
+                        'View medical history →',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withOpacity(0.9),
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Details ──
+              _DetailRow(
+                label: 'Date & Time',
+                value: '${appointment.date} at ${appointment.time}',
+              ),
+              const SizedBox(height: 14),
+              _DetailRow(
+                label: 'Type',
+                value: appointment.type == AppointmentType.inPerson
+                    ? 'In-person'
+                    : 'Video Call',
+              ),
+              const SizedBox(height: 14),
+              _DetailRow(
+                label: 'Reason for Visit',
+                value: appointment.reason,
+              ),
+
+              const SizedBox(height: 24),
+
+              if (isLoading)
+                const Center(child: CircularProgressIndicator())
+              else ...[
+                // ── Message Patient ──
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push('/doctorChat', extra: {
+                        'patientName': appointment.patientName,
+                        'patientId': appointment.patientId,
+                      });
+                    },
+                    icon: const Icon(Icons.chat_bubble_outline_rounded,
+                        color: Colors.white, size: 18),
+                    label: const Text(
+                      'Message Patient',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
+                      elevation: 0,
                     ),
                   ),
                 ),
+
+                // ── Complete button (only for upcoming) ──
+                if (appointment.status == AppointmentStatus.upcoming ||
+                    appointment.status == AppointmentStatus.pending) ...[
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context
+                            .read<DoctorAppointmentsCubit>()
+                            .completeAppointment(appointment.id);
+                      },
+                      icon: const Icon(Icons.check_circle_outline_rounded,
+                          color: Colors.white, size: 18),
+                      label: const Text(
+                        'Mark as Complete',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // ── Cancel button ──
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showCancelDialog(context, appointment.id);
+                      },
+                      icon: Icon(Icons.cancel_outlined,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 18),
+                      label: Text(
+                        'Cancel Appointment',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                            color: Theme.of(context).colorScheme.error),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ),
+                ],
               ],
+
+              const SizedBox(height: 8),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCancelDialog(BuildContext context, String appointmentId) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Cancel Appointment'),
+        content: const Text(
+            'Are you sure you want to cancel this appointment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Go Back'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              context
+                  .read<DoctorAppointmentsCubit>()
+                  .cancelAppointment(appointmentId);
+            },
+            child: Text(
+              'Cancel Appointment',
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
-
-          const SizedBox(height: 20),
-
-          // ── Details ──
-          _DetailRow(
-            label: 'Date & Time',
-            value: '${appointment.date} at ${appointment.time}',
-          ),
-          const SizedBox(height: 14),
-          _DetailRow(
-            label: 'Type',
-            value: appointment.type == AppointmentType.inPerson
-                ? 'In-person'
-                : 'Video Call',
-          ),
-          const SizedBox(height: 14),
-          _DetailRow(
-            label: 'Reason for Visit',
-            value: appointment.reason,
-          ),
-
-          const SizedBox(height: 24),
-
-          // ── Message Patient button ──
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-                context.push(
-                  '/doctorChat',
-                  extra: {
-                    'patientName': appointment.patientName,
-                    'patientId': appointment.patientId,
-                  },
-                );
-              },
-              icon: const Icon(
-                Icons.chat_bubble_outline_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
-              label: const Text(
-                'Message Patient',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
         ],
       ),
     );
@@ -168,10 +270,7 @@ class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DetailRow({
-    required this.label,
-    required this.value,
-  });
+  const _DetailRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

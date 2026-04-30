@@ -1,185 +1,236 @@
+// lib/features/doctor_role/appointments/presentation/views/appointments_view.dart
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/appointment_model.dart';
+import 'package:wateen_app/features/doctor_role/appointments/data/models/doctor_appointment_model.dart';
+import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_cubit.dart';
+import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_state.dart';
+import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/views/widgets/manage_availability_banner_widget.dart';
 import 'widgets/appointment_card_widget.dart';
 import 'widgets/appointment_details_sheet_widget.dart';
 
-class DoctorAppointmentsView extends StatefulWidget {
+class DoctorAppointmentsView extends StatelessWidget {
   const DoctorAppointmentsView({super.key});
 
   @override
-  State<DoctorAppointmentsView> createState() =>
-      _DoctorAppointmentsViewState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => DoctorAppointmentsCubit()..fetchAppointments(),
+      child: const _DoctorAppointmentsBody(),
+    );
+  }
 }
 
-class _DoctorAppointmentsViewState extends State<DoctorAppointmentsView> {
+class _DoctorAppointmentsBody extends StatefulWidget {
+  const _DoctorAppointmentsBody();
+
+  @override
+  State<_DoctorAppointmentsBody> createState() =>
+      _DoctorAppointmentsBodyState();
+}
+
+class _DoctorAppointmentsBodyState extends State<_DoctorAppointmentsBody> {
   bool _isUpcomingTab = true;
-
-  // TODO: replace with real API data
-  final List<DoctorAppointmentModel> _appointments = [
-    DoctorAppointmentModel(
-      id: '1',
-      patientName: 'Ahmed Al-Mansouri',
-      patientAge: 54,
-      date: 'Tuesday, January 27',
-      time: '10:00 AM',
-      reason: 'Blood pressure checkup',
-      type: AppointmentType.inPerson,
-      status: AppointmentStatus.upcoming,
-      patientId: '1',
-    ),
-    DoctorAppointmentModel(
-      id: '2',
-      patientName: 'Fatima Hassan',
-      patientAge: 42,
-      date: 'Tuesday, January 27',
-      time: '2:30 PM',
-      reason: 'Asthma follow-up',
-      type: AppointmentType.videoCall,
-      status: AppointmentStatus.upcoming,
-      patientId: '2',
-    ),
-    DoctorAppointmentModel(
-      id: '3',
-      patientName: 'Mohammed Ali',
-      patientAge: 38,
-      date: 'Wednesday, January 28',
-      time: '11:00 AM',
-      reason: 'Cholesterol review',
-      type: AppointmentType.inPerson,
-      status: AppointmentStatus.upcoming,
-      patientId: '3',
-    ),
-    DoctorAppointmentModel(
-      id: '4',
-      patientName: 'Layla Ahmed',
-      patientAge: 29,
-      date: 'Monday, January 20',
-      time: '9:00 AM',
-      reason: 'Annual checkup',
-      type: AppointmentType.inPerson,
-      status: AppointmentStatus.completed,
-      patientId: '4',
-    ),
-  ];
-
-  List<DoctorAppointmentModel> get _upcomingAppointments => _appointments
-      .where((a) => a.status == AppointmentStatus.upcoming)
-      .toList();
-
-  List<DoctorAppointmentModel> get _completedAppointments => _appointments
-      .where((a) => a.status == AppointmentStatus.completed)
-      .toList();
 
   void _showDetails(DoctorAppointmentModel appointment) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => AppointmentDetailsSheetWidget(
-        appointment: appointment,
+      builder: (_) => BlocProvider.value(
+        value: context.read<DoctorAppointmentsCubit>(),
+        child: AppointmentDetailsSheetWidget(appointment: appointment),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final displayList =
-        _isUpcomingTab ? _upcomingAppointments : _completedAppointments;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: colorScheme.background,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            // ── Header ──
-            Container(
-              color: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Appointments',
-                    style: GoogleFonts.archivo(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.inverseSurface,
+        child: BlocConsumer<DoctorAppointmentsCubit, DoctorAppointmentsState>(
+          listener: (context, state) {
+            if (state is DoctorAppointmentActionSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            } else if (state is DoctorAppointmentActionError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Header ─────────────────────────────────────────────────
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
                   ),
-
-                  const SizedBox(height: 14),
-
-                  // ── Tabs ──
-                  Row(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: _TabButton(
-                          label: 'Upcoming',
-                          isActive: _isUpcomingTab,
-                          onTap: () =>
-                              setState(() => _isUpcomingTab = true),
+                      Text(
+                        'Appointments',
+                        style: GoogleFonts.archivo(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _TabButton(
-                          label: 'Completed',
-                          isActive: !_isUpcomingTab,
-                          onTap: () =>
-                              setState(() => _isUpcomingTab = false),
+                      // Refresh button
+                      GestureDetector(
+                        onTap: () => context
+                            .read<DoctorAppointmentsCubit>()
+                            .fetchAppointments(),
+                        child: const Icon(
+                          Icons.refresh_rounded,
+                          color: Colors.white,
+                          size: 22,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            // ── List ──
-            Expanded(
-              child: displayList.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.calendar_today_outlined,
-                            size: 48,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .outlineVariant,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No ${_isUpcomingTab ? 'upcoming' : 'completed'} appointments',
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outlineVariant,
-                            ),
-                          ),
-                        ],
+                // ── Tab bar ────────────────────────────────────────────────
+                Container(
+                  color: colorScheme.primary,
+                  child: Row(
+                    children: [
+                      _TabButton(
+                        label: 'Upcoming',
+                        isSelected: _isUpcomingTab,
+                        onTap: () => setState(() => _isUpcomingTab = true),
                       ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: displayList.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final appointment = displayList[index];
-                        return AppointmentCardWidget(
-                          appointment: appointment,
-                          onTap: () => _showDetails(appointment),
-                        );
-                      },
-                    ),
+                      _TabButton(
+                        label: 'Completed',
+                        isSelected: !_isUpcomingTab,
+                        onTap: () => setState(() => _isUpcomingTab = false),
+                      ),
+                    ],
+                  ),
+                ),
+ManageAvailabilityBannerWidget(
+  onTap: () => context.push('/doctorCalendly'),
+),
+                // ── Body ───────────────────────────────────────────────────
+                Expanded(
+                  child: switch (state) {
+                    DoctorAppointmentsLoading() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    DoctorAppointmentsError(:final message) => Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.error_outline_rounded,
+                              size: 48,
+                              color: colorScheme.error,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              message,
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            TextButton(
+                              onPressed: () => context
+                                  .read<DoctorAppointmentsCubit>()
+                                  .fetchAppointments(),
+                              child: Text(
+                                'Retry',
+                                style:
+                                    TextStyle(color: colorScheme.secondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    DoctorAppointmentsLoaded(:final upcoming, :final completed) =>
+                      _buildList(
+                        context,
+                        _isUpcomingTab ? upcoming : completed,
+                        colorScheme,
+                      ),
+                    // Action loading / success / error — keep showing last list
+                    _ => _buildList(context, [], colorScheme),
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList(
+    BuildContext context,
+    List<DoctorAppointmentModel> list,
+    ColorScheme colorScheme,
+  ) {
+    if (list.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.calendar_today_rounded,
+              size: 48,
+              color: colorScheme.outlineVariant,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _isUpcomingTab
+                  ? 'No upcoming appointments'
+                  : 'No completed appointments',
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
             ),
           ],
         ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () =>
+          context.read<DoctorAppointmentsCubit>().fetchAppointments(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: list.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final appointment = list[index];
+          return AppointmentCardWidget(
+            appointment: appointment,
+            onTap: () => _showDetails(appointment),
+          );
+        },
       ),
     );
   }
@@ -187,43 +238,41 @@ class _DoctorAppointmentsViewState extends State<DoctorAppointmentsView> {
 
 class _TabButton extends StatelessWidget {
   final String label;
-  final bool isActive;
+  final bool isSelected;
   final VoidCallback onTap;
 
   const _TabButton({
     required this.label,
-    required this.isActive,
+    required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: isActive
-              ? Theme.of(context).colorScheme.secondary
-              : Theme.of(context).colorScheme.primary,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isActive
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.outlineVariant,
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected
+                  ? colorScheme.secondary
+                  : Colors.transparent,
+              width: 2,
+            ),
           ),
         ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isActive
-                  ? Colors.white
-                  : Theme.of(context).colorScheme.outlineVariant,
-            ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight:
+                isSelected ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected
+                ? colorScheme.secondary
+                : colorScheme.outlineVariant,
           ),
         ),
       ),

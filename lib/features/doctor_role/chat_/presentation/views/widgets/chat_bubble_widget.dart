@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/features/doctor_role/chat_/data/models/chat_model.dart';
+import 'package:wateen_app/features/doctor_role/chat_/data/models/doctor_chat_model.dart';
 
- 
- 
 class ChatBubbleWidget extends StatelessWidget {
   final DoctorChatMessageModel message;
 
@@ -25,16 +23,15 @@ class ChatBubbleWidget extends StatelessWidget {
           if (!isDoctor) const SizedBox(width: 12),
 
           Column(
-            crossAxisAlignment: isDoctor
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
+            crossAxisAlignment:
+                isDoctor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               Container(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.70,
                 ),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: isDoctor
                       ? Theme.of(context).colorScheme.secondary
@@ -64,13 +61,38 @@ class ChatBubbleWidget extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 4),
-              Text(
-                message.time,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
+
+              // ── Time + Read receipt ──────────────────────────────────
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    message.time,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                  ),
+
+                  // Blue double tick for doctor's messages
+                  if (isDoctor) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      // Double tick — filled = read, outlined = delivered
+                      message.isRead
+                          ? Icons.done_all_rounded
+                          : Icons.done_rounded,
+                      size: 14,
+                      color: message.isRead
+                          ? const Color(0xFF3B82F6) // blue = read
+                          : Theme.of(context)
+                              .colorScheme
+                              .outlineVariant, // grey = delivered
+                    ),
+                  ],
+                ],
               ),
             ],
           ),

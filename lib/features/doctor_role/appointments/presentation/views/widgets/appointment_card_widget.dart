@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wateen_app/features/doctor_role/appointments/data/models/appointment_model.dart';
+import 'package:wateen_app/features/doctor_role/appointments/data/models/doctor_appointment_model.dart';
 
 
 class AppointmentCardWidget extends StatelessWidget {
