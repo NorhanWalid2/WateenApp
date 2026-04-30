@@ -1,7 +1,7 @@
+// lib/features/doctor_role/messages_/presentation/views/widgets/conversation_card_widget.dart
+
 import 'package:flutter/material.dart';
-import 'package:wateen_app/features/doctor_role/messages_/data/models/message_model.dart';
-//import 'package:go_router/go_router.dart';
- 
+import 'package:wateen_app/features/doctor_role/messages_/data/models/doctor_conversational_model.dart';
 
 class ConversationCardWidget extends StatelessWidget {
   final DoctorConversationModel conversation;
@@ -13,47 +13,49 @@ class ConversationCardWidget extends StatelessWidget {
     required this.onTap,
   });
 
+  bool _isValidUrl(String? url) {
+    if (url == null) return false;
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
           border: Border(
-            bottom: BorderSide(
-              color: Theme.of(context).colorScheme.surface,
-              width: 1,
-            ),
+            bottom: BorderSide(color: colorScheme.surface, width: 1),
           ),
         ),
         child: Row(
           children: [
-
-            // ── Avatar ──
+            // ── Avatar ──────────────────────────────────────────────
             Stack(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE8EEF9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      conversation.patientName[0].toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF3B82F6),
-                      ),
-                    ),
-                  ),
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: const Color(0xFFE8EEF9),
+                  backgroundImage: _isValidUrl(conversation.profilePictureUrl)
+                      ? NetworkImage(conversation.profilePictureUrl!)
+                      : null,
+                  child: !_isValidUrl(conversation.profilePictureUrl)
+                      ? Text(
+                          conversation.patientName.isNotEmpty
+                              ? conversation.patientName[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF3B82F6),
+                          ),
+                        )
+                      : null,
                 ),
-                // Urgent indicator
                 if (conversation.isUrgent)
                   Positioned(
                     top: 0,
@@ -64,8 +66,7 @@ class ConversationCardWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: const Color(0xFFF59E0B),
                         shape: BoxShape.circle,
-                        border: Border.all(
-                            color: Colors.white, width: 2),
+                        border: Border.all(color: Colors.white, width: 2),
                       ),
                       child: const Icon(
                         Icons.priority_high_rounded,
@@ -79,7 +80,7 @@ class ConversationCardWidget extends StatelessWidget {
 
             const SizedBox(width: 14),
 
-            // ── Info ──
+            // ── Text ────────────────────────────────────────────────
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,9 +92,7 @@ class ConversationCardWidget extends StatelessWidget {
                       fontWeight: conversation.unreadCount > 0
                           ? FontWeight.w700
                           : FontWeight.w500,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .inverseSurface,
+                      color: colorScheme.inverseSurface,
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -103,29 +102,25 @@ class ConversationCardWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .outlineVariant,
+                      fontWeight: conversation.unreadCount > 0
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                      color: conversation.unreadCount > 0
+                          ? colorScheme.inverseSurface
+                          : colorScheme.outlineVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: 12,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .outlineVariant,
-                      ),
+                      Icon(Icons.access_time_rounded,
+                          size: 12, color: colorScheme.outlineVariant),
                       const SizedBox(width: 4),
                       Text(
                         conversation.timeAgo,
                         style: TextStyle(
                           fontSize: 11,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outlineVariant,
+                          color: colorScheme.outlineVariant,
                         ),
                       ),
                     ],
@@ -136,37 +131,30 @@ class ConversationCardWidget extends StatelessWidget {
 
             const SizedBox(width: 10),
 
-            // ── Badge / Read indicator ──
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (conversation.unreadCount > 0)
-                  Container(
-                    width: 22,
-                    height: 22,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      shape: BoxShape.circle,
+            // ── Status indicator ─────────────────────────────────────
+            // ✅ Only show unread badge OR nothing — remove the always-blue tick
+            // Blue tick should only appear inside the chat bubble, not here
+            if (conversation.unreadCount > 0)
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: colorScheme.secondary,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    conversation.unreadCount > 9
+                        ? '9+'
+                        : conversation.unreadCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
                     ),
-                    child: Center(
-                      child: Text(
-                        conversation.unreadCount.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  const Icon(
-                    Icons.done_all_rounded,
-                    size: 16,
-                    color: Color(0xFF3B82F6),
                   ),
-              ],
-            ),
+                ),
+              ),
           ],
         ),
       ),

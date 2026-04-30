@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wateen_app/features/doctor_role/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/doctor_role/dashboard/presentation/views/dashboard_view.dart';
 import 'package:wateen_app/features/doctor_role/doc_profile/presentation/views/profile_view.dart';
-import 'package:wateen_app/features/doctor_role/messages_/presentation/views/messages_view.dart';
+import 'package:wateen_app/features/doctor_role/messages_/presentation/views/doctor_messages_view.dart';
 import 'package:wateen_app/features/doctor_role/patients/presentation/views/patients_view.dart';
 import 'widgets/doctor_bottom_nav_widget.dart';
 

@@ -12,13 +12,13 @@ import 'package:wateen_app/features/auth/presentation/views/login_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/role_view.dart';
 import 'package:wateen_app/features/auth/presentation/views/signup_view.dart';
 import 'package:wateen_app/features/doctor_role/appointments/presentation/views/appointments_view.dart';
-import 'package:wateen_app/features/doctor_role/chat_/presentation/views/chat_view.dart';
+import 'package:wateen_app/features/doctor_role/chat_/presentation/views/doctor_chat_view.dart';
 import 'package:wateen_app/features/doctor_role/checklist/presentation/views/checklist_view.dart';
 import 'package:wateen_app/features/doctor_role/dashboard/presentation/views/dashboard_view.dart';
 import 'package:wateen_app/features/doctor_role/doc_profile/presentation/views/profile_view.dart';
 import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/views/doctor_calendy_view.dart';
 import 'package:wateen_app/features/doctor_role/layout/doctor_main_layout.dart';
-import 'package:wateen_app/features/doctor_role/messages_/presentation/views/messages_view.dart';
+import 'package:wateen_app/features/doctor_role/messages_/presentation/views/doctor_messages_view.dart' hide DoctorChatView;
 import 'package:wateen_app/features/doctor_role/patient_details/presentation/views/patient_details_view.dart';
 import 'package:wateen_app/features/doctor_role/patients/data/models/patient_model.dart';
 import 'package:wateen_app/features/doctor_role/patients/presentation/views/patients_view.dart';
@@ -197,16 +197,18 @@ final GoRouter router = GoRouter(
       path: '/doctorMessages',
       builder: (_, __) => const DoctorMessagesView(),
     ),
-    GoRoute(
-      path: '/doctorChat',
-      builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
-        return DoctorChatView(
-          patientName: extra['patientName'] as String,
-          patientId: extra['patientId'] as String,
-        );
-      },
-    ),
+   GoRoute(
+  path: '/doctorChat',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+
+    return DoctorChatView(
+      patientName: extra['patientName'] as String,
+      patientId: extra['patientId'] as String,
+      patientProfilePicture: extra['patientProfilePicture'] as String?,
+    );
+  },
+),
     GoRoute(
       path: '/doctorProfile',
       builder: (_, __) => const DoctorProfileView(),

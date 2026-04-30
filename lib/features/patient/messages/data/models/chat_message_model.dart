@@ -29,6 +29,34 @@ class ChatMessageModel {
     required this.status,
   });
 
+  ChatMessageModel copyWith({
+    String? id,
+    String? senderId,
+    String? senderName,
+    String? receiverId,
+    String? chatId,
+    String? text,
+    String? imagePath,
+    DateTime? time,
+    ChatMessageType? type,
+    ChatMessageSender? sender,
+    ChatMessageStatus? status,
+  }) {
+    return ChatMessageModel(
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      receiverId: receiverId ?? this.receiverId,
+      chatId: chatId ?? this.chatId,
+      text: text ?? this.text,
+      imagePath: imagePath ?? this.imagePath,
+      time: time ?? this.time,
+      type: type ?? this.type,
+      sender: sender ?? this.sender,
+      status: status ?? this.status,
+    );
+  }
+
   factory ChatMessageModel.fromJson(
     Map<String, dynamic> json, {
     required String currentUserId,
@@ -43,17 +71,18 @@ class ChatMessageModel {
       receiverId: (json['receiverId'] ?? '').toString(),
       chatId: (json['chatId'] ?? '').toString(),
       text: json['messageContent']?.toString() ?? '',
-time: DateTime.tryParse(json['sentAt']?.toString() ?? '')?.toLocal() ??
-    DateTime.now(),
+      time: DateTime.tryParse(json['sentAt']?.toString() ?? '')?.toLocal() ??
+          DateTime.now(),
       type: ChatMessageType.text,
       sender: isMe ? ChatMessageSender.me : ChatMessageSender.other,
-      status: (json['isRead'] == true)
-          ? ChatMessageStatus.read
+
+      
+      status: isMe
+          ? ChatMessageStatus.delivered
           : ChatMessageStatus.delivered,
     );
   }
 
-  // For locally created messages (before API confirms)
   factory ChatMessageModel.local({
     required String text,
     required String receiverId,
@@ -69,7 +98,7 @@ time: DateTime.tryParse(json['sentAt']?.toString() ?? '')?.toLocal() ??
       time: DateTime.now(),
       type: ChatMessageType.text,
       sender: ChatMessageSender.me,
-      status: ChatMessageStatus.sent,
+      status: ChatMessageStatus.delivered,
     );
   }
 }
