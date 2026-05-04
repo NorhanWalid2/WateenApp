@@ -6,7 +6,7 @@ import '../../data/models/nurse_request_model.dart';
 
 class NurseRequestsCubit extends Cubit<NurseRequestsState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   NurseRequestsCubit() : super(NurseRequestsInitial());

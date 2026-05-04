@@ -5,7 +5,7 @@ import 'package:wateen_app/features/admin_roles/dashboard/presentation/cubit/adm
 
 class AdminStatsCubit extends Cubit<AdminStatsState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   AdminStatsCubit() : super(AdminStatsInitial());

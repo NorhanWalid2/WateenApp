@@ -7,7 +7,7 @@ import 'package:wateen_app/features/nurse/reports/presentation/cubit/report_stat
 
 class ReportsCubit extends Cubit<ReportsState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   ReportsCubit() : super(ReportsInitial());

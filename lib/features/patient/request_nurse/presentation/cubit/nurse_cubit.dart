@@ -8,7 +8,7 @@ import 'nurse_state.dart';
 class NurseCubit extends Cubit<NurseState> {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://wateen.runasp.net",
+      baseUrl: "https://wateen.runasp.net",
       headers: {"Content-Type": "application/json"},
     ),
   );

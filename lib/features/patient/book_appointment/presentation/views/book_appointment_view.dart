@@ -1,3 +1,5 @@
+// lib/features/patient/book_appointment/presentation/views/book_appointment_view.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,12 +8,10 @@ import 'package:wateen_app/core/widgets/shimmer%20card%20skeletons.dart';
 import 'package:wateen_app/features/patient/book_appointment/data/models/book_appointment_model.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_cubit.dart';
 import 'package:wateen_app/features/patient/book_appointment/presentation/cubit/book_appointment_state.dart';
-import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
-import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
-import 'package:wateen_app/features/patient/messages/presentation/views/chat_view.dart';
 import 'widgets/search_bar_widget.dart';
 import 'widgets/specialty_filter_widget.dart';
 import 'widgets/doctors_list_widget.dart';
+import 'widgets/booking_sheet_widget.dart';
 
 class BookAppointmentView extends StatefulWidget {
   const BookAppointmentView({super.key});
@@ -27,12 +27,11 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
 
   List<BookAppointmentModel> _filtered(List<BookAppointmentModel> all) {
     return all.where((d) {
-      final matchSearch =
-          _searchController.text.isEmpty ||
+      final matchSearch = _searchController.text.isEmpty ||
           d.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-          d.specialty.toLowerCase().contains(
-            _searchController.text.toLowerCase(),
-          );
+          d.specialty
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase());
       final matchSpecialty =
           _selectedSpecialty == 'All' || d.specialty == _selectedSpecialty;
       return matchSearch && matchSpecialty;
@@ -43,6 +42,25 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
     final specialties =
         doctors.map((d) => d.specialty).toSet().toList()..sort();
     return ['All', ...specialties];
+  }
+
+  // ── Open booking sheet ────────────────────────────────────────────
+  void _openBookingSheet(
+      BuildContext context, BookAppointmentCubit cubit, BookAppointmentModel doctor) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: BookingSheetWidget(doctor: doctor),
+      ),
+    ).then((booked) {
+      if (booked == true && context.mounted) {
+        // Navigate to appointments list after successful booking
+        context.pop();
+      }
+    });
   }
 
   @override
@@ -58,11 +76,15 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
     return BlocProvider(
       create: (_) => BookAppointmentCubit()..fetchDoctors(),
       child: BlocBuilder<BookAppointmentCubit, BookAppointmentState>(
+        // Only rebuild when doctors list state changes
+        buildWhen: (prev, curr) =>
+            curr is BookAppointmentLoading ||
+            curr is BookAppointmentLoaded ||
+            curr is BookAppointmentError,
         builder: (context, state) {
-          final allDoctors =
-              state is BookAppointmentLoaded
-                  ? state.doctors
-                  : <BookAppointmentModel>[];
+          final allDoctors = state is BookAppointmentLoaded
+              ? state.doctors
+              : <BookAppointmentModel>[];
           final filtered = _filtered(allDoctors);
           final specialties = _buildSpecialties(allDoctors);
 
@@ -120,8 +142,8 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                         SpecialtyFilterWidget(
                           specialties: specialties,
                           selected: _selectedSpecialty,
-                          onSelected:
-                              (val) => setState(() => _selectedSpecialty = val),
+                          onSelected: (val) =>
+                              setState(() => _selectedSpecialty = val),
                         ),
                         const SizedBox(height: 14),
                       ],
@@ -145,9 +167,7 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                         if (state is BookAppointmentLoaded)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 3,
-                            ),
+                                horizontal: 10, vertical: 3),
                             decoration: BoxDecoration(
                               color: colorScheme.secondary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(20),
@@ -169,51 +189,47 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                   Expanded(
                     child: switch (state) {
                       BookAppointmentLoading() => ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        itemCount: 4,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (_, __) => const ShimmerNurseCardWidget(),
-                      ),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 24),
+                          itemCount: 4,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (_, __) =>
+                              const ShimmerNurseCardWidget(),
+                        ),
                       BookAppointmentError(:final message) => Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.wifi_off_rounded,
-                              size: 48,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              message,
-                              style: TextStyle(
-                                color: colorScheme.onSurfaceVariant,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.wifi_off_rounded,
+                                  size: 48,
+                                  color: colorScheme.onSurfaceVariant),
+                              const SizedBox(height: 12),
+                              Text(message,
+                                  style: TextStyle(
+                                      color: colorScheme.onSurfaceVariant)),
+                              const SizedBox(height: 16),
+                              TextButton(
+                                onPressed: () => context
+                                    .read<BookAppointmentCubit>()
+                                    .fetchDoctors(),
+                                child: Text('Retry',
+                                    style: TextStyle(
+                                        color: colorScheme.secondary)),
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            TextButton(
-                              onPressed:
-                                  () =>
-                                      context
-                                          .read<BookAppointmentCubit>()
-                                          .fetchDoctors(),
-                              child: Text(
-                                'Retry',
-                                style: TextStyle(color: colorScheme.secondary),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
                       _ => SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: DoctorsListWidget(
-                          doctors: filtered,
-                          selectedDoctorId: _selectedDoctorId,
-                          onDoctorSelected:
-                              (d) => setState(() => _selectedDoctorId = d.id),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 24),
+                          child: DoctorsListWidget(
+                            doctors: filtered,
+                            selectedDoctorId: _selectedDoctorId,
+                            onDoctorSelected: (d) =>
+                                setState(() => _selectedDoctorId = d.id),
+                          ),
                         ),
-                      ),
                     },
                   ),
 
@@ -225,37 +241,13 @@ class _BookAppointmentViewState extends State<BookAppointmentView> {
                       width: double.infinity,
                       height: 54,
                       child: ElevatedButton(
-                        onPressed:
-                            selectedDoctor == null
-                                ? null
-                                : () {
-                                  final conversation = ConversationModel(
-                                    otherUserId: selectedDoctor.id,
-                                    doctorName: selectedDoctor.name,
-                                    specialty: selectedDoctor.specialty,
-                                    lastMessage: '',
-                                    time: '',
-                                    unreadCount: 0,
-                                    initials: selectedDoctor.initials,
-                                    color: Colors.blue,
-                                    isOnline: false,
-                                  );
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) => BlocProvider.value(
-                                            value:
-                                                ChatCubit(), // singleton — same instance
-                                            child: ChatView(
-                                              conversation: conversation,
-                                            ),
-                                          ),
-                                    ),
-                                  ).then(
-                                    (_) => ChatCubit().loadConversations(),
-                                  );
-                                },
+                        onPressed: selectedDoctor == null
+                            ? null
+                            : () => _openBookingSheet(
+                                  context,
+                                  context.read<BookAppointmentCubit>(),
+                                  selectedDoctor,
+                                ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.secondary,
                           disabledBackgroundColor: colorScheme.outlineVariant,

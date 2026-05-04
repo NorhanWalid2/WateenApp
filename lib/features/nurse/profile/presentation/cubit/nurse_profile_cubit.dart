@@ -10,7 +10,7 @@ class NurseProfileCubit extends Cubit<NurseProfileState> {
   NurseProfileCubit() : super(NurseProfileInitial());
 
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: 'http://wateen.runasp.net'),
+    BaseOptions(baseUrl: 'https://wateen.runasp.net'),
   );
 
   Options get _authOptions => Options(

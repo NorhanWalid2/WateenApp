@@ -6,7 +6,7 @@ import 'all_nurses_state.dart';
 
 class AllNursesCubit extends Cubit<AllNursesState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   AllNursesCubit() : super(AllNursesInitial());

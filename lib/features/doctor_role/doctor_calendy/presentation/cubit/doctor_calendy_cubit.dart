@@ -7,7 +7,7 @@ import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/cubi
  
 class DoctorCalendlyCubit extends Cubit<DoctorCalendlyState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   DoctorCalendlyCubit() : super(DoctorCalendlyInitial());

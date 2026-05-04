@@ -10,7 +10,7 @@ import 'profile_state.dart';
 class ProfileCubit extends Cubit<ProfileState> {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://wateen.runasp.net",
+      baseUrl: "https://wateen.runasp.net",
       headers: {"Content-Type": "application/json"},
     ),
   );

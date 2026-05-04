@@ -19,7 +19,7 @@ class DoctorChatCubit extends Cubit<DoctorChatState> {
   }
 
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   Timer? _pollingTimer;

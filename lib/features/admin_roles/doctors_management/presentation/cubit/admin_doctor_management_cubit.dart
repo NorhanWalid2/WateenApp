@@ -6,7 +6,7 @@ import '../../data/models/pending_doctor_model.dart';
 
 class DoctorAdminCubit extends Cubit<DoctorAdminState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   DoctorAdminCubit() : super(DoctorAdminInitial());

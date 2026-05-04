@@ -8,7 +8,7 @@ import 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://wateen.runasp.net",
+      baseUrl: "https://wateen.runasp.net",
       headers: {"Content-Type": "application/json"},
     ),
   );

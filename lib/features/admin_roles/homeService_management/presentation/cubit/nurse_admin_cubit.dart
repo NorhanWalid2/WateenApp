@@ -6,7 +6,7 @@ import 'nurse_admin_state.dart';
 
 class NurseAdminCubit extends Cubit<NurseAdminState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   NurseAdminCubit() : super(NurseAdminInitial());

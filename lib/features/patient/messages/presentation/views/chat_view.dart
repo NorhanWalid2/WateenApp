@@ -49,7 +49,7 @@ class ChatViewState extends State<ChatView> {
       return NetworkImage(path);
     }
 
-    return NetworkImage('http://wateen.runasp.net/$path');
+    return NetworkImage('https://wateen.runasp.net/$path');
   }
 
   void scrollToBottom({bool instant = false}) {
