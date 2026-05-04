@@ -11,7 +11,7 @@ import 'package:wateen_app/features/doctor_role/messages_/presentation/cubit/doc
 
 class DoctorConversationsCubit extends Cubit<DoctorConversationsState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   Timer? _pollingTimer;

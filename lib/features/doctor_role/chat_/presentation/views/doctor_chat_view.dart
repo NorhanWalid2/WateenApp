@@ -66,7 +66,7 @@ class _DoctorChatBodyState extends State<_DoctorChatBody> {
       return NetworkImage(path);
     }
 
-    return NetworkImage('http://wateen.runasp.net/$path');
+    return NetworkImage('https://wateen.runasp.net/$path');
   }
 
   void _scrollToBottom() {

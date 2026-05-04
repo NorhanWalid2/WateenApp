@@ -6,7 +6,7 @@ import '../../data/models/all_doctors_model.dart';
 
 class AllDoctorsCubit extends Cubit<AllDoctorsState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"), 
+    BaseOptions(baseUrl: "https://wateen.runasp.net"), 
   );
 
   AllDoctorsCubit() : super(AllDoctorsInitial());

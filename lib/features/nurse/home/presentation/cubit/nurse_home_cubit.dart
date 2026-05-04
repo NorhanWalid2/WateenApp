@@ -6,7 +6,7 @@ import 'package:wateen_app/features/nurse/home/data/models/nurse_request_model.d
 
 class NurseHomeCubit extends Cubit<NurseHomeState> {
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),  
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),  
   );
 
   NurseHomeCubit() : super(NurseHomeInitial());

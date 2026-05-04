@@ -75,7 +75,7 @@ class SignalRService {
     try {
       _hubConnection = HubConnectionBuilder()
           .withUrl(
-            "http://wateen.runasp.net/hubs/chat",
+            "https://wateen.runasp.net/hubs/chat",
             options: HttpConnectionOptions(
               accessTokenFactory: () async => AppPrefs.token ?? '',
             ),

@@ -9,7 +9,7 @@ class ChatRepository {
   ChatRepository._internal();
 
   final Dio _dio = Dio(
-    BaseOptions(baseUrl: "http://wateen.runasp.net"),
+    BaseOptions(baseUrl: "https://wateen.runasp.net"),
   );
 
   Options get _authOptions => Options(

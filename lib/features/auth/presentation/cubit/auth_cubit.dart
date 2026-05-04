@@ -10,10 +10,10 @@ import 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://wateen.runasp.net",
+      baseUrl: "https://wateen.runasp.net",
       headers: {"Content-Type": "application/json"},
     ),
-  );
+  );  
 
   AuthCubit() : super(AuthInitial());
 

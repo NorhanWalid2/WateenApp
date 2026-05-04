@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/ai_assistant/data/models/chat_message_model.dart';
+import 'package:wateen_app/features/patient/ai_assistant/presentation/cubit/ai_assistant_cubit.dart';
+import 'package:wateen_app/features/patient/ai_assistant/presentation/cubit/ai_assistant_state.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/widgets/attach_option_widget.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/widgets/chat_input_bar_widget.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/widgets/message_bubble_widget.dart';
@@ -19,16 +22,6 @@ class AiAssistantViewState extends State<AiAssistantView> {
   final TextEditingController controller = TextEditingController();
   final ScrollController scrollController = ScrollController();
   final ImagePicker picker = ImagePicker();
-  bool isTyping = false;
-
-  final List<ChatMessage> messages = [
-    ChatMessage(
-      text: 'Hello! I\'m your AI health assistant. How can I help you today?',
-      sender: MessageSender.ai,
-      time: DateTime.now().subtract(const Duration(minutes: 2)),
-      type: MessageType.text,
-    ),
-  ];
 
   @override
   void dispose() {
@@ -51,66 +44,19 @@ class AiAssistantViewState extends State<AiAssistantView> {
 
   void sendMessage(String text) {
     if (text.trim().isEmpty) return;
-
-    setState(() {
-      messages.add(ChatMessage(
-        text: text,
-        sender: MessageSender.user,
-        time: DateTime.now(),
-        type: MessageType.text,
-      ));
-      isTyping = true;
-    });
-
     controller.clear();
+    context.read<AiAssistantCubit>().sendMessage(text);
     scrollToBottom();
-
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (!mounted) return;
-      setState(() {
-        isTyping = false;
-        messages.add(ChatMessage(
-          text:
-              'I understand your concern. As an AI health assistant, I can provide general health information. However, for specific medical concerns, please consult with your doctor through our appointment system.',
-          sender: MessageSender.ai,
-          time: DateTime.now(),
-          type: MessageType.text,
-        ));
-      });
-      scrollToBottom();
-    });
   }
 
   Future<void> pickImage(ImageSource source) async {
     final XFile? image = await picker.pickImage(source: source);
-    if (image == null) return;
+    if (image == null || !mounted) return;
 
-    setState(() {
-      messages.add(ChatMessage(
-        imagePath: image.path,
-        sender: MessageSender.user,
-        time: DateTime.now(),
-        type: MessageType.image,
-      ));
-      isTyping = true;
-    });
-
+    // Add image message locally
+    // Image analysis via AI is a future enhancement
+    setState(() {});
     scrollToBottom();
-
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (!mounted) return;
-      setState(() {
-        isTyping = false;
-        messages.add(ChatMessage(
-          text:
-              'I can see the image you\'ve shared. For accurate medical analysis, please consult a healthcare professional.',
-          sender: MessageSender.ai,
-          time: DateTime.now(),
-          type: MessageType.text,
-        ));
-      });
-      scrollToBottom();
-    });
   }
 
   void showAttachmentOptions() {
@@ -131,8 +77,7 @@ class AiAssistantViewState extends State<AiAssistantView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 40,
-                height: 4,
+                width: 40, height: 4,
                 decoration: BoxDecoration(
                   color: colorScheme.outline,
                   borderRadius: BorderRadius.circular(2),
@@ -180,104 +125,165 @@ class AiAssistantViewState extends State<AiAssistantView> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => AiAssistantCubit(),
+      child: _AiAssistantBody(
+        controller: controller,
+        scrollController: scrollController,
+        onSend: sendMessage,
+        onAttach: showAttachmentOptions,
+      ),
+    );
+  }
+}
+
+class _AiAssistantBody extends StatelessWidget {
+  final TextEditingController controller;
+  final ScrollController scrollController;
+  final void Function(String) onSend;
+  final VoidCallback onAttach;
+
+  const _AiAssistantBody({
+    required this.controller,
+    required this.scrollController,
+    required this.onSend,
+    required this.onAttach,
+  });
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: colorScheme.primary,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
-              color: colorScheme.onSurface, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: colorScheme.secondary.withOpacity(0.15),
-                shape: BoxShape.circle,
+    return BlocConsumer<AiAssistantCubit, AiAssistantState>(
+      listener: (context, state) {
+        if (state is AiAssistantLoaded) _scrollToBottom();
+      },
+      builder: (context, state) {
+        final messages = state is AiAssistantLoaded
+            ? state.messages
+            : context.read<AiAssistantCubit>().messages;
+        final isTyping =
+            state is AiAssistantLoaded ? state.isTyping : false;
+
+          return Scaffold(
+            backgroundColor: colorScheme.background,
+            appBar: AppBar(
+              backgroundColor: colorScheme.primary,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios_rounded,
+                    color: colorScheme.onSurface, size: 20),
+                onPressed: () => Navigator.pop(context),
               ),
-              child: Icon(Icons.smart_toy_rounded,
-                  color: colorScheme.secondary, size: 20),
+              title: Row(
+                children: [
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondary.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.smart_toy_rounded,
+                        color: colorScheme.secondary, size: 20),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.aiHealthAssistant,
+                        style: textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 7, height: 7,
+                            decoration: const BoxDecoration(
+                              color: Colors.green,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isTyping ? 'Typing...' : l10n.online,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: Colors.green,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                // Clear conversation button
+                IconButton(
+                  icon: Icon(Icons.refresh_rounded,
+                      color: colorScheme.onSurface),
+                  tooltip: 'Clear conversation',
+                  onPressed: () => context
+                      .read<AiAssistantCubit>()
+                      .clearConversation(),
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            body: Column(
               children: [
-                Text(
-                  l10n.aiHealthAssistant,
-                  style: textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                // ── Messages ──────────────────────────────────────
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    itemCount: messages.length + (isTyping ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == messages.length && isTyping) {
+                        return const TypingIndicatorWidget();
+                      }
+                      return MessageBubbleWidget(message: messages[index]);
+                    },
+                  ),
                 ),
-                Row(
-                  children: [
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      l10n.online,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Colors.green,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+
+                // ── Suggestions (only on first message) ───────────
+                if (messages.length == 1)
+                  SuggestionsBarWidget(
+                    suggestions: [
+                      l10n.suggestionHeadache,
+                      l10n.suggestionBloodPressure,
+                      l10n.suggestionMealCalories,
+                      l10n.suggestionMedication,
+                    ],
+                    onTap: onSend,
+                  ),
+
+                // ── Input ─────────────────────────────────────────
+                ChatInputBarWidget(
+                  controller: controller,
+                  onSend: onSend,
+                  onAttach: onAttach,
                 ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.more_vert_rounded, color: colorScheme.onSurface),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: messages.length + (isTyping ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == messages.length && isTyping) {
-                  return const TypingIndicatorWidget();
-                }
-                return MessageBubbleWidget(message: messages[index]);
-              },
-            ),
-          ),
-          if (messages.length == 1)
-            SuggestionsBarWidget(
-              suggestions: [
-                l10n.suggestionHeadache,
-                l10n.suggestionBloodPressure,
-                l10n.suggestionMealCalories,
-                l10n.suggestionMedication,
-              ],
-              onTap: sendMessage,
-            ),
-          ChatInputBarWidget(
-            controller: controller,
-            onSend: sendMessage,
-            onAttach: showAttachmentOptions,
-          ),
-        ],
-      ),
-    );
+          );
+        },
+      );
   }
 }
