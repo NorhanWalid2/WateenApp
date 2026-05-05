@@ -28,6 +28,7 @@ import 'package:wateen_app/features/nurse/profile/presentation/views/profile_vie
 import 'package:wateen_app/features/nurse/reports/presentation/views/reports_view.dart';
 import 'package:wateen_app/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/ai_assistant_view.dart';
+import 'package:wateen_app/features/patient/ai_assistant/presentation/views/meal_scanner_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointment_details_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/reschedule_appointment_view.dart';
@@ -216,6 +217,11 @@ final GoRouter router = GoRouter(
     GoRoute(
   path: '/doctorCalendly',
   builder: (_, __) => const DoctorCalendlyView(),
+),
+
+GoRoute(
+  path: '/mealScanner',
+  builder: (_, __) => const MealScannerView(),
 ),
   ],
 );

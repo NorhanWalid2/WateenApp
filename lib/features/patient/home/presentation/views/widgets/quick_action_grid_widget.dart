@@ -37,7 +37,7 @@ class QuickActionsGridWidget extends StatelessWidget {
         label: l10n.scanMeal,
         subtitle: l10n.checkNutrition,
         color: Colors.orange,
-        onTap: () {},
+        onTap: () => CustomNavigation(context, '/mealScanner'),
       ),
       QuickActionModel(
         icon: Icons.monitor_heart_rounded,
