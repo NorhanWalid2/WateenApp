@@ -13,6 +13,7 @@ class AppointmentModel {
   final AppointmentStatus status;
   final String? videoCallLink;
   final String? notes;
+  final String? doctorId;
 
   const AppointmentModel({
     required this.id,
@@ -24,7 +25,7 @@ class AppointmentModel {
     required this.type,
     required this.status,
     this.videoCallLink,
-    this.notes,
+    this.notes, this.doctorId,
   });
 
   String get typeLabel {
@@ -109,6 +110,7 @@ class AppointmentModel {
       videoCallLink:
           json['videoCallLink']?.toString(),
       notes: json['notes']?.toString(),
+      doctorId: json['doctorId']?.toString(),
     );
   }
 }

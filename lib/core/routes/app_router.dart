@@ -2,7 +2,6 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/features/admin_roles/admin_settings/presentation/views/settings_view.dart';
-import 'package:wateen_app/features/admin_roles/dashboard/presentation/views/dashboard_view.dart';
 import 'package:wateen_app/features/admin_roles/doctors_management/presentation/views/doctors_management_view.dart';
 import 'package:wateen_app/features/admin_roles/homeService_management/presentation/views/home_service_management_view.dart';
 import 'package:wateen_app/features/admin_roles/layout/admin_main_layout.dart';
@@ -18,17 +17,15 @@ import 'package:wateen_app/features/doctor_role/dashboard/presentation/views/das
 import 'package:wateen_app/features/doctor_role/doc_profile/presentation/views/profile_view.dart';
 import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/views/doctor_calendy_view.dart';
 import 'package:wateen_app/features/doctor_role/layout/doctor_main_layout.dart';
-import 'package:wateen_app/features/doctor_role/messages_/presentation/views/doctor_messages_view.dart' hide DoctorChatView;
+import 'package:wateen_app/features/doctor_role/messages_/presentation/views/doctor_messages_view.dart';
 import 'package:wateen_app/features/doctor_role/patient_details/presentation/views/patient_details_view.dart';
 import 'package:wateen_app/features/doctor_role/patients/data/models/patient_model.dart';
 import 'package:wateen_app/features/doctor_role/patients/presentation/views/patients_view.dart';
 import 'package:wateen_app/features/doctor_role/prescriptions/presentation/views/prescriptions_view.dart';
-import 'package:wateen_app/features/nurse/active_visit/presentation/views/active_visit_view.dart';
-import 'package:wateen_app/features/nurse/profile/presentation/views/profile_view.dart';
-import 'package:wateen_app/features/nurse/reports/presentation/views/reports_view.dart';
 import 'package:wateen_app/features/onboarding/presentation/screens/onboarding.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/ai_assistant_view.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/meal_scanner_view.dart';
+import 'package:wateen_app/features/patient/appointments/data/models/appointment_model.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointment_details_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/reschedule_appointment_view.dart';
@@ -36,6 +33,9 @@ import 'package:wateen_app/features/patient/book_appointment/presentation/views/
 import 'package:wateen_app/features/patient/health/presentation/views/health_view.dart';
 import 'package:wateen_app/features/patient/home/presentation/views/home_view.dart';
 import 'package:wateen_app/features/patient/layout/patient_main_layout.dart';
+import 'package:wateen_app/features/patient/medical_record/presentation/views/medical_record_view.dart';
+import 'package:wateen_app/features/patient/medication/presentation/views/patient_medication_view.dart';
+import 'package:wateen_app/features/patient/patient_tasks/presentation/views/patient_task_view.dart';
 import 'package:wateen_app/features/patient/profile/presentation/views/profile_view.dart';
 import 'package:wateen_app/features/patient/settings/presentation/views/change_password_view.dart';
 import 'package:wateen_app/features/patient/settings/presentation/views/settings_view.dart';
@@ -43,8 +43,6 @@ import 'package:wateen_app/features/patient/request_nurse/data/models/nurse_mode
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/request_nurse_view.dart';
 import 'package:wateen_app/features/patient/request_nurse/presentation/views/nurse_request_details_view.dart';
 import 'package:wateen_app/features/splash/presentation/views/splash_view.dart';
-
-import 'package:wateen_app/features/nurse/home/presentation/views/nurse_home_view.dart';
 import 'package:wateen_app/features/nurse/layout/nurse_main_layout.dart';
 
 String _getInitialRoute() {
@@ -60,13 +58,11 @@ String _getInitialRoute() {
       case 'patient':
         return '/patient';
       case 'doctor':
-        return '/doctorHome';
+        return '/doctorMain'; // ✅ fixed duplicate case
       case 'nurse':
         return '/nurseMain';
       case 'admin':
         return '/adminMain';
-      case 'doctor':
-        return '/doctorMain';
     }
   }
 
@@ -76,42 +72,42 @@ String _getInitialRoute() {
 final GoRouter router = GoRouter(
   initialLocation: '/splash',
   routes: [
-    GoRoute(path: '/splash', builder: (context, state) => const SplashView()),
-    GoRoute(path: '/', builder: (context, state) => const OnboardingView()),
-    GoRoute(path: '/role', builder: (context, state) => const RoleView()),
-    GoRoute(path: '/signup', builder: (context, state) => const SignupView()),
-    GoRoute(path: '/login', builder: (context, state) => LoginView()),
-    GoRoute(path: '/profile', builder: (context, state) => ProfileView()),
-    // ── Auth ──────────────────────────────────────
-    GoRoute(path: '/', builder: (context, state) => const OnboardingView()),
-    GoRoute(path: '/role', builder: (context, state) => const RoleView()),
-    GoRoute(path: '/signup', builder: (context, state) => const SignupView()),
-    GoRoute(path: '/login', builder: (context, state) => LoginView()),
+    // ── Splash & Onboarding ───────────────────────────────────────
+    GoRoute(path: '/splash', builder: (_, __) => const SplashView()),
+    GoRoute(path: '/', builder: (_, __) => const OnboardingView()),
+
+    // ── Auth ──────────────────────────────────────────────────────
+    GoRoute(path: '/role', builder: (_, __) => const RoleView()),
+    GoRoute(path: '/signup', builder: (_, __) => const SignupView()),
+    GoRoute(path: '/login', builder: (_, __) => LoginView()),
     GoRoute(
       path: '/forgetPassword',
-      builder: (context, state) => const ForgetPasswordView(),
+      builder: (_, __) => const ForgetPasswordView(),
     ),
     GoRoute(
       path: '/changePassword',
       builder: (_, __) => const ChangePasswordView(),
     ),
 
-    // ── Patient ───────────────────────────────────
+    // ── Patient ───────────────────────────────────────────────────
     GoRoute(path: '/patient', builder: (_, __) => const PatientMainLayout()),
-    GoRoute(path: '/home', builder: (context, state) => const HomeView()),
-    GoRoute(path: '/profile', builder: (context, state) => ProfileView()),
-    GoRoute(
-      path: '/settings',
-      builder: (context, state) => const SettingsView(),
-    ),
+    GoRoute(path: '/home', builder: (_, __) => const HomeView()),
+    GoRoute(path: '/profile', builder: (_, __) => ProfileView()),
+    GoRoute(path: '/settings', builder: (_, __) => const SettingsView()),
     GoRoute(
       path: '/appointments',
       builder: (_, __) => const AppointmentsView(),
     ),
+
+    // ✅ FIXED: AppointmentDetailsView now receives AppointmentModel via extra
     GoRoute(
       path: '/appointmentsDetails',
-      builder: (_, __) => const AppointmentDetailsView(),
+      builder: (context, state) {
+        final appointment = state.extra as AppointmentModel;
+        return AppointmentDetailsView(appointment: appointment);
+      },
     ),
+
     GoRoute(
       path: '/rescheduleAppointments',
       builder: (_, __) => const RescheduleAppointmentView(),
@@ -133,16 +129,25 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(path: '/addVitals', builder: (_, __) => const HealthView()),
+    GoRoute(path: '/mealScanner', builder: (_, __) => const MealScannerView()),
+    GoRoute(
+      path: '/medicalRecords',
+      builder: (_, __) => const MedicalRecordsView(),
+    ),
+    GoRoute(
+      path: '/patientMedications',
+      builder: (_, __) => const PatientMedicationsView(),
+    ),
+    GoRoute(
+      path: '/patientTasks',
+      builder: (_, __) => const PatientTasksView(),
+    ),
 
-    // ── Nurse ─────────────────────────────────────
-    // In app_router.dart — make sure nurse route uses NurseMainLayout:
+    // ── Nurse ─────────────────────────────────────────────────────
     GoRoute(path: '/nurseMain', builder: (_, __) => const NurseMainLayout()),
-    
- 
-   
-    // ── Admin ─────────────────────────────────────
+
+    // ── Admin ─────────────────────────────────────────────────────
     GoRoute(path: '/adminMain', builder: (_, __) => const AdminMainLayout()),
-   
     GoRoute(
       path: '/doctorsManagement',
       builder: (_, __) => const DoctorsManagementView(),
@@ -159,7 +164,8 @@ final GoRouter router = GoRouter(
       path: '/adminSettings',
       builder: (_, __) => const AdminSettingsView(),
     ),
-    // ── Doctor ─────────────────────────────────────
+
+    // ── Doctor ────────────────────────────────────────────────────
     GoRoute(path: '/doctorMain', builder: (_, __) => const DoctorMainLayout()),
     GoRoute(
       path: '/doctorDashboard',
@@ -198,30 +204,24 @@ final GoRouter router = GoRouter(
       path: '/doctorMessages',
       builder: (_, __) => const DoctorMessagesView(),
     ),
-   GoRoute(
-  path: '/doctorChat',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-
-    return DoctorChatView(
-      patientName: extra['patientName'] as String,
-      patientId: extra['patientId'] as String,
-      patientProfilePicture: extra['patientProfilePicture'] as String?,
-    );
-  },
-),
+    GoRoute(
+      path: '/doctorChat',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return DoctorChatView(
+          patientName: extra['patientName'] as String,
+          patientId: extra['patientId'] as String,
+          patientProfilePicture: extra['patientProfilePicture'] as String?,
+        );
+      },
+    ),
     GoRoute(
       path: '/doctorProfile',
       builder: (_, __) => const DoctorProfileView(),
     ),
     GoRoute(
-  path: '/doctorCalendly',
-  builder: (_, __) => const DoctorCalendlyView(),
-),
-
-GoRoute(
-  path: '/mealScanner',
-  builder: (_, __) => const MealScannerView(),
-),
+      path: '/doctorCalendly',
+      builder: (_, __) => const DoctorCalendlyView(),
+    ),
   ],
 );

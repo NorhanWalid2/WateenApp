@@ -7,17 +7,14 @@ import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_sta
 import 'package:wateen_app/l10n/app_localizations.dart';
 import 'package:wateen_app/features/patient/messages/data/models/chat_message_model.dart';
 import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
+import 'package:wateen_app/core/widgets/doctor_avatar_widget.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/widgets/chat_bubble_widget.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/widgets/chat_input_widget.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/widgets/attach_item_widget.dart';
 
 class ChatView extends StatefulWidget {
   final ConversationModel conversation;
-
-  const ChatView({
-    super.key,
-    required this.conversation,
-  });
+  const ChatView({super.key, required this.conversation});
 
   @override
   State<ChatView> createState() => ChatViewState();
@@ -42,26 +39,19 @@ class ChatViewState extends State<ChatView> {
     super.dispose();
   }
 
-  ImageProvider? _buildImage(String? path) {
-    if (path == null || path.trim().isEmpty) return null;
-
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return NetworkImage(path);
-    }
-
-    return NetworkImage('https://wateen.runasp.net/$path');
-  }
-
   void scrollToBottom({bool instant = false}) {
-    Future.delayed(const Duration(milliseconds: 120), () {
+    // Use a short delay so ListView has time to render all items first
+    Future.delayed(const Duration(milliseconds: 150), () {
       if (!mounted) return;
-
-      if (scrollController.hasClients) {
+      if (scrollController.hasClients &&
+          scrollController.position.hasContentDimensions) {
         if (instant) {
-          scrollController.jumpTo(0);
+          scrollController.jumpTo(
+            scrollController.position.maxScrollExtent,
+          );
         } else {
           scrollController.animateTo(
-            0,
+            scrollController.position.maxScrollExtent,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
@@ -72,14 +62,11 @@ class ChatViewState extends State<ChatView> {
 
   void sendMessage(String text) {
     if (text.trim().isEmpty) return;
-
     controller.clear();
-
     context.read<ChatCubit>().sendMessage(
-          widget.conversation.otherUserId,
-          text,
-        );
-
+      widget.conversation.otherUserId,
+      text,
+    );
     scrollToBottom();
   }
 
@@ -166,9 +153,11 @@ class ChatViewState extends State<ChatView> {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final avatarImage = _buildImage(widget.conversation.profilePictureUrl);
 
     return BlocConsumer<ChatCubit, ChatState>(
+      // ✅ BUG 1 FIX: Only rebuild on message-related states
+      // Ignore ConversationsLoaded — that's for the list screen
+      // Without this, ConversationsLoaded clears the chat UI
       buildWhen: (prev, curr) =>
           curr is MessagesLoading ||
           curr is MessagesLoaded ||
@@ -181,8 +170,10 @@ class ChatViewState extends State<ChatView> {
           curr is MessageReceived,
       listener: (context, state) {
         if (state is MessagesLoaded) {
+          // Initial load — jump instantly so user sees latest messages
           scrollToBottom(instant: true);
         } else if (state is MessageReceived || state is MessageSent) {
+          // New message — animate smoothly
           scrollToBottom();
         }
       },
@@ -208,20 +199,12 @@ class ChatViewState extends State<ChatView> {
               children: [
                 Stack(
                   children: [
-                    CircleAvatar(
+                    DoctorAvatarWidget(
+                      imageUrl: widget.conversation.profilePictureUrl,
+                      initials: widget.conversation.initials,
                       radius: 20,
-                      backgroundColor:
-                          widget.conversation.color.withOpacity(0.15),
-                      backgroundImage: avatarImage,
-                      child: avatarImage == null
-                          ? Text(
-                              widget.conversation.initials,
-                              style: textTheme.titleSmall?.copyWith(
-                                color: widget.conversation.color,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            )
-                          : null,
+                      backgroundColor: widget.conversation.color.withOpacity(0.15),
+                      initialsColor: widget.conversation.color,
                     ),
                     if (widget.conversation.isOnline)
                       Positioned(
@@ -269,17 +252,13 @@ class ChatViewState extends State<ChatView> {
             ),
             actions: [
               IconButton(
-                icon: Icon(
-                  Icons.videocam_outlined,
-                  color: colorScheme.inverseSurface,
-                ),
+                icon: Icon(Icons.videocam_outlined,
+                    color: colorScheme.inverseSurface),
                 onPressed: () {},
               ),
               IconButton(
-                icon: Icon(
-                  Icons.more_vert_rounded,
-                  color: colorScheme.inverseSurface,
-                ),
+                icon: Icon(Icons.more_vert_rounded,
+                    color: colorScheme.inverseSurface),
                 onPressed: () {},
               ),
             ],
@@ -289,11 +268,8 @@ class ChatViewState extends State<ChatView> {
               Expanded(
                 child: isLoading
                     ? ListView.builder(
-                        reverse: true,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                            horizontal: 16, vertical: 12),
                         itemCount: 6,
                         itemBuilder: (_, i) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -304,17 +280,13 @@ class ChatViewState extends State<ChatView> {
                             children: [
                               if (i % 2 != 0) ...[
                                 const ShimmerWidget(
-                                  width: 28,
-                                  height: 28,
-                                  borderRadius: 14,
-                                ),
+                                    width: 28, height: 28, borderRadius: 14),
                                 const SizedBox(width: 6),
                               ],
                               ShimmerWidget(
-                                width: i % 2 == 0 ? 180 : 140,
-                                height: 44,
-                                borderRadius: 16,
-                              ),
+                                  width: i % 2 == 0 ? 180 : 140,
+                                  height: 44,
+                                  borderRadius: 16),
                             ],
                           ),
                         ),
@@ -324,39 +296,28 @@ class ChatViewState extends State<ChatView> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.chat_bubble_outline_rounded,
-                                  size: 48,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
+                                Icon(Icons.chat_bubble_outline_rounded,
+                                    size: 48,
+                                    color: colorScheme.onSurfaceVariant),
                                 const SizedBox(height: 12),
                                 Text(
                                   'No messages yet.\nSay hello!',
                                   textAlign: TextAlign.center,
                                   style: textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
+                                      color: colorScheme.onSurfaceVariant),
                                 ),
                               ],
                             ),
                           )
                         : ListView.builder(
                             controller: scrollController,
-                            reverse: true,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
+                                horizontal: 16, vertical: 12),
                             itemCount: messages.length,
-                            itemBuilder: (_, i) {
-                              final reversedMessages =
-                                  messages.reversed.toList();
-
-                              return ChatBubbleWidget(
-                                message: reversedMessages[i],
-                                conversation: widget.conversation,
-                              );
-                            },
+                            itemBuilder: (_, i) => ChatBubbleWidget(
+                              message: messages[i],
+                              conversation: widget.conversation,
+                            ),
                           ),
               ),
               ChatInputWidget(

@@ -45,7 +45,7 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
       const AppointmentsView(),
       BlocProvider(
         create: (_) => ChatCubit()..loadConversations(),
-        child: const ConversationsView(),
+        child: const PatientMessagesView(),
       ),
       const HealthView(),
       const ProfileView(),

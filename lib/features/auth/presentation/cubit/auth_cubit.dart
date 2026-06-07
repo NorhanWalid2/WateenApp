@@ -216,7 +216,8 @@ Future<void> login({required String email, required String password}) async {
         payload['nameid'] ??
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
         '';
-
+await AppPrefs.saveUserName(response.data['fullName'] ?? response.data['givenName'] ?? '');
+await AppPrefs.saveUserRole(response.data['role'] ?? '');
     await AppPrefs.saveUserId(userId.toString());
 await SignalRService().connect();
 

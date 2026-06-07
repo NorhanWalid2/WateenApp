@@ -4,11 +4,13 @@ import 'package:wateen_app/features/doctor_role/checklist/data/models/checklist_
 class TaskCardWidget extends StatelessWidget {
   final ChecklistTaskModel task;
   final VoidCallback onToggle;
+  final VoidCallback? onDelete; // ✅ optional — only doctor sees delete
 
   const TaskCardWidget({
     super.key,
     required this.task,
     required this.onToggle,
+    this.onDelete,
   });
 
   Color _priorityColor(BuildContext context) {
@@ -22,12 +24,6 @@ class TaskCardWidget extends StatelessWidget {
     }
   }
 
-  String _priorityText() =>
-      ChecklistTaskModel.priorityToString(task.priority);
-
-  String _categoryText() =>
-      ChecklistTaskModel.categoryToString(task.category);
-
   IconData _categoryIcon() {
     switch (task.category) {
       case TaskCategory.test:
@@ -38,6 +34,8 @@ class TaskCardWidget extends StatelessWidget {
         return Icons.refresh_rounded;
       case TaskCategory.medication:
         return Icons.medication_rounded;
+      case TaskCategory.other: // ✅ fixed missing case
+        return Icons.task_alt_rounded;
     }
   }
 
@@ -76,7 +74,6 @@ class TaskCardWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // ── Checkbox ──
           GestureDetector(
             onTap: onToggle,
@@ -86,9 +83,7 @@ class TaskCardWidget extends StatelessWidget {
               margin: const EdgeInsets.only(top: 2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isCompleted
-                    ? const Color(0xFF16A34A)
-                    : Colors.transparent,
+                color: isCompleted ? const Color(0xFF16A34A) : Colors.transparent,
                 border: Border.all(
                   color: isCompleted
                       ? const Color(0xFF16A34A)
@@ -97,11 +92,7 @@ class TaskCardWidget extends StatelessWidget {
                 ),
               ),
               child: isCompleted
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 14,
-                    )
+                  ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
                   : null,
             ),
           ),
@@ -113,15 +104,12 @@ class TaskCardWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // Title + Priority
                 Row(
                   children: [
-                    Icon(
-                      _categoryIcon(),
-                      size: 16,
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
+                    Icon(_categoryIcon(),
+                        size: 16,
+                        color: Theme.of(context).colorScheme.outlineVariant),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -130,26 +118,21 @@ class TaskCardWidget extends StatelessWidget {
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.inverseSurface,
-                          decoration: isCompleted
-                              ? TextDecoration.lineThrough
-                              : null,
+                          decoration: isCompleted ? TextDecoration.lineThrough : null,
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // Priority badge
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: _priorityColor(context).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: _priorityColor(context).withOpacity(0.3),
-                        ),
+                            color: _priorityColor(context).withOpacity(0.3)),
                       ),
                       child: Text(
-                        _priorityText(),
+                        ChecklistTaskModel.priorityToString(task.priority),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -157,12 +140,21 @@ class TaskCardWidget extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // ✅ Delete button (only shown if onDelete provided)
+                    if (onDelete != null) ...[
+                      const SizedBox(width: 6),
+                      GestureDetector(
+                        onTap: onDelete,
+                        child: Icon(Icons.delete_outline_rounded,
+                            size: 18,
+                            color: Theme.of(context).colorScheme.error),
+                      ),
+                    ],
                   ],
                 ),
 
                 const SizedBox(height: 6),
 
-                // Description
                 Text(
                   task.description,
                   style: TextStyle(
@@ -173,7 +165,6 @@ class TaskCardWidget extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                // Date + Category
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -202,7 +193,7 @@ class TaskCardWidget extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      _categoryText(),
+                      ChecklistTaskModel.categoryToString(task.category),
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.outlineVariant,
