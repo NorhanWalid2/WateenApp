@@ -4,11 +4,13 @@ import 'package:wateen_app/features/doctor_role/prescriptions/data/prescription_
 class PrescriptionCardWidget extends StatelessWidget {
   final PrescriptionModel prescription;
   final VoidCallback? onEdit;
+  final VoidCallback? onDelete; // ✅ added
 
   const PrescriptionCardWidget({
     super.key,
     required this.prescription,
     this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -32,7 +34,7 @@ class PrescriptionCardWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          // ── Name + Edit ──
+          // ── Name + Edit + Delete ──
           Row(
             children: [
               Container(
@@ -59,6 +61,7 @@ class PrescriptionCardWidget extends StatelessWidget {
                   ),
                 ),
               ),
+              // Edit button
               if (isActive && onEdit != null)
                 GestureDetector(
                   onTap: onEdit,
@@ -68,6 +71,18 @@ class PrescriptionCardWidget extends StatelessWidget {
                     color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
+              // ✅ Delete button
+              if (onDelete != null) ...[
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () => _confirmDelete(context),
+                  child: Icon(
+                    Icons.delete_outline_rounded,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ],
             ],
           ),
 
@@ -123,6 +138,34 @@ class PrescriptionCardWidget extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete Medication'),
+        content: Text(
+          'Are you sure you want to delete ${prescription.medicationName}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              onDelete?.call();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
           ),
         ],
       ),

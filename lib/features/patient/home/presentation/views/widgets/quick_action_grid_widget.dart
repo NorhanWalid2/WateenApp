@@ -37,7 +37,7 @@ class QuickActionsGridWidget extends StatelessWidget {
         label: l10n.scanMeal,
         subtitle: l10n.checkNutrition,
         color: Colors.orange,
-        onTap: () {},
+        onTap:  () => CustomNavigation(context, '/mealScanner'),
       ),
       QuickActionModel(
         icon: Icons.monitor_heart_rounded,
@@ -45,6 +45,22 @@ class QuickActionsGridWidget extends StatelessWidget {
         subtitle: l10n.logHealthData,
         color: Colors.red,
         onTap: () => CustomNavigation(context, '/addVitals'),
+      ),
+      // ✅ NEW: My Medications
+      QuickActionModel(
+        icon: Icons.medication_rounded,
+        label: 'My Medications',
+        subtitle: 'View prescriptions',
+        color: const Color(0xFF0891B2),
+        onTap: () => CustomNavigation(context, '/patientMedications'),
+      ),
+      // ✅ NEW: My Care Plan (tasks/checklist)
+      QuickActionModel(
+        icon: Icons.checklist_rounded,
+        label: 'Care Plan',
+        subtitle: 'Tasks from doctor',
+        color: const Color(0xFF7C3AED),
+        onTap: () => CustomNavigation(context, '/patientTasks'),
       ),
     ];
   }
@@ -60,10 +76,9 @@ class QuickActionsGridWidget extends StatelessWidget {
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
       childAspectRatio: 1.5,
-      children:
-          actions
-              .map((action) => QuickActionCardWidget(action: action))
-              .toList(),
+      children: actions
+          .map((action) => QuickActionCardWidget(action: action))
+          .toList(),
     );
   }
 }

@@ -203,7 +203,7 @@ class ProfileViewBody extends StatelessWidget {
                           icon: Icons.history_edu_outlined,
                           title: l10n.medicalHistory,
                           subtitle: l10n.viewAndUploadFiles,
-                          onTap: () {},
+                          onTap: () => CustomNavigation(context, '/medicalRecords'),
                         ),
                         Divider(
                           height: 1,

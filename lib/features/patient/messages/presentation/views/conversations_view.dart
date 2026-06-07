@@ -1,209 +1,335 @@
+// lib/features/patient/messages/presentation/views/patient_messages_view.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wateen_app/core/widgets/shimmer%20card%20skeletons.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/core/widgets/doctor_avatar_widget.dart';
 import 'package:wateen_app/features/patient/messages/data/models/conversation_model.dart';
 import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_cubit.dart';
 import 'package:wateen_app/features/patient/messages/presentation/cubit/chat_state.dart';
 import 'package:wateen_app/features/patient/messages/presentation/views/chat_view.dart';
-import 'package:wateen_app/features/patient/messages/presentation/views/widgets/conversation_tile_widget.dart';
-import 'package:wateen_app/l10n/app_localizations.dart';
 
-class ConversationsView extends StatefulWidget {
-  const ConversationsView({super.key});
+class PatientMessagesView extends StatefulWidget {
+  const PatientMessagesView({super.key});
 
   @override
-  State<ConversationsView> createState() => ConversationsViewState();
+  State<PatientMessagesView> createState() => _PatientMessagesViewState();
 }
 
-class ConversationsViewState extends State<ConversationsView> {
-  final TextEditingController searchController = TextEditingController();
-  String query = '';
+class _PatientMessagesViewState extends State<PatientMessagesView> {
+  final TextEditingController _searchCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ChatCubit().loadConversations();
+  }
 
   @override
   void dispose() {
-    searchController.dispose();
+    _searchCtrl.dispose();
     super.dispose();
+  }
+
+  List<ConversationModel> _filtered(List<ConversationModel> all) {
+    final myId = AppPrefs.userId ?? '';
+    // ✅ Remove conversations where the "other user" is ourselves
+    // This happens when the API returns both sides of a conversation
+    final withoutSelf = all.where((c) => c.otherUserId != myId).toList();
+    final q = _searchCtrl.text.toLowerCase();
+    if (q.isEmpty) return withoutSelf;
+    return withoutSelf
+        .where((c) => c.doctorName.toLowerCase().contains(q))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocBuilder<ChatCubit, ChatState>(
-      builder: (context, state) {
-        final conversations =
-            state is ConversationsLoaded
-                ? state.conversations
-                : <ConversationModel>[];
+    return BlocProvider.value(
+      value: ChatCubit(),
+      child: Scaffold(
+        backgroundColor: colorScheme.background,
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Header ──────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Messages', style: textTheme.headlineMedium),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.search,
+                              color: colorScheme.outlineVariant, size: 20),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: _searchCtrl,
+                              onChanged: (_) => setState(() {}),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: colorScheme.inverseSurface),
+                              decoration: InputDecoration(
+                                hintText: 'Search doctors...',
+                                hintStyle: TextStyle(
+                                    color: colorScheme.outlineVariant,
+                                    fontSize: 14),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-        final filtered =
-            conversations
-                .where(
-                  (c) =>
-                      c.doctorName.toLowerCase().contains(query.toLowerCase()),
-                )
-                .toList();
+              // ── Conversations list ───────────────────────────────
+              Expanded(
+                child: BlocBuilder<ChatCubit, ChatState>(
+                  buildWhen: (prev, curr) => curr is ConversationsLoaded ||
+                      curr is ConversationsLoading ||
+                      curr is ConversationsError,
+                  builder: (context, state) {
+                    if (state is ConversationsLoading) {
+                      return const Center(
+                          child: CircularProgressIndicator());
+                    }
 
-        return Column(
+                    if (state is ConversationsError) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.wifi_off_rounded,
+                                size: 48,
+                                color: colorScheme.outlineVariant),
+                            const SizedBox(height: 12),
+                            Text(state.message,
+                                style: TextStyle(
+                                    color: colorScheme.outlineVariant)),
+                            TextButton(
+                              onPressed: () =>
+                                  ChatCubit().loadConversations(),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    final all = state is ConversationsLoaded
+                        ? state.conversations
+                        : <ConversationModel>[];
+                    final conversations = _filtered(all);
+
+                    if (conversations.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.chat_bubble_outline_rounded,
+                                size: 56,
+                                color: colorScheme.outlineVariant),
+                            const SizedBox(height: 12),
+                            Text('No messages yet',
+                                style: TextStyle(
+                                    color: colorScheme.outlineVariant,
+                                    fontSize: 15)),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () => ChatCubit().loadConversations(),
+                      child: ListView.builder(
+                        itemCount: conversations.length,
+                        itemBuilder: (context, index) {
+                          final conv = conversations[index];
+                          return _ConversationTile(
+                            conversation: conv,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BlocProvider.value(
+                                  value: ChatCubit(),
+                                  child: ChatView(
+                                      conversation: conv),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Conversation Tile ─────────────────────────────────────────────────────────
+
+class _ConversationTile extends StatelessWidget {
+  final ConversationModel conversation;
+  final VoidCallback onTap;
+
+  const _ConversationTile({
+    required this.conversation,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: colorScheme.primary,
+          border: Border(
+            bottom: BorderSide(
+                color: colorScheme.surface, width: 1),
+          ),
+        ),
+        child: Row(
           children: [
-            // ── Header ───────────────────────────
-            Container(
-              color: colorScheme.primary,
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            // ✅ Doctor profile picture with initials fallback
+            Stack(
+              children: [
+                DoctorAvatarWidget(
+                  imageUrl: conversation.profilePictureUrl,
+                  initials: conversation.initials,
+                  radius: 26,
+                  backgroundColor:
+                      conversation.color.withOpacity(0.15),
+                  initialsColor: conversation.color,
+                ),
+                if (conversation.isOnline)
+                  Positioned(
+                    bottom: 1,
+                    right: 1,
+                    child: Container(
+                      width: 12, height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: colorScheme.primary, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            const SizedBox(width: 14),
+
+            // Info
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.messages,
-                    style: textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: searchController,
-                      onChanged: (v) => setState(() => query = v),
-                      style: textTheme.bodyMedium,
-                      decoration: InputDecoration(
-                        hintText: l10n.searchDoctors,
-                        hintStyle: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search_rounded,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 20,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        conversation.doctorName,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: conversation.unreadCount > 0
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: colorScheme.inverseSurface,
                         ),
                       ),
-                    ),
+                      Text(
+                        conversation.timeAgo,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: conversation.unreadCount > 0
+                              ? colorScheme.secondary
+                              : colorScheme.outlineVariant,
+                          fontWeight: conversation.unreadCount > 0
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          conversation.lastMessage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: conversation.unreadCount > 0
+                                ? colorScheme.inverseSurface
+                                : colorScheme.outlineVariant,
+                            fontWeight: conversation.unreadCount > 0
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                      if (conversation.unreadCount > 0)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          width: 20, height: 20,
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              conversation.unreadCount > 9
+                                  ? '9+'
+                                  : conversation.unreadCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
             ),
-
-            // ── Body ─────────────────────────────
-            Expanded(
-              child: _buildBody(
-                context,
-                state,
-                filtered,
-                colorScheme,
-                textTheme,
-                l10n,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildBody(
-    BuildContext context,
-    ChatState state,
-    List<ConversationModel> filtered,
-    ColorScheme colorScheme,
-    TextTheme textTheme,
-    dynamic l10n,
-  ) {
-    if (state is ConversationsLoading) {
-      return ListView.separated(
-        itemCount: 6,
-        separatorBuilder:
-            (_, __) => Divider(
-              height: 1,
-              indent: 76,
-              color: colorScheme.outline.withOpacity(0.2),
-            ),
-        itemBuilder: (_, __) => const ShimmerConversationTileWidget(),
-      );
-    }
-    if (state is ConversationsError) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.wifi_off_rounded,
-              size: 48,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              state.message,
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 16),
-            TextButton.icon(
-              onPressed: () => context.read<ChatCubit>().loadConversations(),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
-              style: TextButton.styleFrom(
-                foregroundColor: colorScheme.secondary,
-              ),
-            ),
           ],
         ),
-      );
-    }
-    if (filtered.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.noConversationsFound,
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
-    }
-    // Sort: most recent first
-    final sorted = [...filtered]..sort((a, b) {
-      if (a.lastDateTime == null && b.lastDateTime == null) return 0;
-      if (a.lastDateTime == null) return 1;
-      if (b.lastDateTime == null) return -1;
-      return b.lastDateTime!.compareTo(a.lastDateTime!); // newest first
-    });
-
-    return ListView.separated(
-      itemCount: sorted.length,
-      separatorBuilder:
-          (_, __) => Divider(
-            height: 1,
-            indent: 76,
-            color: colorScheme.outline.withOpacity(0.2),
-          ),
-      itemBuilder:
-          (_, i) => ConversationTileWidget(
-            conversation: sorted[i],
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (_) => BlocProvider.value(
-                          value: context.read<ChatCubit>(),
-                          child: ChatView(conversation: sorted[i]),
-                        ),
-                  ),
-                ).then((_) {
-                  if (context.mounted) {
-                    context.read<ChatCubit>().loadConversations();
-                  }
-                }),
-          ),
+      ),
     );
   }
 }

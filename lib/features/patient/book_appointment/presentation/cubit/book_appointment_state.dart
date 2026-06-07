@@ -1,5 +1,6 @@
 // lib/features/patient/book_appointment/presentation/cubit/book_appointment_state.dart
 
+import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/cubit/doctor_calendy_state.dart';
 import 'package:wateen_app/features/patient/book_appointment/data/models/book_appointment_model.dart';
 
 abstract class BookAppointmentState {}
@@ -37,3 +38,23 @@ class BookAppointmentSlotsError extends BookAppointmentState {
 class BookAppointmentBooking extends BookAppointmentState {}
 
 class BookAppointmentSuccess extends BookAppointmentState {}
+
+// Add to existing states:
+
+class CalendlyLoading extends BookAppointmentState {}
+
+class CalendlyLoaded extends BookAppointmentState {
+  final List<CalendlyEventTypeModel> eventTypes;
+  final String doctorId;
+  CalendlyLoaded(this.eventTypes, this.doctorId);
+}
+
+class CalendlyNotSetup extends BookAppointmentState {
+  final String doctorId;
+  CalendlyNotSetup(this.doctorId);
+}
+
+class CalendlyError extends BookAppointmentState {
+  final String message;
+  CalendlyError(this.message);
+}

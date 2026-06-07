@@ -2,215 +2,198 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wateen_app/features/doctor_role/appointments/data/models/doctor_appointment_model.dart';
 import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_cubit.dart';
 import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_state.dart';
-import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/views/widgets/manage_availability_banner_widget.dart';
-import 'widgets/appointment_card_widget.dart';
-import 'widgets/appointment_details_sheet_widget.dart';
+import 'package:wateen_app/features/doctor_role/patients/presentation/views/widgets/patient_detail_sheet.dart';
 
-class DoctorAppointmentsView extends StatelessWidget {
+class DoctorAppointmentsView extends StatefulWidget {
   const DoctorAppointmentsView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => DoctorAppointmentsCubit()..fetchAppointments(),
-      child: const _DoctorAppointmentsBody(),
-    );
-  }
+  State<DoctorAppointmentsView> createState() => _DoctorAppointmentsViewState();
 }
 
-class _DoctorAppointmentsBody extends StatefulWidget {
-  const _DoctorAppointmentsBody();
-
-  @override
-  State<_DoctorAppointmentsBody> createState() =>
-      _DoctorAppointmentsBodyState();
-}
-
-class _DoctorAppointmentsBodyState extends State<_DoctorAppointmentsBody> {
+class _DoctorAppointmentsViewState extends State<DoctorAppointmentsView> {
+  late final DoctorAppointmentsCubit _cubit;
   bool _isUpcomingTab = true;
 
-  void _showDetails(DoctorAppointmentModel appointment) {
+  @override
+  void initState() {
+    super.initState();
+    _cubit = DoctorAppointmentsCubit()..fetchAppointments();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
+
+  void _showPatientSheet(DoctorAppointmentModel appt) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => BlocProvider.value(
-        value: context.read<DoctorAppointmentsCubit>(),
-        child: AppointmentDetailsSheetWidget(appointment: appointment),
+      builder: (_) => PatientDetailSheet(
+        patientId: appt.patientId,
+        appointmentId: appt.id, // pass appointmentId for Complete button
       ),
-    );
+    ).then((completed) {
+      if (completed == true) {
+        // Refresh appointments after completing
+        _cubit.fetchAppointments();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    const primaryRed = Color(0xFFDC2626);
 
-    return Scaffold(
-      backgroundColor: colorScheme.background,
-      body: SafeArea(
-        child: BlocConsumer<DoctorAppointmentsCubit, DoctorAppointmentsState>(
-          listener: (context, state) {
-            if (state is DoctorAppointmentActionSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+    return BlocProvider.value(
+      value: _cubit,
+      child: Scaffold(
+        backgroundColor: colorScheme.background,
+        body: SafeArea(
+          child: BlocConsumer<DoctorAppointmentsCubit, DoctorAppointmentsState>(
+            listener: (context, state) {
+              if (state is DoctorAppointmentActionSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(state.message),
                   backgroundColor: Colors.green,
                   behavior: SnackBarBehavior.floating,
-                ),
-              );
-            } else if (state is DoctorAppointmentActionError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                ));
+              } else if (state is DoctorAppointmentActionError) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(state.message),
                   backgroundColor: Colors.red,
                   behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Header ─────────────────────────────────────────────────
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Appointments',
-                        style: GoogleFonts.archivo(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      // Refresh button
-                      GestureDetector(
-                        onTap: () => context
-                            .read<DoctorAppointmentsCubit>()
-                            .fetchAppointments(),
-                        child: const Icon(
-                          Icons.refresh_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ));
+              }
+            },
+            builder: (context, state) {
+              // Get appointments from state
+              List<DoctorAppointmentModel> upcoming = [];
+              List<DoctorAppointmentModel> completed = [];
 
-                // ── Tab bar ────────────────────────────────────────────────
-                Container(
-                  color: colorScheme.primary,
-                  child: Row(
-                    children: [
-                      _TabButton(
-                        label: 'Upcoming',
-                        isSelected: _isUpcomingTab,
-                        onTap: () => setState(() => _isUpcomingTab = true),
-                      ),
-                      _TabButton(
-                        label: 'Completed',
-                        isSelected: !_isUpcomingTab,
-                        onTap: () => setState(() => _isUpcomingTab = false),
-                      ),
-                    ],
-                  ),
-                ),
-ManageAvailabilityBannerWidget(
-  onTap: () => context.push('/doctorCalendly'),
-),
-                // ── Body ───────────────────────────────────────────────────
-                Expanded(
-                  child: switch (state) {
-                    DoctorAppointmentsLoading() => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    DoctorAppointmentsError(:final message) => Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+              if (state is DoctorAppointmentsLoaded) {
+                upcoming = state.appointments
+                    .where((a) =>
+                        a.status == AppointmentStatus.upcoming ||
+                        a.status == AppointmentStatus.pending)
+                    .toList();
+                completed = state.appointments
+                    .where((a) =>
+                        a.status == AppointmentStatus.completed ||
+                        a.status == AppointmentStatus.cancelled)
+                    .toList();
+              }
+
+              return Column(
+                children: [
+                  // ── Header ────────────────────────────────────
+                  Container(
+                    color: primaryRed,
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
-                              Icons.error_outline_rounded,
-                              size: 48,
-                              color: colorScheme.error,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              message,
-                              style: TextStyle(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            TextButton(
-                              onPressed: () => context
-                                  .read<DoctorAppointmentsCubit>()
-                                  .fetchAppointments(),
-                              child: Text(
-                                'Retry',
-                                style:
-                                    TextStyle(color: colorScheme.secondary),
-                              ),
+                            Text('Appointments',
+                                style: GoogleFonts.archivo(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                )),
+                            GestureDetector(
+                              onTap: _cubit.fetchAppointments,
+                              child: const Icon(Icons.refresh_rounded,
+                                  color: Colors.white),
                             ),
                           ],
                         ),
-                      ),
-                    DoctorAppointmentsLoaded(:final upcoming, :final completed) =>
-                      _buildList(
-                        context,
-                        _isUpcomingTab ? upcoming : completed,
-                        colorScheme,
-                      ),
-                    // Action loading / success / error — keep showing last list
-                    _ => _buildList(context, [], colorScheme),
-                  },
-                ),
-              ],
-            );
-          },
+                        const SizedBox(height: 16),
+                        // Tab bar
+                        Row(
+                          children: [
+                            _Tab(
+                              label: 'Upcoming',
+                              count: upcoming.length,
+                              isSelected: _isUpcomingTab,
+                              onTap: () =>
+                                  setState(() => _isUpcomingTab = true),
+                            ),
+                            const SizedBox(width: 8),
+                            _Tab(
+                              label: 'Completed',
+                              count: completed.length,
+                              isSelected: !_isUpcomingTab,
+                              onTap: () =>
+                                  setState(() => _isUpcomingTab = false),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+
+                  // ── Body ──────────────────────────────────────
+                  Expanded(
+                    child: state is DoctorAppointmentsLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : state is DoctorAppointmentsError
+                            ? Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.error_outline_rounded,
+                                        size: 48, color: colorScheme.error),
+                                    const SizedBox(height: 12),
+                                    Text(state.message),
+                                    TextButton(
+                                      onPressed: _cubit.fetchAppointments,
+                                      child: const Text('Retry'),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : _buildList(
+                                context,
+                                _isUpcomingTab ? upcoming : completed,
+                                colorScheme,
+                                primaryRed,
+                              ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildList(
-    BuildContext context,
-    List<DoctorAppointmentModel> list,
-    ColorScheme colorScheme,
-  ) {
+  Widget _buildList(BuildContext context, List<DoctorAppointmentModel> list,
+      ColorScheme colorScheme, Color primaryRed) {
     if (list.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.calendar_today_rounded,
-              size: 48,
-              color: colorScheme.outlineVariant,
-            ),
+            Icon(Icons.calendar_today_rounded,
+                size: 48, color: colorScheme.outlineVariant),
             const SizedBox(height: 12),
             Text(
               _isUpcomingTab
                   ? 'No upcoming appointments'
                   : 'No completed appointments',
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
+              style: TextStyle(color: colorScheme.outlineVariant),
             ),
           ],
         ),
@@ -218,17 +201,17 @@ ManageAvailabilityBannerWidget(
     }
 
     return RefreshIndicator(
-      onRefresh: () =>
-          context.read<DoctorAppointmentsCubit>().fetchAppointments(),
+      onRefresh: _cubit.fetchAppointments,
       child: ListView.separated(
         padding: const EdgeInsets.all(20),
         itemCount: list.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
-          final appointment = list[index];
-          return AppointmentCardWidget(
-            appointment: appointment,
-            onTap: () => _showDetails(appointment),
+          final appt = list[index];
+          return _AppointmentCard(
+            appointment: appt,
+            primaryRed: primaryRed,
+            onTap: () => _showPatientSheet(appt),
           );
         },
       ),
@@ -236,43 +219,153 @@ ManageAvailabilityBannerWidget(
   }
 }
 
-class _TabButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
+// ── Appointment Card ──────────────────────────────────────────────────────────
+
+class _AppointmentCard extends StatelessWidget {
+  final DoctorAppointmentModel appointment;
+  final Color primaryRed;
   final VoidCallback onTap;
 
-  const _TabButton({
-    required this.label,
-    required this.isSelected,
+  const _AppointmentCard({
+    required this.appointment,
+    required this.primaryRed,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isVideo = appointment.type == AppointmentType.videoCall;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isSelected
-                  ? colorScheme.secondary
-                  : Colors.transparent,
-              width: 2,
+          color: colorScheme.primary,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2))
+          ],
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: primaryRed.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  appointment.patientName.isNotEmpty
+                      ? appointment.patientName
+                          .split(' ')
+                          .take(2)
+                          .map((p) => p[0])
+                          .join()
+                          .toUpperCase()
+                      : '?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: primaryRed,
+                  ),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appointment.patientName,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.inverseSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        isVideo
+                            ? Icons.videocam_outlined
+                            : Icons.local_hospital_outlined,
+                        size: 13,
+                        color: colorScheme.outlineVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${isVideo ? 'Video' : 'In-person'} · ${appointment.date} ${appointment.time}',
+                        style: TextStyle(
+                            fontSize: 12, color: colorScheme.outlineVariant),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    appointment.reason,
+                    style: TextStyle(
+                        fontSize: 12, color: colorScheme.outlineVariant),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+
+            // Arrow
+            Icon(Icons.chevron_right_rounded,
+                color: colorScheme.outlineVariant),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Tab widget ────────────────────────────────────────────────────────────────
+
+class _Tab extends StatelessWidget {
+  final String label;
+  final int count;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _Tab({
+    required this.label,
+    required this.count,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
-          label,
+          '$label ($count)',
           style: TextStyle(
-            fontSize: 14,
-            fontWeight:
-                isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected
-                ? colorScheme.secondary
-                : colorScheme.outlineVariant,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? const Color(0xFFDC2626) : Colors.white,
           ),
         ),
       ),

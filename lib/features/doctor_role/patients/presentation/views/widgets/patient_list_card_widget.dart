@@ -13,28 +13,27 @@ class PatientListCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    const primaryRed = Color(0xFFDC2626);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
           border: Border(
-            bottom: BorderSide(
-              color: Theme.of(context).colorScheme.surface,
-              width: 1,
-            ),
+            bottom: BorderSide(color: colorScheme.surface, width: 1),
           ),
         ),
         child: Row(
           children: [
-            // ── Avatar ──
+            // Avatar
             Container(
-              width: 44,
-              height: 44,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
-                color: const Color(0xFFE8EEF9),
+                color: primaryRed.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -43,7 +42,7 @@ class PatientListCardWidget extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF3B82F6),
+                    color: primaryRed,
                   ),
                 ),
               ),
@@ -51,7 +50,7 @@ class PatientListCardWidget extends StatelessWidget {
 
             const SizedBox(width: 14),
 
-            // ── Info ──
+            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,35 +60,51 @@ class PatientListCardWidget extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.inverseSurface,
+                      color: colorScheme.inverseSurface,
                     ),
                   ),
                   const SizedBox(height: 3),
-                  Text(
-                    '${patient.age} years • ${patient.condition}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
+                  Row(
+                    children: [
+                      if (patient.gender.isNotEmpty) ...[
+                        Icon(
+                          patient.gender.toLowerCase() == 'female'
+                              ? Icons.female_rounded
+                              : Icons.male_rounded,
+                          size: 14,
+                          color: colorScheme.outlineVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          patient.gender,
+                          style: TextStyle(
+                              fontSize: 12, color: colorScheme.outlineVariant),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                      if (patient.phoneNumber.isNotEmpty)
+                        Text(
+                          patient.phoneNumber,
+                          style: TextStyle(
+                              fontSize: 12, color: colorScheme.outlineVariant),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    'Last visit: ${patient.lastVisit}',
+                    patient.email,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context).colorScheme.outlineVariant,
+                      color: colorScheme.outlineVariant,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
 
-            // ── Arrow ──
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: Theme.of(context).colorScheme.outlineVariant,
-            ),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 16, color: colorScheme.outlineVariant),
           ],
         ),
       ),

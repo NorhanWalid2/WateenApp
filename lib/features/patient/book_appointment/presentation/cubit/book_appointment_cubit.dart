@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/features/doctor_role/doctor_calendy/presentation/cubit/doctor_calendy_state.dart';
 import 'package:wateen_app/features/patient/book_appointment/data/models/book_appointment_model.dart';
 import 'book_appointment_state.dart';
 
@@ -155,4 +156,29 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
       emit(BookAppointmentError('Something went wrong'));
     }
   }
+  Future<void> fetchEventTypes({required String doctorId}) async {
+  emit(CalendlyLoading());
+  try {
+    final response = await _dio.get(
+      "/api/Calendly/doctor/$doctorId/event-types",
+      options: _authOptions,
+    );
+    final List data = response.data is List ? response.data as List : [];
+    final eventTypes = data
+        .map((e) => CalendlyEventTypeModel.fromJson(e))
+        .where((e) => e.active)
+        .toList();
+    emit(CalendlyLoaded(eventTypes, doctorId));
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
+      emit(CalendlyNotSetup(doctorId));
+    } else {
+      emit(CalendlyError(
+        e.response?.data?['message'] ?? 'Failed to load booking options',
+      ));
+    }
+  } catch (_) {
+    emit(CalendlyError('Something went wrong'));
+  }
+}
 }

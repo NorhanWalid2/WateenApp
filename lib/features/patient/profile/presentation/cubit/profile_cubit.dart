@@ -20,7 +20,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   Options get _authOptions =>
       Options(headers: {"Authorization": "Bearer ${AppPrefs.token}"});
 
-  // ── Fetch ──────────────────────────────────────────────────────────────────
+  // ── Fetch ──────────────────────────────────────────────────────
   Future<void> fetchPatientProfile() async {
     emit(ProfileLoading());
     try {
@@ -29,34 +29,57 @@ class ProfileCubit extends Cubit<ProfileState> {
         options: _authOptions,
       );
       debugPrint('=== PROFILE RESPONSE: ${response.data}');
-      PatientProfileModel  profile = PatientProfileModel.fromJson(
+
+      PatientProfileModel profile = PatientProfileModel.fromJson(
         response.data as Map<String, dynamic>,
       );
-       final isValidUrl = profile.profilePictureUrl != null &&
-        (profile.profilePictureUrl!.startsWith('http://') ||
-         profile.profilePictureUrl!.startsWith('https://'));
 
-    if (!isValidUrl) {
-      final savedUrl = AppPrefs.profilePictureUrl;
-      if (savedUrl != null && savedUrl.isNotEmpty) {
-        profile = PatientProfileModel(
-          firstName:         profile.firstName,
-          lastName:          profile.lastName,
-          email:             profile.email,
-          address:           profile.address,
-          dateOfBirth:       profile.dateOfBirth,
-          gender:            profile.gender,
-          profilePictureUrl: savedUrl, // ← use saved URL
-          phoneNumber:       profile.phoneNumber,
-          nationalId:        profile.nationalId,
-          bloodType:         profile.bloodType,
-          systolicPressure:  profile.systolicPressure,
-          diastolicPressure: profile.diastolicPressure,
-          heartRate:         profile.heartRate,
-          sugar:             profile.sugar,
-        );
+      // ✅ Save userId from profile if not already saved
+      // Try profile.id first, fall back to existing AppPrefs.userId
+      try {
+        final profileId = (profile as dynamic).id as String?;
+        if (profileId != null && profileId.isNotEmpty) {
+          await AppPrefs.saveUserId(profileId);
+          debugPrint('=== SAVED userId: $profileId');
+        }
+      } catch (_) {
+        // PatientProfileModel doesn't have id field — use existing userId
+        debugPrint('=== userId from prefs: ${AppPrefs.userId}');
       }
-    }
+
+      // ✅ Check if API returned a valid picture URL
+      final isValidUrl = profile.profilePictureUrl != null &&
+          (profile.profilePictureUrl!.startsWith('http://') ||
+              profile.profilePictureUrl!.startsWith('https://'));
+
+      if (isValidUrl) {
+        // ✅ API returned a real URL — save it to prefs so it persists
+        await AppPrefs.saveProfilePicture(profile.profilePictureUrl!);
+        debugPrint('=== SAVED picture from API: ${profile.profilePictureUrl}');
+      } else {
+        // API returned invalid URL (e.g. "TEST.pNG") — restore from prefs
+        final savedUrl = AppPrefs.profilePictureUrl;
+        debugPrint('=== API url invalid, restoring from prefs: $savedUrl');
+        if (savedUrl != null && savedUrl.isNotEmpty) {
+          profile = PatientProfileModel(
+            firstName:         profile.firstName,
+            lastName:          profile.lastName,
+            email:             profile.email,
+            address:           profile.address,
+            dateOfBirth:       profile.dateOfBirth,
+            gender:            profile.gender,
+            profilePictureUrl: savedUrl,
+            phoneNumber:       profile.phoneNumber,
+            nationalId:        profile.nationalId,
+            bloodType:         profile.bloodType,
+            systolicPressure:  profile.systolicPressure,
+            diastolicPressure: profile.diastolicPressure,
+            heartRate:         profile.heartRate,
+            sugar:             profile.sugar,
+          );
+        }
+      }
+
       emit(ProfileLoaded(profile));
     } on DioException catch (e) {
       debugPrint('=== FETCH ERROR ${e.response?.statusCode}: ${e.response?.data}');
@@ -67,7 +90,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  // ── Update ─────────────────────────────────────────────────────────────────
+  // ── Update Profile ─────────────────────────────────────────────
   Future<void> updatePatientProfile({
     required String firstName,
     required String lastName,
@@ -75,7 +98,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     required String address,
     required String dateOfBirth,
     required String gender,
-     
   }) async {
     final current = _loadedProfile;
     if (current == null) return;
@@ -88,7 +110,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       final resolvedAddress   = address.isNotEmpty   ? address   : (current.address ?? '');
       final resolvedGender    = gender.isNotEmpty    ? gender    : (current.gender ?? 'male');
 
-      // Convert YYYY-MM-DD → YYYY-MM-DDT00:00:00Z
       String resolvedDob;
       if (dateOfBirth.isNotEmpty) {
         resolvedDob = '${dateOfBirth}T00:00:00Z';
@@ -96,18 +117,16 @@ class ProfileCubit extends Cubit<ProfileState> {
         resolvedDob = current.dateOfBirth ?? DateTime.now().toUtc().toIso8601String();
       }
 
-      // API requires "Male" or "Female" capitalized
       final capitalizedGender = resolvedGender[0].toUpperCase() +
           resolvedGender.substring(1).toLowerCase();
 
       final body = {
-        "firstName":         resolvedFirstName,
-        "lastName":          resolvedLastName,
-        "email":             resolvedEmail,
-         
-        "dateOfBirth":       resolvedDob,
-        "address":           resolvedAddress,
-        "gender":            capitalizedGender,
+        "firstName":   resolvedFirstName,
+        "lastName":    resolvedLastName,
+        "email":       resolvedEmail,
+        "dateOfBirth": resolvedDob,
+        "address":     resolvedAddress,
+        "gender":      capitalizedGender,
       };
 
       debugPrint('=== PUT body: $body');
@@ -125,7 +144,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         address:           resolvedAddress,
         dateOfBirth:       resolvedDob,
         gender:            resolvedGender,
-        profilePictureUrl: current.profilePictureUrl, 
+        profilePictureUrl: current.profilePictureUrl,
         phoneNumber:       current.phoneNumber,
         nationalId:        current.nationalId,
         bloodType:         current.bloodType,
@@ -148,7 +167,63 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  // ── Update Profile Picture ─────────────────────────────────────
+  Future<void> updateProfilePicture(File imageFile) async {
+    final current = _loadedProfile;
+    if (current == null) return;
+
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          imageFile.path,
+          filename: 'profile.jpg',
+          contentType: DioMediaType('image', 'jpeg'),
+        ),
+      });
+
+      final response = await _dio.put(
+        "/api/Profile/profile-picture",
+        data: formData,
+        options: Options(
+          headers: {"Authorization": "Bearer ${AppPrefs.token}"},
+          contentType: 'multipart/form-data',
+        ),
+      );
+
+      debugPrint('=== PICTURE RESPONSE: ${response.data}');
+
+      final newUrl = response.data?['profilePictureUrl'] as String?;
+      if (newUrl != null && newUrl.startsWith('http')) {
+        // ✅ Save immediately — per-user key so it survives logout
+        await AppPrefs.saveProfilePicture(newUrl);
+        debugPrint('=== SAVED new picture: $newUrl');
+
+        final updated = PatientProfileModel(
+          firstName:         current.firstName,
+          lastName:          current.lastName,
+          email:             current.email,
+          address:           current.address,
+          dateOfBirth:       current.dateOfBirth,
+          gender:            current.gender,
+          profilePictureUrl: newUrl,
+          phoneNumber:       current.phoneNumber,
+          nationalId:        current.nationalId,
+          bloodType:         current.bloodType,
+          systolicPressure:  current.systolicPressure,
+          diastolicPressure: current.diastolicPressure,
+          heartRate:         current.heartRate,
+          sugar:             current.sugar,
+        );
+        emit(ProfileLoaded(updated));
+      }
+    } on DioException catch (e) {
+      debugPrint('=== PICTURE UPDATE ERROR ${e.response?.statusCode}: ${e.response?.data}');
+    } catch (e) {
+      debugPrint('=== PICTURE UNEXPECTED: $e');
+    }
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────
   PatientProfileModel? get _loadedProfile {
     final s = state;
     if (s is ProfileLoaded) return s.profile;
@@ -173,56 +248,4 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
     return 'Request failed';
   }
-Future<void> updateProfilePicture(File imageFile) async {
-  final current = _loadedProfile;
-  if (current == null) return;
-
-  try {
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(
-        imageFile.path,
-        filename: 'profile.jpg',
-        contentType: DioMediaType('image', 'jpeg'),
-      ),
-    });
-
-    final response = await _dio.put(
-      "/api/Profile/profile-picture",
-      data: formData,
-      options: Options(
-        headers: {"Authorization": "Bearer ${AppPrefs.token}"},
-        contentType: 'multipart/form-data',
-      ),
-    );
-
-    debugPrint('=== PICTURE RESPONSE: ${response.data}');
-
-    // ── Use URL from response directly — don't refetch ──────────
-    final newPictureUrl = response.data?['profilePictureUrl'] as String?;
-    if (newPictureUrl != null && newPictureUrl.startsWith('http')) {
-      await AppPrefs.saveProfilePicture(newPictureUrl);
-      final updated = PatientProfileModel(
-        firstName:         current.firstName,
-        lastName:          current.lastName,
-        email:             current.email,
-        address:           current.address,
-        dateOfBirth:       current.dateOfBirth,
-        gender:            current.gender,
-        profilePictureUrl: newPictureUrl, // ← use Cloudinary URL
-        phoneNumber:       current.phoneNumber,
-        nationalId:        current.nationalId,
-        bloodType:         current.bloodType,
-        systolicPressure:  current.systolicPressure,
-        diastolicPressure: current.diastolicPressure,
-        heartRate:         current.heartRate,
-        sugar:             current.sugar,
-      );
-      emit(ProfileLoaded(updated));
-    }
-  } on DioException catch (e) {
-    debugPrint('=== PICTURE UPDATE ERROR ${e.response?.statusCode}: ${e.response?.data}');
-  } catch (e) {
-    debugPrint('=== PICTURE UNEXPECTED: $e');
-  }
-}
 }

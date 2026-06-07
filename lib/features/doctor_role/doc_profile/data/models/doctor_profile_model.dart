@@ -1,69 +1,70 @@
+// lib/features/doctor_role/profile/data/models/doctor_profile_model.dart
+
 class DoctorProfileModel {
-  final String name;
-  final String specialty;
-  final double rating;
-  final int reviewCount;
-  final int yearsExperience;
+  final String id;
+  final String firstName;
+  final String lastName;
   final String email;
-  final String phone;
-  final String location;
-  final List<DoctorQualificationModel> qualifications;
-  final List<DoctorCertificationModel> certifications;
-  final List<DoctorScheduleModel> schedule;
-  final List<String> areasOfExpertise;
-  final int totalPatients;
-  final int successRate;
+  final String phoneNumber;
+  final String specialization;
+  final String licenseNumber;
+  final String? bio;
+  final String? education;
+  final String? certifications;
+  final String? workplace;
+  final String? profilePictureUrl;
+  final int experienceYears;
 
-  DoctorProfileModel({
-    required this.name,
-    required this.specialty,
-    required this.rating,
-    required this.reviewCount,
-    required this.yearsExperience,
+  const DoctorProfileModel({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
     required this.email,
-    required this.phone,
-    required this.location,
-    required this.qualifications,
-    required this.certifications,
-    required this.schedule,
-    required this.areasOfExpertise,
-    required this.totalPatients,
-    required this.successRate,
+    required this.phoneNumber,
+    required this.specialization,
+    required this.licenseNumber,
+    this.bio,
+    this.education,
+    this.certifications,
+    this.workplace,
+    this.profilePictureUrl,
+    this.experienceYears = 0,
   });
 
-  String get initial => name[0].toUpperCase();
-}
+  String get fullName => '$firstName $lastName'.trim();
 
-class DoctorQualificationModel {
-  final String degree;
-  final String institution;
+  String get initials {
+    final parts = fullName.split(' ').where((p) => p.isNotEmpty).take(2);
+    return parts.map((p) => p[0].toUpperCase()).join();
+  }
 
-  DoctorQualificationModel({
-    required this.degree,
-    required this.institution,
-  });
-}
+  bool get hasValidProfilePicture =>
+      profilePictureUrl != null &&
+      (profilePictureUrl!.startsWith('http://') ||
+          profilePictureUrl!.startsWith('https://'));
 
-class DoctorCertificationModel {
-  final String title;
-  final String issuedBy;
-
-  DoctorCertificationModel({
-    required this.title,
-    required this.issuedBy,
-  });
-}
-
-class DoctorScheduleModel {
-  final String days;
-  final String startTime;
-  final String endTime;
-  final bool isEnabled;
-
-  DoctorScheduleModel({
-    required this.days,
-    required this.startTime,
-    required this.endTime,
-    this.isEnabled = true,
-  });
+  factory DoctorProfileModel.fromJson(Map<String, dynamic> json) {
+    // GET /api/Profile/doctorData response:
+    // { id, specialization, licenseNumber, bio, phoneNumber,
+    //   availabilitySchedule, experienceYears, education,
+    //   certifications, workplace }
+    // firstName/lastName/email come from JWT or separate user object
+    return DoctorProfileModel(
+      id: (json['id'] ?? '').toString(),
+      firstName: (json['firstName'] ?? json['first_name'] ?? '').toString(),
+      lastName: (json['lastName'] ?? json['last_name'] ?? '').toString(),
+      email: (json['email'] ?? '').toString(),
+      phoneNumber: (json['phoneNumber'] ?? '').toString(),
+      specialization: (json['specialization'] ?? json['specialty'] ?? '').toString(),
+      licenseNumber: (json['licenseNumber'] ?? '').toString(),
+      bio: json['bio']?.toString(),
+      education: json['education']?.toString(),
+      certifications: json['certifications']?.toString(),
+      workplace: (json['workPlace'] ?? json['workplace'])?.toString(),
+      // profilePictureUrl not in doctorData response — load from AppPrefs
+      profilePictureUrl: json['profilePictureUrl']?.toString() ??
+          json['profilePicture']?.toString(),
+      experienceYears: int.tryParse((json['experienceYears'] ?? 0).toString()) ?? 0,
+    );
+  }
 }
