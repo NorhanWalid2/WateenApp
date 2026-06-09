@@ -64,41 +64,41 @@ class PatientListCardWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      if (patient.gender.isNotEmpty) ...[
-                        Icon(
-                          patient.gender.toLowerCase() == 'female'
-                              ? Icons.female_rounded
-                              : Icons.male_rounded,
-                          size: 14,
-                          color: colorScheme.outlineVariant,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          patient.gender,
-                          style: TextStyle(
-                              fontSize: 12, color: colorScheme.outlineVariant),
-                        ),
-                        const SizedBox(width: 10),
-                      ],
-                      if (patient.phoneNumber.isNotEmpty)
-                        Text(
-                          patient.phoneNumber,
-                          style: TextStyle(
-                              fontSize: 12, color: colorScheme.outlineVariant),
-                        ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     if (patient.gender.isNotEmpty) ...[
+                  //       Icon(
+                  //         patient.gender.toLowerCase() == 'female'
+                  //             ? Icons.female_rounded
+                  //             : Icons.male_rounded,
+                  //         size: 14,
+                  //         color: colorScheme.outlineVariant,
+                  //       ),
+                  //       const SizedBox(width: 4),
+                  //       Text(
+                  //         patient.gender,
+                  //         style: TextStyle(
+                  //             fontSize: 12, color: colorScheme.outlineVariant),
+                  //       ),
+                  //       const SizedBox(width: 10),
+                  //     ],
+                  //     if (patient.phoneNumber.isNotEmpty)
+                  //       Text(
+                  //         patient.phoneNumber,
+                  //         style: TextStyle(
+                  //             fontSize: 12, color: colorScheme.outlineVariant),
+                  //       ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 3),
-                  Text(
-                    patient.email,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colorScheme.outlineVariant,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  // Text(
+                  //   patient.email,
+                  //   style: TextStyle(
+                  //     fontSize: 12,
+                  //     color: colorScheme.outlineVariant,
+                  //   ),
+                  //   overflow: TextOverflow.ellipsis,
+                  // ),
                 ],
               ),
             ),
