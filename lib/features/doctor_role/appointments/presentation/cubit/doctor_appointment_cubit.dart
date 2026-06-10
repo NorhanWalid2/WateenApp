@@ -28,8 +28,6 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
 
       print('APPOINTMENTS RAW: ${response.data}');
 
-      // Handle paginated { data: [...], pageNumber, totalCount }
-      // or plain List, or { appointments: [...] }
       List<dynamic> data = [];
       final raw = response.data;
       if (raw is List) {
@@ -40,13 +38,17 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
       }
 
       print('APPOINTMENTS COUNT: ${data.length}');
-      if (data.isNotEmpty) print('FIRST APPOINTMENT: ${data.first}');
+      if (data.isNotEmpty) print('FIRST APPOINTMENT RAW JSON: ${data.first}');
 
       _cachedAppointments = data
           .whereType<Map>()
           .map((e) => DoctorAppointmentModel.fromJson(
                 Map<String, dynamic>.from(e)))
           .toList();
+
+      for (final a in _cachedAppointments) {
+        print('PARSED >> id=${a.id} | status=${a.status} | patient=${a.patientName}');
+      }
 
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
     } on DioException catch (e) {
@@ -110,31 +112,54 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
 
   // ── Complete appointment ───────────────────────────────────────────
   Future<void> completeAppointment(String appointmentId) async {
+    print('COMPLETE ATTEMPT: id=$appointmentId');
     emit(DoctorAppointmentActionLoading(appointmentId));
     try {
-      await _dio.put(
+      final res = await _dio.put(
         "/api/Appointment/complete/$appointmentId",
         options: _authOptions,
       );
+      print('COMPLETE RESPONSE: status=${res.statusCode} data=${res.data}');
+
+      // ✅ Optimistic update — flip status locally immediately
+      _cachedAppointments = _cachedAppointments.map((a) {
+        if (a.id == appointmentId) {
+          return DoctorAppointmentModel(
+            id: a.id,
+            patientName: a.patientName,
+            patientAge: a.patientAge,
+            date: a.date,
+            time: a.time,
+            reason: a.reason,
+            type: a.type,
+            status: AppointmentStatus.completed,
+            patientId: a.patientId,
+          );
+        }
+        return a;
+      }).toList();
+
+      // ✅ Emit success THEN updated list
+      // Do NOT refetch — server may still return old status and overwrite the fix
       emit(DoctorAppointmentActionSuccess('Appointment marked as complete'));
-      await fetchAppointments();
+      emit(DoctorAppointmentsLoaded(_cachedAppointments));
     } on DioException catch (e) {
-      print('COMPLETE ERROR: ${e.response?.data}');
+      print('COMPLETE ERROR: status=${e.response?.statusCode} data=${e.response?.data}');
       emit(DoctorAppointmentActionError(
           _extractMessage(e, 'Failed to complete appointment')));
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
-    } catch (_) {
+    } catch (e, s) {
+      print('COMPLETE CATCH: $e\n$s');
       emit(DoctorAppointmentActionError('Something went wrong'));
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
     }
   }
 
-  /// Safely extract error message from DioException
-  /// response.data can be String, Map, or null
   String _extractMessage(DioException e, String fallback) {
     final data = e.response?.data;
     if (data == null) return fallback;
-    if (data is Map) return (data['message'] ?? data['title'] ?? fallback).toString();
+    if (data is Map)
+      return (data['message'] ?? data['title'] ?? fallback).toString();
     if (data is String && data.isNotEmpty) return data;
     return fallback;
   }

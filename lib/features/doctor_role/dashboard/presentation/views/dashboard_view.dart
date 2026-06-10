@@ -10,6 +10,7 @@ import 'package:wateen_app/features/doctor_role/dashboard/data/models/doctor_das
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/features/doctor_role/dashboard/presentation/cubit/doctor_dashboard_cubit.dart';
 import 'package:wateen_app/features/doctor_role/dashboard/presentation/cubit/doctor_dashboard_state.dart';
+import 'package:wateen_app/features/doctor_role/patients/presentation/views/widgets/patient_detail_sheet.dart';
 
 class DoctorDashboardView extends StatefulWidget {
   const DoctorDashboardView({super.key});
@@ -265,9 +266,21 @@ class _DoctorDashboardViewState extends State<DoctorDashboardView> {
                                             ? () => _openCalendlyUrl(
                                                 appt.calendlyJoinUrl!)
                                             : null,
-                                    onViewRecord: () {
-                                      context.push('/patientDetails',
-                                          extra: appt.patientId);
+                                    onViewRecord: () async {
+                                      final completed =
+                                          await showModalBottomSheet<bool>(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (_) => PatientDetailSheet(
+                                          patientId: appt.patientId,
+                                          appointmentId: appt.id,
+                                        ),
+                                      );
+                                      if (completed == true &&
+                                          context.mounted) {
+                                        _cubit.fetchDashboard();
+                                      }
                                     },
                                   ),
                                 ),

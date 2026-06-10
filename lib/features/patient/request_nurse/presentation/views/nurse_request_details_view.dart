@@ -20,6 +20,37 @@ class _NurseRequestDetailsViewState extends State<NurseRequestDetailsView> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   DateTime? _selectedDateTime;
+  String? _selectedGovernment;
+
+  static const List<String> _governments = [
+    'Cairo',
+    'Giza',
+    'Alexandria',
+    'Dakahlia',
+    'Red Sea',
+    'Beheira',
+    'Fayoum',
+    'Gharbia',
+    'Ismailia',
+    'Menofia',
+    'Minya',
+    'Qaliubiya',
+    'New Valley',
+    'Suez',
+    'Aswan',
+    'Assiut',
+    'Beni Suef',
+    'Port Said',
+    'Damietta',
+    'Sharkia',
+    'South Sinai',
+    'Kafr Al sheikh',
+    'Matrouh',
+    'Luxor',
+    'Qena',
+    'North Sinai',
+    'Sohag',
+  ];
 
   Future<void> _pickDateTime() async {
     final colorScheme = Theme.of(context).colorScheme;
@@ -93,6 +124,10 @@ class _NurseRequestDetailsViewState extends State<NurseRequestDetailsView> {
       _showError(context, 'Please enter a service description');
       return;
     }
+    if (_selectedGovernment == null) {
+      _showError(context, 'Please select your governorate');
+      return;
+    }
     if (_selectedDateTime == null) {
       _showError(context, 'Please select a requested time');
       return;
@@ -102,6 +137,7 @@ class _NurseRequestDetailsViewState extends State<NurseRequestDetailsView> {
       nurseId: widget.nurse.id,
       address: _addressController.text.trim(),
       serviceDescription: _descriptionController.text.trim(),
+      government: _selectedGovernment!,
       requestedTime: _selectedDateTime!,
     );
   }
@@ -280,6 +316,47 @@ class _NurseRequestDetailsViewState extends State<NurseRequestDetailsView> {
                                   color: colorScheme.outline.withOpacity(0.3),
                                 ),
 
+                                // Government
+                                _FormField(
+                                  icon: Icons.map_outlined,
+                                  label: 'Governorate',
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: _selectedGovernment,
+                                      isExpanded: true,
+                                      isDense: true,
+                                      hint: Text(
+                                        'Select your governorate...',
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                      ),
+                                      icon: Icon(
+                                        Icons.keyboard_arrow_down_rounded,
+                                        color: colorScheme.onSurfaceVariant,
+                                        size: 20,
+                                      ),
+                                      dropdownColor: colorScheme.primary,
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.inverseSurface,
+                                      ),
+                                      items: _governments
+                                          .map((g) => DropdownMenuItem(
+                                                value: g,
+                                                child: Text(g),
+                                              ))
+                                          .toList(),
+                                      onChanged: (val) =>
+                                          setState(() => _selectedGovernment = val),
+                                    ),
+                                  ),
+                                ),
+
+                                Divider(
+                                  height: 1,
+                                  color: colorScheme.outline.withOpacity(0.3),
+                                ),
+
                                 // Date & Time
                                 _FormField(
                                   icon: Icons.calendar_today_rounded,
@@ -447,4 +524,4 @@ class _FormField extends StatelessWidget {
       ),
     );
   }
-}
+}   

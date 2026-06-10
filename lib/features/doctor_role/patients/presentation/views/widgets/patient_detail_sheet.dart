@@ -26,10 +26,17 @@ class PatientDetailSheet extends StatelessWidget {
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends StatefulWidget {
   final String patientId;
   final String? appointmentId;
   const _Body({required this.patientId, required this.appointmentId});
+
+  @override
+  State<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<_Body> {
+  bool _completing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +69,7 @@ class _Body extends StatelessWidget {
                     TextButton(
                       onPressed: () => context
                           .read<PatientDetailCubit>()
-                          .fetchPatient(patientId),
+                          .fetchPatient(widget.patientId),
                       child: const Text('Retry'),
                     ),
                   ],
@@ -178,32 +185,52 @@ class _Body extends StatelessWidget {
 
                 // ── 3 Action buttons ──────────────────────────────
                 // Complete (only when from appointments)
-                if (appointmentId != null) ...[
+                if (widget.appointmentId != null) ...[
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () async {
-                        final cubit = context.read<PatientDetailCubit>();
-                        final success = await cubit.completeAppointment(appointmentId!);
-                        if (context.mounted) {
-                          Navigator.pop(context, success);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(success
-                                ? 'Appointment completed!'
-                                : 'Failed to complete appointment'),
-                            backgroundColor: success ? Colors.green : Colors.red,
-                            behavior: SnackBarBehavior.floating,
-                          ));
-                        }
-                      },
-                      icon: const Icon(Icons.check_circle_outline_rounded,
-                          size: 18, color: Colors.white),
-                      label: const Text('Mark as Complete',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                      onPressed: _completing
+                          ? null
+                          : () async {
+                              setState(() => _completing = true);
+                              final cubit = context.read<PatientDetailCubit>();
+                              final success = await cubit
+                                  .completeAppointment(widget.appointmentId!);
+                              if (context.mounted) {
+                                setState(() => _completing = false);
+                                Navigator.pop(context, success);
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(success
+                                      ? 'Appointment completed!'
+                                      : 'Failed to complete appointment'),
+                                  backgroundColor:
+                                      success ? Colors.green : Colors.red,
+                                  behavior: SnackBarBehavior.floating,
+                                ));
+                              }
+                            },
+                      icon: _completing
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Icon(Icons.check_circle_outline_rounded,
+                              size: 18, color: Colors.white),
+                      label: Text(
+                        _completing ? 'Completing...' : 'Mark as Complete',
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
+                        disabledBackgroundColor:
+                            Colors.green.withOpacity(0.5),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         elevation: 0,
                       ),
                     ),
@@ -224,7 +251,7 @@ class _Body extends StatelessWidget {
                           Navigator.pop(context);
                           context.push('/doctorChat', extra: {
                             'patientName': patient.name,
-                            'patientId': patientId,
+                            'patientId': widget.patientId,
                           });
                         },
                       ),

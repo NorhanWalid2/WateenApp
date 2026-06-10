@@ -61,12 +61,13 @@ class NurseCubit extends Cubit<NurseState> {
     required String nurseId,
     required String address,
     required String serviceDescription,
+    required String government,
     required DateTime requestedTime,
   }) async {
     emit(NurseBookingLoading());
     try {
       final token = AppPrefs.token;
-      print('BOOKING DATA: nurseId=$nurseId, address=$address');
+      print('BOOKING DATA: nurseId=$nurseId, address=$address, government=$government');
       await _dio.post(
         "/api/HomeService/book",
         options: Options(headers: {"Authorization": "Bearer $token"}),
@@ -74,6 +75,7 @@ class NurseCubit extends Cubit<NurseState> {
           "nurseId": nurseId,
           "address": address,
           "serviceDescription": serviceDescription,
+          "government": government,
           "requestedTime": requestedTime.toUtc().toIso8601String(),
         },
       );
