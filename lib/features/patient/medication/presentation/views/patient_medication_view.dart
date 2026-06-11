@@ -1,50 +1,49 @@
- 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wateen_app/features/doctor_role/prescriptions/data/prescription_model.dart';
 import 'package:wateen_app/features/patient/medication/data/models/patient_medication_model.dart';
 import 'package:wateen_app/features/patient/medication/presentation/cubit/medication_cubit.dart';
 import 'package:wateen_app/features/patient/medication/presentation/cubit/medication_state.dart';
 
- 
 class PatientMedicationsView extends StatefulWidget {
   const PatientMedicationsView({super.key});
- 
+
   @override
   State<PatientMedicationsView> createState() => _PatientMedicationsViewState();
 }
- 
+
 class _PatientMedicationsViewState extends State<PatientMedicationsView> {
   bool _isActiveTab = true;
   late final PatientMedicationCubit _cubit;
- 
+
   @override
   void initState() {
     super.initState();
     _cubit = PatientMedicationCubit()..fetchMedications(activeOnly: true);
   }
- 
+
   @override
   void dispose() {
     _cubit.close();
     super.dispose();
   }
- 
+
   void _switchTab(bool active) {
     setState(() => _isActiveTab = active);
     _cubit.fetchMedications(activeOnly: active);
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     const primaryRed = Color(0xFFDC2626);
- 
+
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         body: SafeArea(
           child: Column(
             children: [
@@ -60,7 +59,8 @@ class _PatientMedicationsViewState extends State<PatientMedicationsView> {
                         GestureDetector(
                           onTap: () => context.pop(),
                           child: Container(
-                            width: 36, height: 36,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
                               color: colorScheme.surface,
                               borderRadius: BorderRadius.circular(10),
@@ -70,15 +70,18 @@ class _PatientMedicationsViewState extends State<PatientMedicationsView> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text('My Medications',
-                            style: GoogleFonts.archivo(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.inverseSurface,
-                            )),
+                        Text(
+                          'My Medications',
+                          style: GoogleFonts.archivo(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.inverseSurface,
+                          ),
+                        ),
                         const Spacer(),
                         GestureDetector(
-                          onTap: () => _cubit.fetchMedications(activeOnly: _isActiveTab),
+                          onTap: () =>
+                              _cubit.fetchMedications(activeOnly: _isActiveTab),
                           child: Icon(Icons.refresh_rounded,
                               color: colorScheme.inverseSurface),
                         ),
@@ -107,13 +110,16 @@ class _PatientMedicationsViewState extends State<PatientMedicationsView> {
                   ],
                 ),
               ),
- 
+
               // ── Body ─────────────────────────────────────────────
               Expanded(
-                child: BlocBuilder<PatientMedicationCubit, PatientMedicationState>(
+                child: BlocBuilder<PatientMedicationCubit,
+                    PatientMedicationState>(
                   builder: (context, state) {
                     if (state is PatientMedicationLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: CircularProgressIndicator(
+                              color: primaryRed, strokeWidth: 2));
                     }
                     if (state is PatientMedicationError) {
                       return Center(
@@ -133,10 +139,11 @@ class _PatientMedicationsViewState extends State<PatientMedicationsView> {
                         ),
                       );
                     }
+
                     final meds = state is PatientMedicationLoaded
                         ? state.medications
                         : <PatientMedicationModel>[];
- 
+
                     if (meds.isEmpty) {
                       return Center(
                         child: Column(
@@ -149,14 +156,16 @@ class _PatientMedicationsViewState extends State<PatientMedicationsView> {
                               _isActiveTab
                                   ? 'No active medications'
                                   : 'No past medications',
-                              style: TextStyle(color: colorScheme.outlineVariant),
+                              style: TextStyle(
+                                  color: colorScheme.outlineVariant),
                             ),
                           ],
                         ),
                       );
                     }
- 
+
                     return RefreshIndicator(
+                      color: primaryRed,
                       onRefresh: () =>
                           _cubit.fetchMedications(activeOnly: _isActiveTab),
                       child: ListView.separated(
@@ -178,24 +187,27 @@ class _PatientMedicationsViewState extends State<PatientMedicationsView> {
     );
   }
 }
- 
+
+// ── Medication Card ───────────────────────────────────────────────────────────
 class _MedicationCard extends StatelessWidget {
   final PatientMedicationModel med;
   const _MedicationCard({required this.med});
- 
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     const primaryRed = Color(0xFFDC2626);
- 
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.primary,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04),
-              blurRadius: 4, offset: const Offset(0, 1)),
+          BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 1)),
         ],
       ),
       child: Column(
@@ -204,7 +216,8 @@ class _MedicationCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36, height: 36,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: primaryRed.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -214,16 +227,18 @@ class _MedicationCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(med.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: colorScheme.inverseSurface,
-                    )),
+                child: Text(
+                  med.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.inverseSurface,
+                  ),
+                ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: med.isActive
                       ? Colors.green.withOpacity(0.1)
@@ -243,63 +258,83 @@ class _MedicationCard extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 10),
-          Text(med.dosage,
-              style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: primaryRed)),
+
+          Text(
+            med.dosage,
+            style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: primaryRed),
+          ),
+
           const SizedBox(height: 8),
-          _Row(icon: Icons.access_time_rounded,
-              text: 'Frequency: ${med.frequency}'),
+
+          _Row(
+            icon: Icons.access_time_rounded,
+            text: 'Frequency: ${PrescriptionModel.formatFrequency(med.frequency)}',
+          ),
           const SizedBox(height: 4),
-          _Row(icon: Icons.calendar_today_rounded,
-              text: 'Duration: ${med.duration}'),
+          _Row(
+            icon: Icons.calendar_today_rounded,
+            text: 'Duration: ${med.duration}',
+          ),
           if (med.instructions.isNotEmpty) ...[
             const SizedBox(height: 4),
-            _Row(icon: Icons.info_outline_rounded,
-                text: 'Instructions: ${med.instructions}'),
+            _Row(
+              icon: Icons.info_outline_rounded,
+              text: 'Instructions: ${med.instructions}',
+            ),
           ],
+
           const SizedBox(height: 8),
-          Text('Started: ${med.startDate}',
-              style: TextStyle(
-                  fontSize: 12, color: colorScheme.outlineVariant)),
+
+          Text(
+            'Started: ${med.startDate}',
+            style:
+                TextStyle(fontSize: 12, color: colorScheme.outlineVariant),
+          ),
         ],
       ),
     );
   }
 }
- 
+
+// ── Row helper ────────────────────────────────────────────────────────────────
 class _Row extends StatelessWidget {
   final IconData icon;
   final String text;
   const _Row({required this.icon, required this.text});
- 
+
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 14,
-            color: Theme.of(context).colorScheme.outlineVariant),
+        Icon(icon, size: 14, color: Theme.of(context).colorScheme.outlineVariant),
         const SizedBox(width: 6),
         Expanded(
-          child: Text(text,
-              style: TextStyle(
-                  fontSize: 13,
-                  color: Theme.of(context).colorScheme.outlineVariant)),
+          child: Text(
+            text,
+            style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.outlineVariant),
+          ),
         ),
       ],
     );
   }
 }
- 
+
+// ── Tab button ────────────────────────────────────────────────────────────────
 class _TabBtn extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
-  const _TabBtn({required this.label, required this.isActive, required this.onTap});
- 
+  const _TabBtn(
+      {required this.label, required this.isActive, required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     const primaryRed = Color(0xFFDC2626);
@@ -309,22 +344,26 @@ class _TabBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? primaryRed : Theme.of(context).colorScheme.surface,
+          color:
+              isActive ? primaryRed : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-              color: isActive
-                  ? primaryRed
-                  : Theme.of(context).colorScheme.outlineVariant),
+            color: isActive
+                ? primaryRed
+                : Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         child: Center(
-          child: Text(label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isActive
-                    ? Colors.white
-                    : Theme.of(context).colorScheme.outlineVariant,
-              )),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isActive
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.outlineVariant,
+            ),
+          ),
         ),
       ),
     );

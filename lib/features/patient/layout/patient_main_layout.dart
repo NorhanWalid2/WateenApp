@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wateen_app/features/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:wateen_app/features/patient/ai_assistant/presentation/views/ai_assistant_view.dart';
 import 'package:wateen_app/features/patient/appointments/presentation/views/appointments_view.dart';
 import 'package:wateen_app/features/patient/health/presentation/views/health_view.dart';
@@ -51,7 +52,9 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
       const ProfileView(),
     ];
 
-    return Scaffold(
+    return BlocProvider(
+      create: (_) => NotificationCubit()..fetchNotifications(),
+      child: Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: SafeArea(
@@ -122,6 +125,7 @@ class PatientMainLayoutState extends State<PatientMainLayout> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

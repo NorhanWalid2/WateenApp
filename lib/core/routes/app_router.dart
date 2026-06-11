@@ -1,6 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
+import 'package:wateen_app/features/notifications/presentation/views/notification_view.dart';
 import 'package:wateen_app/features/admin_roles/admin_settings/presentation/views/settings_view.dart';
 import 'package:wateen_app/features/admin_roles/doctors_management/presentation/views/doctors_management_view.dart';
 import 'package:wateen_app/features/admin_roles/homeService_management/presentation/views/home_service_management_view.dart';
@@ -93,6 +94,7 @@ final GoRouter router = GoRouter(
     GoRoute(path: '/patient', builder: (_, __) => const PatientMainLayout()),
     GoRoute(path: '/home', builder: (_, __) => const HomeView()),
     GoRoute(path: '/profile', builder: (_, __) => ProfileView()),
+    GoRoute(path: '/notifications', builder: (_, __) => const NotificationView()),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsView()),
     GoRoute(
       path: '/appointments',
