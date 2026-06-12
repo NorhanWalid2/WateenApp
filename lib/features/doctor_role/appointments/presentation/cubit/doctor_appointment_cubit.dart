@@ -1,21 +1,36 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/features/doctor_role/appointments/data/models/doctor_appointment_model.dart';
 import 'package:wateen_app/features/doctor_role/appointments/presentation/cubit/doctor_appointment_state.dart';
 
 class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
-  final Dio _dio = Dio(
-    BaseOptions(baseUrl: "https://wateen.runasp.net"),
-  );
-
+  final Dio _dio = Dio(BaseOptions(baseUrl: "https://wateen.runasp.net"));
   List<DoctorAppointmentModel> _cachedAppointments = [];
+  Set<String> _locallyCompleted = {};
 
-  DoctorAppointmentsCubit() : super(DoctorAppointmentsInitial());
+  DoctorAppointmentsCubit() : super(DoctorAppointmentsInitial()) {
+    _loadLocallyCompleted();
+  }
 
   Options get _authOptions => Options(
         headers: {"Authorization": "Bearer ${AppPrefs.token}"},
       );
+
+  // ✅ Key scoped by userId — each doctor has their own completed list
+  String get _prefKey => 'completed_appointments_${AppPrefs.userId ?? "unknown"}';
+
+  Future<void> _loadLocallyCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_prefKey) ?? [];
+    _locallyCompleted = saved.toSet();
+  }
+
+  Future<void> _saveLocallyCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_prefKey, _locallyCompleted.toList());
+  }
 
   // ── Fetch all doctor appointments ─────────────────────────────────
   Future<void> fetchAppointments() async {
@@ -26,8 +41,6 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
         options: _authOptions,
       );
 
-      print('APPOINTMENTS RAW: ${response.data}');
-
       List<dynamic> data = [];
       final raw = response.data;
       if (raw is List) {
@@ -37,18 +50,31 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
         if (inner is List) data = inner;
       }
 
-      print('APPOINTMENTS COUNT: ${data.length}');
-      if (data.isNotEmpty) print('FIRST APPOINTMENT RAW JSON: ${data.first}');
-
       _cachedAppointments = data
           .whereType<Map>()
           .map((e) => DoctorAppointmentModel.fromJson(
                 Map<String, dynamic>.from(e)))
           .toList();
 
-      for (final a in _cachedAppointments) {
-        print('PARSED >> id=${a.id} | status=${a.status} | patient=${a.patientName}');
-      }
+      // ✅ Override status for locally completed appointments
+      // Compensates for backend not persisting the status change
+      _cachedAppointments = _cachedAppointments.map((a) {
+        if (_locallyCompleted.contains(a.id) &&
+            a.status != AppointmentStatus.completed) {
+          return DoctorAppointmentModel(
+            id: a.id,
+            patientName: a.patientName,
+            patientAge: a.patientAge,
+            date: a.date,
+            time: a.time,
+            reason: a.reason,
+            type: a.type,
+            status: AppointmentStatus.completed,
+            patientId: a.patientId,
+          );
+        }
+        return a;
+      }).toList();
 
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
     } on DioException catch (e) {
@@ -80,8 +106,7 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
       await fetchAppointments();
     } on DioException catch (e) {
       print('RESPOND ERROR: ${e.response?.data}');
-      emit(DoctorAppointmentActionError(
-          _extractMessage(e, 'Failed to respond')));
+      emit(DoctorAppointmentActionError(_extractMessage(e, 'Failed to respond')));
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
     } catch (_) {
       emit(DoctorAppointmentActionError('Something went wrong'));
@@ -101,8 +126,7 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
       await fetchAppointments();
     } on DioException catch (e) {
       print('CANCEL ERROR: ${e.response?.data}');
-      emit(DoctorAppointmentActionError(
-          _extractMessage(e, 'Failed to cancel')));
+      emit(DoctorAppointmentActionError(_extractMessage(e, 'Failed to cancel')));
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
     } catch (_) {
       emit(DoctorAppointmentActionError('Something went wrong'));
@@ -121,7 +145,10 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
       );
       print('COMPLETE RESPONSE: status=${res.statusCode} data=${res.data}');
 
-      // ✅ Optimistic update — flip status locally immediately
+      // ✅ Persist under this doctor's userId key
+      _locallyCompleted.add(appointmentId);
+      await _saveLocallyCompleted();
+
       _cachedAppointments = _cachedAppointments.map((a) {
         if (a.id == appointmentId) {
           return DoctorAppointmentModel(
@@ -139,8 +166,6 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
         return a;
       }).toList();
 
-      // ✅ Emit success THEN updated list
-      // Do NOT refetch — server may still return old status and overwrite the fix
       emit(DoctorAppointmentActionSuccess('Appointment marked as complete'));
       emit(DoctorAppointmentsLoaded(_cachedAppointments));
     } on DioException catch (e) {
@@ -158,8 +183,7 @@ class DoctorAppointmentsCubit extends Cubit<DoctorAppointmentsState> {
   String _extractMessage(DioException e, String fallback) {
     final data = e.response?.data;
     if (data == null) return fallback;
-    if (data is Map)
-      return (data['message'] ?? data['title'] ?? fallback).toString();
+    if (data is Map) return (data['message'] ?? data['title'] ?? fallback).toString();
     if (data is String && data.isNotEmpty) return data;
     return fallback;
   }

@@ -271,22 +271,23 @@ class DoctorCardWidget extends StatelessWidget {
         child: Row(
           children: [
             // ── Avatar ─────────────────────────────────────
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: colorScheme.secondary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  doctor.initials,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.secondary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: colorScheme.secondary.withOpacity(0.1),
+              backgroundImage: (doctor.profilePicture != null &&
+                      doctor.profilePicture!.startsWith('http'))
+                  ? NetworkImage(doctor.profilePicture!)
+                  : null,
+              child: (doctor.profilePicture == null ||
+                      !doctor.profilePicture!.startsWith('http'))
+                  ? Text(
+                      doctor.initials,
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.secondary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  : null,
             ),
             const SizedBox(width: 14),
 
@@ -368,9 +369,10 @@ class DoctorProfileSheet extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
         children: [
           // ── Handle ─────────────────────────────────────────
           Container(
@@ -386,19 +388,20 @@ class DoctorProfileSheet extends StatelessWidget {
           // ── Doctor header ───────────────────────────────────
           Row(
             children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: colorScheme.secondary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(doctor.initials,
-                      style: textTheme.titleLarge?.copyWith(
-                          color: colorScheme.secondary,
-                          fontWeight: FontWeight.w700)),
-                ),
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: colorScheme.secondary.withOpacity(0.1),
+                backgroundImage: (doctor.profilePicture != null &&
+                        doctor.profilePicture!.startsWith('http'))
+                    ? NetworkImage(doctor.profilePicture!)
+                    : null,
+                child: (doctor.profilePicture == null ||
+                        !doctor.profilePicture!.startsWith('http'))
+                    ? Text(doctor.initials,
+                        style: textTheme.titleLarge?.copyWith(
+                            color: colorScheme.secondary,
+                            fontWeight: FontWeight.w700))
+                    : null,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -428,7 +431,23 @@ class DoctorProfileSheet extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // ── Bio ──────────────────────────────────────────────
+          if (doctor.bio != null && doctor.bio!.isNotEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(doctor.bio!,
+                  style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant, height: 1.5)),
+            ),
+            const SizedBox(height: 14),
+          ],
 
           // ── Stats row ───────────────────────────────────────
           Row(
@@ -454,6 +473,76 @@ class DoctorProfileSheet extends StatelessWidget {
               ),
             ],
           ),
+
+          // ── Education ────────────────────────────────────────
+          if (doctor.education != null && doctor.education!.isNotEmpty)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colorScheme.outline.withOpacity(.2)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.school_rounded,
+                      color: colorScheme.secondary, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Education',
+                            style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
+                        const SizedBox(height: 4),
+                        Text(doctor.education!,
+                            style: textTheme.bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // ── Certification ────────────────────────────────────
+          if (doctor.certification != null && doctor.certification!.isNotEmpty)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colorScheme.outline.withOpacity(.2)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.verified_rounded,
+                      color: colorScheme.secondary, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Certification',
+                            style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
+                        const SizedBox(height: 4),
+                        Text(doctor.certification!,
+                            style: textTheme.bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           const SizedBox(height: 20),
           Divider(color: colorScheme.outline.withOpacity(0.2)),
@@ -595,7 +684,8 @@ class DoctorProfileSheet extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-      ),
+        ),  // Column
+      ),    // SingleChildScrollView
     );
   }
 }

@@ -32,8 +32,11 @@ class BookAppointmentCubit extends Cubit<BookAppointmentState> {
           ? response.data
           : (response.data['data'] ?? response.data['doctors'] ?? []);
 
-      // Debug — print first doctor to see exact field names
-      if (data.isNotEmpty) print('DOCTOR RAW: ${data.first}');
+      // Debug — print ALL keys of first doctor to find education/certification field names
+      if (data.isNotEmpty) {
+        print('DOCTOR RAW KEYS: ${(data.first as Map).keys.toList()}');
+        print('DOCTOR RAW: ${data.first}');
+      }
 
       final doctors = data
           .whereType<Map>()

@@ -66,54 +66,82 @@ class DoctorProfileCubit extends Cubit<DoctorProfileState> {
 
   // ── PUT /api/Profile/doctorNurse ──────────────────────────────────
   // Body: { firstName, lastName, email, profilePictureUrl, education, certifications }
-  Future<void> updateProfile({
-    required String firstName,
-    required String lastName,
-    required String email,
-    String? education,
-    String? certifications,
-    String? profilePictureUrl,
-  }) async {
-    final current = _currentProfile;
-    if (current == null) return;
+ Future<void> updateProfile({
+  required String firstName,
+  required String lastName,
+  required String email,
+  String? education,
+  String? certifications,
+  String? profilePictureUrl,
+  String? bio,
+}) async {
+  final current = _currentProfile;
+  if (current == null) return;
 
-    emit(DoctorProfileUpdating(current));
+  emit(DoctorProfileUpdating(current));
 
-    final body = {
-      "firstName": firstName,
-      "lastName": lastName,
-      "email": email,
-      if (education != null && education.isNotEmpty) "education": education,
-      if (certifications != null && certifications.isNotEmpty)
-        "certifications": certifications,
-      if (profilePictureUrl != null && profilePictureUrl.isNotEmpty)
-        "profilePictureUrl": profilePictureUrl,
-    };
-    print('UPDATE PROFILE BODY: $body');
+  final body = {
+    "firstName": firstName,
+    "lastName": lastName,
+    "email": email,
+    if (education != null && education.isNotEmpty)
+      "education": education,
+    if (certifications != null && certifications.isNotEmpty)
+      "certifications": certifications,
+    if (profilePictureUrl != null &&
+        profilePictureUrl.isNotEmpty)
+      "profilePictureUrl": profilePictureUrl,
+    if (bio != null && bio.isNotEmpty)
+      "bio": bio,
+  };
 
-    try {
-      await _dio.put("/api/Profile/doctorNurse", data: body, options: _auth);
-      print('PROFILE UPDATED');
-      // Refresh to get latest data
-      await fetchProfile();
-      final updated = _currentProfile;
-      if (updated != null) emit(DoctorProfileUpdateSuccess(updated));
-    } on DioException catch (e) {
-      print(
-        'UPDATE PROFILE ERROR: ${e.response?.statusCode} - ${e.response?.data}',
-      );
-      final errData = e.response?.data;
-      String msg = 'Failed to update profile';
-      if (errData is Map) {
-        msg = (errData['message'] ?? errData['title'] ?? msg).toString();
-      }
-      emit(DoctorProfileUpdateError(msg, current));
-    } catch (e) {
-      print('UPDATE PROFILE CATCH: $e');
-      emit(DoctorProfileUpdateError('Something went wrong', current));
+  print('UPDATE PROFILE BODY: $body');
+
+  try {
+    await _dio.put(
+      "/api/Profile/doctorNurse",
+      data: body,
+      options: _auth,
+    );
+
+    print('PROFILE UPDATED');
+
+    await fetchProfile();
+
+    final updated = _currentProfile;
+
+    if (updated != null) {
+      emit(DoctorProfileUpdateSuccess(updated));
     }
-  }
+  } on DioException catch (e) {
+    print(
+      'UPDATE PROFILE ERROR: ${e.response?.statusCode} - ${e.response?.data}',
+    );
 
+    final errData = e.response?.data;
+
+    String msg = 'Failed to update profile';
+
+    if (errData is Map) {
+      msg =
+          (errData['message'] ??
+                  errData['title'] ??
+                  msg)
+              .toString();
+    }
+
+    emit(DoctorProfileUpdateError(msg, current));
+  } catch (e) {
+    print('UPDATE PROFILE CATCH: $e');
+
+    emit(
+      DoctorProfileUpdateError(
+        'Something went wrong',
+        current,
+      ),
+    );
+  }
+}
   // ── PUT /api/Profile/profile-picture ────────────────────────────
   // Body: multipart/form-data with 'file' field (binary)
   Future<void> uploadProfilePicture() async {

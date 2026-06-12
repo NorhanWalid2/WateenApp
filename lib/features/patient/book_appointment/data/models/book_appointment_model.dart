@@ -12,6 +12,9 @@ class BookAppointmentModel {
   final int yearsExperience;
   final double consultationFee;
   final bool isAvailable;
+  final String? education;
+  final String? certification;
+  final String? bio;
 
   const BookAppointmentModel({
     required this.id,
@@ -25,14 +28,13 @@ class BookAppointmentModel {
     this.yearsExperience = 0,
     this.consultationFee = 0,
     this.isAvailable = true,
+    this.education,
+    this.certification,
+    this.bio,
   });
 
   factory BookAppointmentModel.fromJson(Map<String, dynamic> json) {
-    final name = (json['fullName'] ??
-            json['name'] ??
-            json['doctorName'] ??
-            'Unknown')
-        .toString();
+    final name = (json['fullName'] ?? json['name'] ?? json['doctorName'] ?? 'Unknown').toString();
     final initials = name
         .trim()
         .split(' ')
@@ -44,50 +46,33 @@ class BookAppointmentModel {
     return BookAppointmentModel(
       id: (json['id'] ?? json['doctorId'] ?? '').toString(),
       name: name,
-      specialty: (json['specialization'] ??
-              json['specialty'] ??
-              'General')
-          .toString(),
+      specialty: (json['specialization'] ?? json['specialty'] ?? 'General').toString(),
       initials: initials.isEmpty ? 'DR' : initials,
-      rating: double.tryParse(
-              (json['rating'] ?? 0).toString()) ??
-          0.0,
-      reviewCount: int.tryParse(
-              (json['reviewCount'] ?? json['reviews'] ?? 0)
-                  .toString()) ??
-          0,
-      profilePicture: json['profilePicture']?.toString() ??
-          json['profilePictureUrl']?.toString(),
-      location: json['location']?.toString() ??
-          json['city']?.toString(),
-      // API returns: experienceYears
+      rating: double.tryParse((json['rating'] ?? 0).toString()) ?? 0.0,
+      reviewCount: int.tryParse((json['reviewCount'] ?? json['reviews'] ?? 0).toString()) ?? 0,
+      // ✅ API returns profilePictureUrl (not profilePicture)
+      profilePicture: (json['profilePictureUrl'] ?? json['profilePicture'])?.toString(),
+      location: json['location']?.toString() ?? json['city']?.toString(),
       yearsExperience: int.tryParse(
-              (json['experienceYears'] ??
-                      json['yearsOfExperience'] ??
-                      json['yearsExperience'] ??
-                      json['experience'] ??
-                      0)
-                  .toString()) ??
-          0,
+            (json['experienceYears'] ?? json['yearsOfExperience'] ?? json['experience'] ?? 0).toString(),
+          ) ?? 0,
       consultationFee: double.tryParse(
-              (json['consultationFee'] ??
-                      json['fee'] ??
-                      json['price'] ??
-                      0)
-                  .toString()) ??
-          0.0,
+            (json['consultationFee'] ?? json['fee'] ?? json['price'] ?? 0).toString(),
+          ) ?? 0.0,
       isAvailable: json['isAvailable'] ?? true,
-      // API returns: specialization (not specialty)
-      // handled in specialty field above
+      // ✅ Confirmed field names from API response
+      education: json['education']?.toString(),
+      certification: json['certification']?.toString(),
+      bio: json['bio']?.toString(),
     );
   }
 }
 
 class CalendlySlot {
-  final String startTime;  // ISO8601 — used for booking
+  final String startTime;
   final String endTime;
-  final String displayDate; // e.g. "Mon, May 5"
-  final String displayTime; // e.g. "10:00 AM"
+  final String displayDate;
+  final String displayTime;
 
   const CalendlySlot({
     required this.startTime,
