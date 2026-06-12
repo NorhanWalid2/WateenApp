@@ -25,6 +25,15 @@ class PrescriptionModel {
     required this.status,
   });
 
+  // ── Frequency display helper ─────────────────────────────────────
+  // frequency is stored as hours interval: 3 → "Every 3 hours"
+  static String formatFrequency(String raw) {
+    final n = int.tryParse(raw.trim());
+    if (n == null) return raw; // legacy text — show as-is
+    if (n == 1) return 'Every hour';
+    return 'Every $n hours';
+  }
+
   // ── Static options for dropdowns ─────────────────────────────────
   static const List<String> frequencyOptions = [
     'Once daily',

@@ -22,16 +22,58 @@ class AuthCubit extends Cubit<AuthState> {
 
 String _getErrorMsg(DioException e) {
   debugPrint('=== FULL ERROR: ${e.response?.data}');
-  if (e.response?.data is Map) {
-    return e.response?.data['message'] ??
-        e.response?.data['title'] ??
-        e.response?.data['errors']?.toString() ??
-        'errorGeneral';
+
+  final data = e.response?.data;
+  final msg = data is Map
+      ? (data['message'] ??
+              data['title'] ??
+              data['errors']?.toString() ??
+              '')
+          .toString()
+      : data?.toString() ?? '';
+
+  final lowerMsg = msg.toLowerCase();
+
+  // ── Login Errors ─────────────────────────────
+  if (lowerMsg.contains('invalid') ||
+      lowerMsg.contains('incorrect') ||
+      lowerMsg.contains('password') ||
+      lowerMsg.contains('email')) {
+    return 'Incorrect email or password';
   }
-  if (e.response?.data is String) {
-    return e.response?.data;
+
+  // ── Doctor/Nurse Pending Approval ────────────
+  if (lowerMsg.contains('pending') ||
+      lowerMsg.contains('not approved') ||
+      lowerMsg.contains('not yet approved') ||
+      lowerMsg.contains('awaiting approval')) {
+    return 'Your account is still under review by the admin';
   }
-  return 'errorGeneral';
+
+  // ── Rejected Account ─────────────────────────
+  if (lowerMsg.contains('rejected') ||
+      lowerMsg.contains('denied')) {
+    return 'Your account request has been rejected';
+  }
+
+  // ── Email Exists ─────────────────────────────
+  if (lowerMsg.contains('already') &&
+      lowerMsg.contains('email')) {
+    return 'This email is already registered';
+  }
+
+  // ── Phone Exists ─────────────────────────────
+  if (lowerMsg.contains('phone')) {
+    return 'This phone number is already registered';
+  }
+
+  // ── Network ──────────────────────────────────
+  if (e.type == DioExceptionType.connectionError ||
+      e.type == DioExceptionType.connectionTimeout) {
+    return 'Please check your internet connection';
+  }
+
+  return 'Something went wrong. Please try again';
 }
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
@@ -104,17 +146,18 @@ String _getErrorMsg(DioException e) {
     }
   }
 // ── Register Doctor ────────────────────────────────────────────────────────
-  Future<void> registerDoctor({
-    required String fullName,
-    required String email,
-    required String phone,
-    required String password,
-    required String confirmPassword,
-    required String specialization,
-    required String licenseNumber,
-    required String workPlace,      // ✅ was "bio" before
-    required String experienceYears, // ✅ was missing
-  }) async {
+Future<void> registerDoctor({
+  required String fullName,
+  required String email,
+  required String phone,
+  required String password,
+  required String confirmPassword,
+  required String specialization,
+  required String licenseNumber,
+  required String workPlace,
+  required String experienceYears,
+  required String location, // NEW
+}) async {
     emit(AuthLoading());
     try {
       final nameParts = fullName.trim().split(' ');
@@ -122,18 +165,19 @@ String _getErrorMsg(DioException e) {
       final lastName =
           nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-      final body = {
-        "firstName":       firstName,
-        "lastName":        lastName,
-        "email":           email,
-        "password":        password,
-        "confirmPassword": confirmPassword,
-        "specialization":  specialization,
-        "licenseNumber":   licenseNumber,
-        "phoneNumber":     phone,           // ✅ was "doctorPhoneNumber"
-        "workPlace":       workPlace,       // ✅ was "bio"
-        "experienceYears": int.tryParse(experienceYears) ?? 0, // ✅ was missing
-      };
+    final body = {
+  "firstName": firstName,
+  "lastName": lastName,
+  "email": email,
+  "password": password,
+  "confirmPassword": confirmPassword,
+  "specialization": specialization,
+  "licenseNumber": licenseNumber,
+  "phoneNumber": phone,
+  "workPlace": workPlace,
+  "experienceYears": int.tryParse(experienceYears) ?? 0,
+  "location": location, // NEW
+};
 
       debugPrint('=== REGISTER DOCTOR: $body');
 

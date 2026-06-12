@@ -1,3 +1,5 @@
+// lib/features/patient/ai_assistant/data/models/diagnosis_model.dart
+
 class DiagnosisResultItem {
   final String condition;
   final String? specialty;
@@ -46,22 +48,20 @@ class DiagnosisModel {
   bool get hasResults => results.isNotEmpty;
 
   factory DiagnosisModel.fromJson(Map<String, dynamic> json) {
-    // ← use Arabic success key
     final success = (json['نجاح'] ?? json['success'] ?? false) == true;
-    final inputText =
-        (json['النص_المدخل'] ?? json['input_text'])?.toString();
+    final inputText = (json['النص_المدخل'] ?? json['input_text'])?.toString();
     final note = (json['ملاحظة'] ?? json['note'])?.toString();
 
-    // ← use Arabic results key
     final rawResults = json['النتائج'] ?? json['results'];
     List<DiagnosisResultItem> results = [];
-    if (rawResults is List) {
-      results = rawResults
-          .map((e) => DiagnosisResultItem.fromJson(e as Map<String, dynamic>))
-          .toList();
+    if (rawResults is List && rawResults.isNotEmpty) {
+      // ✅ Take only the first result
+      results = [
+        DiagnosisResultItem.fromJson(
+            rawResults.first as Map<String, dynamic>)
+      ];
     }
 
-    // ← use Arabic red flags key
     final rawFlags = json['علامات_تحذيرية'] ?? json['red_flags'];
     List<String> redFlags = [];
     if (rawFlags is List) {

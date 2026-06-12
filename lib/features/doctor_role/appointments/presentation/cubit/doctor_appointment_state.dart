@@ -1,4 +1,4 @@
-// lib/features/doctor_role/appointments/presentation/cubit/doctor_appointments_state.dart
+// lib/features/doctor_role/appointments/presentation/cubit/doctor_appointment_state.dart
 
 import 'package:wateen_app/features/doctor_role/appointments/data/models/doctor_appointment_model.dart';
 
@@ -10,20 +10,7 @@ class DoctorAppointmentsLoading extends DoctorAppointmentsState {}
 
 class DoctorAppointmentsLoaded extends DoctorAppointmentsState {
   final List<DoctorAppointmentModel> appointments;
-
   DoctorAppointmentsLoaded(this.appointments);
-
-  List<DoctorAppointmentModel> get upcoming => appointments
-      .where((a) =>
-          a.status == AppointmentStatus.upcoming ||
-          a.status == AppointmentStatus.pending)
-      .toList();
-
-  List<DoctorAppointmentModel> get completed => appointments
-      .where((a) =>
-          a.status == AppointmentStatus.completed ||
-          a.status == AppointmentStatus.cancelled)
-      .toList();
 }
 
 class DoctorAppointmentsError extends DoctorAppointmentsState {
@@ -31,7 +18,6 @@ class DoctorAppointmentsError extends DoctorAppointmentsState {
   DoctorAppointmentsError(this.message);
 }
 
-// Action states — for respond / cancel / complete
 class DoctorAppointmentActionLoading extends DoctorAppointmentsState {
   final String appointmentId;
   DoctorAppointmentActionLoading(this.appointmentId);

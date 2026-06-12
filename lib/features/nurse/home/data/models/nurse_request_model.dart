@@ -5,9 +5,10 @@ class NurseHomeRequestModel {
   final String serviceDescription;
   final String requestedTime;
   final String address;
+  final String government;
   final int status;
   final String patientId;
-  final String nurseId;
+  final String? nurseId;       // ✅ nullable — API returns null when unassigned
   final String? nurseName;
   final String? patientName;
 
@@ -16,9 +17,10 @@ class NurseHomeRequestModel {
     required this.serviceDescription,
     required this.requestedTime,
     required this.address,
+    required this.government,
     required this.status,
     required this.patientId,
-    required this.nurseId,
+    this.nurseId,
     this.nurseName,
     this.patientName,
   });
@@ -75,6 +77,7 @@ class NurseHomeRequestModel {
       serviceDescription: serviceDescription,
       requestedTime: requestedTime,
       address: address,
+      government: government,
       status: status ?? this.status,
       patientId: patientId,
       nurseId: nurseId,
@@ -89,9 +92,13 @@ class NurseHomeRequestModel {
       serviceDescription: (json['serviceDescription'] ?? '').toString(),
       requestedTime: (json['requestedTime'] ?? '').toString(),
       address: (json['address'] ?? '').toString(),
-      status: (json['status'] as int?) ?? 0,
+      // ✅ safe — API may return null for old records
+      government: (json['government'] ?? '').toString(),
+      // ✅ int.tryParse handles String/int/null from API safely
+      status: int.tryParse((json['status'] ?? 0).toString()) ?? 0,
       patientId: (json['patientId'] ?? '').toString(),
-      nurseId: (json['nurseId'] ?? '').toString(),
+      // ✅ nullable — API returns null when no nurse assigned yet
+      nurseId: json['nurseId']?.toString(),
       nurseName: json['nurseName']?.toString(),
       patientName: json['patientName']?.toString(),
     );

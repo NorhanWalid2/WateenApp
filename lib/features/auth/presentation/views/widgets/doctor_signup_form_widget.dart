@@ -18,7 +18,7 @@ class DoctorSignUpFormWidget extends StatefulWidget {
 class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
   int _currentStep = 0;
   final int _totalSteps = 3;
-
+String? _selectedLocation;
   // ── Step 1 ───────────────────────────────────
   final _step1Key = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
@@ -97,16 +97,17 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
 
      case 2:
         context.read<AuthCubit>().registerDoctor(
-          fullName:        _fullNameController.text.trim(),
-          email:           _emailController.text.trim(),
-          phone:           _phoneController.text.trim(),
-          password:        _passwordController.text,
-          confirmPassword: _confirmPasswordController.text,
-          specialization:  _specializationController.text.trim(),
-          licenseNumber:   _licenseNumberController.text.trim(),
-          workPlace:       _hospitalController.text.trim(),   // ✅ was bio
-          experienceYears: _experienceController.text.trim(), // ✅ was missing
-        );
+  fullName: _fullNameController.text.trim(),
+  email: _emailController.text.trim(),
+  phone: _phoneController.text.trim(),
+  password: _passwordController.text,
+  confirmPassword: _confirmPasswordController.text,
+  specialization: _specializationController.text.trim(),
+  licenseNumber: _licenseNumberController.text.trim(),
+  workPlace: _hospitalController.text.trim(),
+  experienceYears: _experienceController.text.trim(),
+  location: _selectedLocation ?? '',
+);
         break;
     }
   }
@@ -184,16 +185,23 @@ class _DoctorSignUpFormWidgetState extends State<DoctorSignUpFormWidget> {
           confirmPasswordController: _confirmPasswordController,
         );
       case 1:
-        return DoctorStep2(
-          formKey: _step2Key,
-          specializationController: _specializationController,
-          licenseNumberController: _licenseNumberController,
-          experienceController: _experienceController,
-          hospitalController: _hospitalController,
-          consultationFeeController: _consultationFeeController,
-          homeVisits: _homeVisits,
-          onHomeVisitsChanged: (v) => setState(() => _homeVisits = v),
-        );
+        return   DoctorStep2(
+  formKey: _step2Key,
+  specializationController: _specializationController,
+  licenseNumberController: _licenseNumberController,
+  experienceController: _experienceController,
+  hospitalController: _hospitalController,
+  consultationFeeController: _consultationFeeController,
+  homeVisits: _homeVisits,
+  onHomeVisitsChanged: (v) => setState(() => _homeVisits = v),
+
+  selectedLocation: _selectedLocation,
+  onLocationChanged: (value) {
+    setState(() {
+      _selectedLocation = value;
+    });
+  },
+);
 
       case 2:
         return DoctorStep4(

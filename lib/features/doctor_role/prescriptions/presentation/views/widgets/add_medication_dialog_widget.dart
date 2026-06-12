@@ -22,7 +22,7 @@ class _AddMedicationDialogWidgetState
   final _dosageController = TextEditingController();
   final _instructionsController = TextEditingController();
 
-  String _frequency = 'Once daily';
+  String _frequency = '1';
   String _duration = 'Ongoing';
   DateTime _startDate = DateTime.now();
 
@@ -110,12 +110,63 @@ class _AddMedicationDialogWidgetState
               const SizedBox(height: 14),
 
               // ── Frequency ──
-              const MedicationFieldLabel(label: 'Frequency'),
+              const MedicationFieldLabel(label: 'Frequency (every X hours)'),
               const SizedBox(height: 6),
-              MedicationDropdownField(
-                value: _frequency,
-                items: PrescriptionModel.frequencyOptions,
-                onChanged: (val) => setState(() => _frequency = val!),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Every $_frequency ${int.parse(_frequency) == 1 ? "hour" : "hours"}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.inverseSurface,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: int.parse(_frequency) > 1
+                              ? () => setState(() => _frequency =
+                                  (int.parse(_frequency) - 1).toString())
+                              : null,
+                          icon: const Icon(Icons.remove_circle_outline_rounded),
+                          color: const Color(0xFFDC2626),
+                          disabledColor: Colors.grey.shade300,
+                          iconSize: 26,
+                          padding: EdgeInsets.zero,
+                        ),
+                        SizedBox(
+                          width: 36,
+                          child: Text(
+                            _frequency,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: int.parse(_frequency) < 24
+                              ? () => setState(() => _frequency =
+                                  (int.parse(_frequency) + 1).toString())
+                              : null,
+                          icon: const Icon(Icons.add_circle_outline_rounded),
+                          color: const Color(0xFFDC2626),
+                          disabledColor: Colors.grey.shade300,
+                          iconSize: 26,
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 14),

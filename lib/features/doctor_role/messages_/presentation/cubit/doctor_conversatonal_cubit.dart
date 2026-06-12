@@ -1,4 +1,4 @@
-// lib/features/doctor_role/messages_/presentation/cubit/doctor_conversatonal_cubit.dart
+// lib/features/doctor_role/messages_/presentation/cubit/doctor_conversational_cubit.dart
 
 import 'dart:async';
 
@@ -17,7 +17,6 @@ class DoctorConversationsCubit extends Cubit<DoctorConversationsState> {
   Timer? _pollingTimer;
 
   DoctorConversationsCubit() : super(DoctorConversationsInitial()) {
-    // ✅ Use addOn* — never overwrite other cubits' callbacks
     SignalRService().addOnMessageReceived(_onNewMessage);
     SignalRService().addOnMessagesRead(_onMessagesRead);
     startPolling();
@@ -31,10 +30,8 @@ class DoctorConversationsCubit extends Cubit<DoctorConversationsState> {
     if (!isClosed) emit(state);
   }
 
-  // ── SignalR callbacks ─────────────────────────────────────────────
-
   void _onNewMessage(Map<String, dynamic> data) {
-    print('DoctorConversations: new message received, refreshing list');
+    print('DoctorConversations: new message received');
     _silentRefresh();
   }
 
@@ -43,84 +40,122 @@ class DoctorConversationsCubit extends Cubit<DoctorConversationsState> {
     _silentRefresh();
   }
 
-  // ── Extract list from paginated API response ──────────────────────
-
   List<dynamic> _extractList(dynamic responseData) {
     if (responseData is List) return responseData;
+
     if (responseData is Map) {
       if (responseData['data'] is List) return responseData['data'];
-      if (responseData['conversations'] is List) return responseData['conversations'];
+      if (responseData['result'] is List) return responseData['result'];
+      if (responseData['conversations'] is List) {
+        return responseData['conversations'];
+      }
       if (responseData['items'] is List) return responseData['items'];
     }
+
     return [];
   }
 
-  // ── Fetch conversations ───────────────────────────────────────────
+  List<DoctorConversationModel> _cleanConversations(dynamic body) {
+    final myId = AppPrefs.userId ?? '';
+
+    final data = _extractList(body);
+
+    final parsed = data
+        .whereType<Map>()
+        .map(
+          (e) => DoctorConversationModel.fromJson(
+            Map<String, dynamic>.from(e),
+          ),
+        )
+        .where((c) => c.id.trim().isNotEmpty)
+        .where((c) => c.id != myId)
+        .where((c) => c.lastMessage.trim().isNotEmpty)
+        .toList();
+
+    final Map<String, DoctorConversationModel> unique = {};
+
+    for (final conversation in parsed) {
+      final old = unique[conversation.id];
+
+      if (old == null) {
+        unique[conversation.id] = conversation;
+      } else {
+        if (conversation.unreadCount > old.unreadCount) {
+          unique[conversation.id] = conversation;
+        }
+      }
+    }
+
+    return unique.values.toList();
+  }
 
   Future<void> fetchConversations() async {
     _safeEmit(DoctorConversationsLoading());
+
     try {
       await SignalRService().connect();
 
-      final response = await _dio.get("/api/Chat", options: _authOptions);
-      final data = _extractList(response.data);
+      final response = await _dio.get(
+        "/api/Chat",
+        options: _authOptions,
+      );
 
-      final conversations = data
-          .whereType<Map>()
-          .map((e) => DoctorConversationModel.fromJson(
-                Map<String, dynamic>.from(e)))
-          .where((c) => c.lastMessage.trim().isNotEmpty)
-          .toList();
+      print('DOCTOR CONVERSATIONS RAW: ${response.data}');
+
+      final conversations = _cleanConversations(response.data);
 
       _safeEmit(DoctorConversationsLoaded(conversations));
     } on DioException catch (e) {
       print('CONVERSATIONS ERROR: ${e.response?.data}');
-      _safeEmit(DoctorConversationsError(
-        e.response?.data?['message'] ?? 'Failed to load conversations',
-      ));
+
+      _safeEmit(
+        DoctorConversationsError(
+          e.response?.data?['message'] ?? 'Failed to load conversations',
+        ),
+      );
     } catch (e) {
       print('CONVERSATIONS CATCH: $e');
       _safeEmit(DoctorConversationsError('Something went wrong'));
     }
   }
 
-  // ── Silent refresh — no loading state ────────────────────────────
-
   Future<void> _silentRefresh() async {
     if (isClosed) return;
+
     try {
-      final response = await _dio.get("/api/Chat", options: _authOptions);
-      final data = _extractList(response.data);
+      final response = await _dio.get(
+        "/api/Chat",
+        options: _authOptions,
+      );
 
-      final conversations = data
-          .whereType<Map>()
-          .map((e) => DoctorConversationModel.fromJson(
-                Map<String, dynamic>.from(e)))
-          .where((c) => c.lastMessage.trim().isNotEmpty)
-          .toList();
+      final conversations = _cleanConversations(response.data);
 
-      if (!isClosed) _safeEmit(DoctorConversationsLoaded(conversations));
+      if (!isClosed) {
+        _safeEmit(DoctorConversationsLoaded(conversations));
+      }
     } catch (e) {
       print('Doctor conversations silent refresh error: $e');
     }
   }
 
-  // ── Mark as read ──────────────────────────────────────────────────
-
   Future<void> markAsRead(String otherUserId) async {
     try {
-      await _dio.put("/api/Chat/$otherUserId/read", options: _authOptions);
+      await _dio.put(
+        "/api/Chat/$otherUserId/read",
+        options: _authOptions,
+      );
+
       await SignalRService().markAsRead(otherUserId);
+
       await _silentRefresh();
     } catch (e) {
       print('MARK READ ERROR: $e');
     }
   }
 
-  // ── Polling ───────────────────────────────────────────────────────
-
   void startPolling() {
     _pollingTimer?.cancel();
+
     _pollingTimer = Timer.periodic(
       const Duration(seconds: 5),
       (_) => _silentRefresh(),
@@ -134,10 +169,11 @@ class DoctorConversationsCubit extends Cubit<DoctorConversationsState> {
 
   @override
   Future<void> close() {
-    // ✅ Remove listeners when cubit is disposed
     SignalRService().removeOnMessageReceived(_onNewMessage);
     SignalRService().removeOnMessagesRead(_onMessagesRead);
+
     stopPolling();
+
     return super.close();
   }
 }

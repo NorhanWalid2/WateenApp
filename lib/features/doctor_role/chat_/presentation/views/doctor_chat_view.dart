@@ -1,3 +1,7 @@
+// lib/features/doctor_role/chat_/presentation/views/doctor_chat_view.dart
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -23,9 +27,7 @@ class DoctorChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DoctorChatCubit(otherUserId: patientId)
-        ..fetchHistory()
-        ..startPolling(),
+      create: (_) => DoctorChatCubit(otherUserId: patientId),
       child: _DoctorChatBody(
         patientName: patientName,
         patientProfilePicture: patientProfilePicture,
@@ -51,11 +53,57 @@ class _DoctorChatBodyState extends State<_DoctorChatBody> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  Timer? _readTimer;
+  bool _screenIsVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _screenIsVisible = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || !_screenIsVisible) return;
+
+      final cubit = context.read<DoctorChatCubit>();
+
+      await cubit.openChat();
+
+      if (!mounted || !_screenIsVisible) return;
+
+      await cubit.markAsReadOnlyFromVisibleScreen();
+
+      _startReadTimer();
+    });
+  }
+
+  void _startReadTimer() {
+    _readTimer?.cancel();
+
+    _readTimer = Timer.periodic(
+      const Duration(seconds: 2),
+      (_) async {
+        if (!mounted || !_screenIsVisible) return;
+
+        await context
+            .read<DoctorChatCubit>()
+            .markAsReadOnlyFromVisibleScreen();
+      },
+    );
+  }
+
   @override
   void dispose() {
+    _screenIsVisible = false;
+
+    _readTimer?.cancel();
+    _readTimer = null;
+
     context.read<DoctorChatCubit>().leaveConversation();
+
     _messageController.dispose();
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -71,7 +119,7 @@ class _DoctorChatBodyState extends State<_DoctorChatBody> {
 
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
-      if (!mounted) return;
+      if (!mounted || !_screenIsVisible) return;
 
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -88,7 +136,9 @@ class _DoctorChatBodyState extends State<_DoctorChatBody> {
     if (text.isEmpty) return;
 
     _messageController.clear();
+
     context.read<DoctorChatCubit>().sendMessage(text);
+
     _scrollToBottom();
   }
 
@@ -210,8 +260,17 @@ class _DoctorChatBodyState extends State<_DoctorChatBody> {
                           ),
                           const SizedBox(height: 16),
                           TextButton(
-                            onPressed: () =>
-                                context.read<DoctorChatCubit>().fetchHistory(),
+                            onPressed: () async {
+                              await context
+                                  .read<DoctorChatCubit>()
+                                  .openChat();
+
+                              if (!mounted || !_screenIsVisible) return;
+
+                              await context
+                                  .read<DoctorChatCubit>()
+                                  .markAsReadOnlyFromVisibleScreen();
+                            },
                             child: const Text('Retry'),
                           ),
                         ],

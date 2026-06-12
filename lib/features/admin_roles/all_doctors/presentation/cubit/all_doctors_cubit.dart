@@ -57,30 +57,41 @@ class AllDoctorsCubit extends Cubit<AllDoctorsState> {
   }
 
   // ── Delete doctor account ─────────────────────────────────────────
-  Future<void> deleteDoctor({required String doctorId}) async {
-    final current = _currentDoctors;
-    final total = _currentTotal;
-    emit(AllDoctorsDeleteLoading(current, total, doctorId));
-    try {
-      await _dio.delete(
-        "/api/Admin/delete-account",
-        options: _authOptions,
-        data: {"id": doctorId}, // ← fixed: was "userId", backend expects "Id"
-      );
-      final updated = current.where((d) => d.id != doctorId).toList();
-      emit(AllDoctorsDeleteSuccess(updated, total - 1));
-      emit(AllDoctorsLoaded(updated, total - 1));
-    } on DioException catch (e) {
-      print('DELETE ERROR: ${e.response?.statusCode} ${e.response?.data}');
-      emit(AllDoctorsDeleteError(
-        current,
-        total,
-        e.response?.data?['message'] ?? 'Failed to delete doctor',
-      ));
-      emit(AllDoctorsLoaded(current, total));
-    } catch (_) {
-      emit(AllDoctorsDeleteError(current, total, 'Something went wrong'));
-      emit(AllDoctorsLoaded(current, total));
-    }
+ Future<void> deleteDoctor({required String doctorId}) async {
+  final current = _currentDoctors;
+  final total = _currentTotal;
+  emit(AllDoctorsDeleteLoading(current, total, doctorId));
+  try {
+    final response = await _dio.delete(
+      "/api/Admin/delete-account",
+      options: Options(
+        headers: {"Authorization": "Bearer ${AppPrefs.token}"},
+        contentType: 'application/json',  // ✅ ensures body is sent as JSON
+      ),
+      data: {"id": doctorId},
+    );
+
+    print('DELETE DOCTOR RESPONSE: ${response.statusCode}');
+
+    final updated = current.where((d) => d.id != doctorId).toList();
+    final newTotal = (total - 1).clamp(0, total);
+    emit(AllDoctorsDeleteSuccess(updated, newTotal));
+    emit(AllDoctorsLoaded(updated, newTotal));
+  } on DioException catch (e) {
+    print('DELETE DOCTOR ERROR: ${e.response?.statusCode} ${e.response?.data}');
+
+    // ✅ safe extraction — data may be a String, Map, or null
+    final rawData = e.response?.data;
+    final message = rawData is Map
+        ? rawData['message']?.toString() ?? 'Failed to delete doctor'
+        : 'Failed to delete doctor';   // ← was crashing here on String
+
+    emit(AllDoctorsDeleteError(current, total, message));
+    emit(AllDoctorsLoaded(current, total));
+  } catch (e, s) {
+    print('DELETE DOCTOR UNEXPECTED: $e\n$s');
+    emit(AllDoctorsDeleteError(current, total, 'Something went wrong'));
+    emit(AllDoctorsLoaded(current, total));
   }
+}
 }

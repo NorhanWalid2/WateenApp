@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +6,6 @@ import 'package:wateen_app/core/database/shared_prefference/app_prefs.dart';
 import 'package:wateen_app/features/doctor_role/doc_profile/data/models/doctor_profile_model.dart';
 import 'package:wateen_app/features/doctor_role/doc_profile/presentation/cubit/doctor_profile_cubit.dart';
 import 'package:wateen_app/features/doctor_role/doc_profile/presentation/cubit/doctor_profile_state.dart';
-
 
 class DoctorProfileView extends StatefulWidget {
   const DoctorProfileView({super.key});
@@ -36,36 +34,38 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => BlocProvider.value(
-        value: _cubit,
-        child: _EditProfileSheet(profile: profile),
-      ),
+      builder:
+          (_) => BlocProvider.value(
+            value: _cubit,
+            child: _EditProfileSheet(profile: profile),
+          ),
     );
   }
 
   void _showLogoutDialog() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Log Out'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Log Out'),
+            content: const Text('Are you sure you want to log out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await AppPrefs.clearAll();
+                  if (context.mounted) {
+                    context.go('/login');
+                  }
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Log Out'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              await AppPrefs.clearAll();
-              if (context.mounted) {
-                context.go('/login');
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Log Out'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -79,17 +79,21 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
       child: BlocConsumer<DoctorProfileCubit, DoctorProfileState>(
         listener: (context, state) {
           if (state is DoctorProfileUpdateSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Profile updated successfully!'),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully!'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           } else if (state is DoctorProfileUpdateError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.message),
-              backgroundColor: colorScheme.error,
-              behavior: SnackBarBehavior.floating,
-            ));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: colorScheme.error,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -118,39 +122,50 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                         decoration: const BoxDecoration(
                           color: primaryRed,
                           borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(28)),
+                            bottom: Radius.circular(28),
+                          ),
                         ),
                         child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Profile',
-                                    style: GoogleFonts.archivo(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    )),
+                                Text(
+                                  'Profile',
+                                  style: GoogleFonts.archivo(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
                                 if (profile != null)
                                   GestureDetector(
                                     onTap: () => _showEditSheet(profile!),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 14, vertical: 8),
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withOpacity(0.2),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: const Row(
                                         children: [
-                                          Icon(Icons.edit_outlined,
-                                              color: Colors.white, size: 16),
+                                          Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
                                           SizedBox(width: 6),
-                                          Text('Edit',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w600)),
+                                          Text(
+                                            'Edit',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -163,27 +178,32 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                             // Avatar with camera button
                             isLoading
                                 ? Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  )
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                )
                                 : GestureDetector(
-                                    onTap: () => _cubit.uploadProfilePicture(),
-                                    child: Stack(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 40,
-                                          backgroundColor:
-                                              Colors.white.withOpacity(0.2),
-                                          backgroundImage:
-                                              profile?.hasValidProfilePicture == true
-                                                  ? NetworkImage(profile!.profilePictureUrl!)
-                                                  : null,
-                                          child: profile?.hasValidProfilePicture != true
-                                              ? Text(
+                                  onTap: () => _cubit.uploadProfilePicture(),
+                                  child: Stack(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundColor: Colors.white
+                                            .withOpacity(0.2),
+                                        backgroundImage:
+                                            profile?.hasValidProfilePicture ==
+                                                    true
+                                                ? NetworkImage(
+                                                  profile!.profilePictureUrl!,
+                                                )
+                                                : null,
+                                        child:
+                                            profile?.hasValidProfilePicture !=
+                                                    true
+                                                ? Text(
                                                   profile?.initials ?? 'DR',
                                                   style: const TextStyle(
                                                     fontSize: 26,
@@ -191,29 +211,29 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                                                     color: Colors.white,
                                                   ),
                                                 )
-                                              : null,
-                                        ),
-                                        // Camera badge
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Container(
-                                            width: 26,
-                                            height: 26,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(
-                                              Icons.camera_alt_rounded,
-                                              size: 14,
-                                              color: Color(0xFFDC2626),
-                                            ),
+                                                : null,
+                                      ),
+                                      // Camera badge
+                                      Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 26,
+                                          height: 26,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.camera_alt_rounded,
+                                            size: 14,
+                                            color: Color(0xFFDC2626),
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
+                                ),
 
                             const SizedBox(height: 12),
 
@@ -242,163 +262,184 @@ class _DoctorProfileViewState extends State<DoctorProfileView> {
                       // ── Body ─────────────────────────────────────────
                       Padding(
                         padding: const EdgeInsets.all(20),
-                        child: isLoading
-                            ? const Center(
-                                child: Padding(
-                                padding: EdgeInsets.all(40),
-                                child: CircularProgressIndicator(
-                                    color: primaryRed),
-                              ))
-                            : state is DoctorProfileError
+                        child:
+                            isLoading
+                                ? const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(40),
+                                    child: CircularProgressIndicator(
+                                      color: primaryRed,
+                                    ),
+                                  ),
+                                )
+                                : state is DoctorProfileError
                                 ? Center(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const SizedBox(height: 40),
+                                      Icon(
+                                        Icons.error_outline_rounded,
+                                        size: 48,
+                                        color: colorScheme.error,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(state.message),
+                                      TextButton(
+                                        onPressed: _cubit.fetchProfile,
+                                        child: const Text('Retry'),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                : profile == null
+                                ? const SizedBox()
+                                : Column(
+                                  children: [
+                                    // Professional info
+                                    _InfoCard(
+                                      title: 'Professional Info',
                                       children: [
-                                        const SizedBox(height: 40),
-                                        Icon(Icons.error_outline_rounded,
-                                            size: 48,
-                                            color: colorScheme.error),
-                                        const SizedBox(height: 12),
-                                        Text(state.message),
-                                        TextButton(
-                                          onPressed: _cubit.fetchProfile,
-                                          child: const Text('Retry'),
+                                        _InfoRow(
+                                          icon: Icons.badge_outlined,
+                                          label: 'License',
+                                          value: profile.licenseNumber,
+                                        ),
+                                        _InfoRow(
+                                          icon: Icons.local_hospital_outlined,
+                                          label: 'Specialization',
+                                          value: profile.specialization,
+                                        ),
+                                        _InfoRow(
+                                          icon: Icons.work_outline_rounded,
+                                          label: 'Experience',
+                                          value:
+                                              '${profile.experienceYears} years',
+                                        ),
+                                        if (profile.workplace != null &&
+                                            profile.workplace!.isNotEmpty)
+                                          _InfoRow(
+                                            icon: Icons.business_outlined,
+                                            label: 'Workplace',
+                                            value: profile.workplace!,
+                                          ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 14),
+
+                                    // Contact info
+                                    _InfoCard(
+                                      title: 'Contact',
+                                      children: [
+                                        _InfoRow(
+                                          icon: Icons.email_outlined,
+                                          label: 'Email',
+                                          value: profile.email,
+                                        ),
+                                        _InfoRow(
+                                          icon: Icons.phone_outlined,
+                                          label: 'Phone',
+                                          value: profile.phoneNumber,
                                         ),
                                       ],
                                     ),
-                                  )
-                                : profile == null
-                                    ? const SizedBox()
-                                    : Column(
+
+                                    // Education
+                                    if (profile.education != null &&
+                                        profile.education!.isNotEmpty) ...[
+                                      const SizedBox(height: 14),
+                                      _InfoCard(
+                                        title: 'Education',
                                         children: [
-                                          // Professional info
-                                          _InfoCard(
-                                            title: 'Professional Info',
-                                            children: [
-                                              _InfoRow(
-                                                  icon: Icons.badge_outlined,
-                                                  label: 'License',
-                                                  value: profile.licenseNumber),
-                                              _InfoRow(
-                                                  icon: Icons.local_hospital_outlined,
-                                                  label: 'Specialization',
-                                                  value: profile.specialization),
-                                              _InfoRow(
-                                                  icon: Icons.work_outline_rounded,
-                                                  label: 'Experience',
-                                                  value: '${profile.experienceYears} years'),
-                                              if (profile.workplace != null &&
-                                                  profile.workplace!.isNotEmpty)
-                                                _InfoRow(
-                                                    icon: Icons.business_outlined,
-                                                    label: 'Workplace',
-                                                    value: profile.workplace!),
-                                            ],
+                                          _InfoRow(
+                                            icon: Icons.school_outlined,
+                                            label: 'Education',
+                                            value: profile.education!,
                                           ),
+                                        ],
+                                      ),
+                                    ],
 
-                                          const SizedBox(height: 14),
-
-                                          // Contact info
-                                          _InfoCard(
-                                            title: 'Contact',
-                                            children: [
-                                              _InfoRow(
-                                                  icon: Icons.email_outlined,
-                                                  label: 'Email',
-                                                  value: profile.email),
-                                              _InfoRow(
-                                                  icon: Icons.phone_outlined,
-                                                  label: 'Phone',
-                                                  value: profile.phoneNumber),
-                                            ],
+                                    // Certifications
+                                    if (profile.certifications != null &&
+                                        profile.certifications!.isNotEmpty) ...[
+                                      const SizedBox(height: 14),
+                                      _InfoCard(
+                                        title: 'Certifications',
+                                        children: [
+                                          _InfoRow(
+                                            icon: Icons.verified_outlined,
+                                            label: 'Certifications',
+                                            value: profile.certifications!,
                                           ),
+                                        ],
+                                      ),
+                                    ],
 
-                                          // Education
-                                          if (profile.education != null &&
-                                              profile.education!.isNotEmpty) ...[
-                                            const SizedBox(height: 14),
-                                            _InfoCard(
-                                              title: 'Education',
-                                              children: [
-                                                _InfoRow(
-                                                    icon: Icons.school_outlined,
-                                                    label: 'Education',
-                                                    value: profile.education!),
-                                              ],
+                                    // Bio
+                                    if (profile.bio != null &&
+                                        profile.bio!.isNotEmpty) ...[
+                                      const SizedBox(height: 14),
+                                      _InfoCard(
+                                        title: 'About',
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 4,
                                             ),
-                                          ],
-
-                                          // Certifications
-                                          if (profile.certifications != null &&
-                                              profile.certifications!.isNotEmpty) ...[
-                                            const SizedBox(height: 14),
-                                            _InfoCard(
-                                              title: 'Certifications',
-                                              children: [
-                                                _InfoRow(
-                                                    icon: Icons.verified_outlined,
-                                                    label: 'Certifications',
-                                                    value: profile.certifications!),
-                                              ],
-                                            ),
-                                          ],
-
-                                          // Bio
-                                          if (profile.bio != null &&
-                                              profile.bio!.isNotEmpty) ...[
-                                            const SizedBox(height: 14),
-                                            _InfoCard(
-                                              title: 'About',
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.only(
-                                                      bottom: 4),
-                                                  child: Text(
-                                                    profile.bio!,
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      color: colorScheme
-                                                          .inverseSurface,
-                                                      height: 1.5,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-
-                                          const SizedBox(height: 24),
-
-                                          // Logout
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: OutlinedButton.icon(
-                                              onPressed: _showLogoutDialog,
-                                              icon: Icon(Icons.logout_rounded,
-                                                  color: colorScheme.error,
-                                                  size: 20),
-                                              label: Text('Log Out',
-                                                  style: TextStyle(
-                                                      color: colorScheme.error,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
-                                              style: OutlinedButton.styleFrom(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 14),
-                                                side: BorderSide(
-                                                    color: colorScheme.error),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12)),
+                                            child: Text(
+                                              profile.bio!,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color:
+                                                    colorScheme.inverseSurface,
+                                                height: 1.5,
                                               ),
                                             ),
                                           ),
-
-                                          const SizedBox(height: 20),
                                         ],
                                       ),
+                                    ],
+
+                                    const SizedBox(height: 24),
+
+                                    // Logout
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: OutlinedButton.icon(
+                                        onPressed: _showLogoutDialog,
+                                        icon: Icon(
+                                          Icons.logout_rounded,
+                                          color: colorScheme.error,
+                                          size: 20,
+                                        ),
+                                        label: Text(
+                                          'Log Out',
+                                          style: TextStyle(
+                                            color: colorScheme.error,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 14,
+                                          ),
+                                          side: BorderSide(
+                                            color: colorScheme.error,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
                       ),
                     ],
                   ),
@@ -428,6 +469,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   late TextEditingController _emailCtrl;
   late TextEditingController _educationCtrl;
   late TextEditingController _certificationsCtrl;
+  late TextEditingController _bioCtrl;
 
   @override
   void initState() {
@@ -435,9 +477,13 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     _firstNameCtrl = TextEditingController(text: widget.profile.firstName);
     _lastNameCtrl = TextEditingController(text: widget.profile.lastName);
     _emailCtrl = TextEditingController(text: widget.profile.email);
-    _educationCtrl = TextEditingController(text: widget.profile.education ?? '');
-    _certificationsCtrl =
-        TextEditingController(text: widget.profile.certifications ?? '');
+    _educationCtrl = TextEditingController(
+      text: widget.profile.education ?? '',
+    );
+    _certificationsCtrl = TextEditingController(
+      text: widget.profile.certifications ?? '',
+    );
+    _bioCtrl = TextEditingController(text: widget.profile.bio ?? '');
   }
 
   @override
@@ -447,6 +493,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     _emailCtrl.dispose();
     _educationCtrl.dispose();
     _certificationsCtrl.dispose();
+    _bioCtrl.dispose();
     super.dispose();
   }
 
@@ -465,11 +512,14 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       child: Container(
         decoration: BoxDecoration(
           color: colorScheme.primary,
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: EdgeInsets.fromLTRB(
-            24, 16, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+          24,
+          16,
+          24,
+          MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,12 +537,14 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 ),
               ),
 
-              Text('Edit Profile',
-                  style: GoogleFonts.archivo(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.inverseSurface,
-                  )),
+              Text(
+                'Edit Profile',
+                style: GoogleFonts.archivo(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.inverseSurface,
+                ),
+              ),
               const SizedBox(height: 20),
 
               _Field(label: 'First Name', controller: _firstNameCtrl),
@@ -500,16 +552,23 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
               _Field(label: 'Last Name', controller: _lastNameCtrl),
               const SizedBox(height: 12),
               _Field(
-                  label: 'Email',
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress),
+                label: 'Email',
+                controller: _emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+              ),
               const SizedBox(height: 12),
               _Field(label: 'Education', controller: _educationCtrl),
               const SizedBox(height: 12),
               _Field(
-                  label: 'Certifications',
-                  controller: _certificationsCtrl,
-                  maxLines: 2),
+                label: 'Certifications',
+                controller: _certificationsCtrl,
+                maxLines: 2,
+              ),
+
+              const SizedBox(height: 12),
+
+              _Field(label: 'Bio', controller: _bioCtrl, maxLines: 4),
+
               const SizedBox(height: 24),
 
               BlocBuilder<DoctorProfileCubit, DoctorProfileState>(
@@ -519,42 +578,47 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: isUpdating
-                          ? null
-                          : () {
-                              context
-                                  .read<DoctorProfileCubit>()
-                                  .updateProfile(
-                                    firstName:
-                                        _firstNameCtrl.text.trim(),
-                                    lastName:
-                                        _lastNameCtrl.text.trim(),
-                                    email: _emailCtrl.text.trim(),
-                                    education:
-                                        _educationCtrl.text.trim(),
-                                    certifications:
-                                        _certificationsCtrl.text.trim(),
-                                  );
-                            },
+                      onPressed:
+                          isUpdating
+                              ? null
+                              : () {
+                                context
+                                    .read<DoctorProfileCubit>()
+                                    .updateProfile(
+                                      firstName: _firstNameCtrl.text.trim(),
+                                      lastName: _lastNameCtrl.text.trim(),
+                                      email: _emailCtrl.text.trim(),
+                                      education: _educationCtrl.text.trim(),
+                                      certifications:
+                                          _certificationsCtrl.text.trim(),
+                                      bio: _bioCtrl.text.trim(),
+                                    );
+                              },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color(0xFFDC2626),
+                        backgroundColor: const Color(0xFFDC2626),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         elevation: 0,
                       ),
-                      child: isUpdating
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white, strokeWidth: 2),
-                            )
-                          : const Text('Save Changes',
-                              style: TextStyle(
+                      child:
+                          isUpdating
+                              ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text(
+                                'Save Changes',
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white)),
+                                  color: Colors.white,
+                                ),
+                              ),
                     ),
                   );
                 },
@@ -586,26 +650,31 @@ class _Field extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.outlineVariant)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.outlineVariant,
+          ),
+        ),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,
-          style: TextStyle(
-              fontSize: 14, color: colorScheme.inverseSurface),
+          style: TextStyle(fontSize: 14, color: colorScheme.inverseSurface),
           decoration: InputDecoration(
             filled: true,
             fillColor: colorScheme.surface,
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
             contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 12),
+              horizontal: 14,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -632,12 +701,14 @@ class _InfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color:
-                      Theme.of(context).colorScheme.outlineVariant)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
+          ),
           const SizedBox(height: 10),
           ...children,
         ],
@@ -650,8 +721,11 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoRow(
-      {required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -662,15 +736,19 @@ class _InfoRow extends StatelessWidget {
         children: [
           Icon(icon, size: 15, color: colorScheme.outlineVariant),
           const SizedBox(width: 8),
-          Text('$label: ',
-              style: TextStyle(
-                  fontSize: 13, color: colorScheme.outlineVariant)),
+          Text(
+            '$label: ',
+            style: TextStyle(fontSize: 13, color: colorScheme.outlineVariant),
+          ),
           Expanded(
-            child: Text(value,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.inverseSurface)),
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.inverseSurface,
+              ),
+            ),
           ),
         ],
       ),

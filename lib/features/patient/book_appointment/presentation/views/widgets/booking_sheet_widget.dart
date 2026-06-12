@@ -167,6 +167,97 @@ class _BookingSheetWidgetState extends State<BookingSheetWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
+                      // ── Doctor Info ──────────────────────────────
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Stats row
+                            Row(
+                              children: [
+                                if (widget.doctor.yearsExperience > 0) ...[
+                                  Expanded(
+                                    child: _DoctorInfoChip(
+                                      icon: Icons.work_outline_rounded,
+                                      label: 'Experience',
+                                      value: '${widget.doctor.yearsExperience} yrs',
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                ],
+                                if (widget.doctor.rating > 0)
+                                  Expanded(
+                                    child: _DoctorInfoChip(
+                                      icon: Icons.star_rounded,
+                                      label: 'Rating',
+                                      value: widget.doctor.rating.toStringAsFixed(1),
+                                      colorScheme: colorScheme,
+                                      iconColor: const Color(0xFFF59E0B),
+                                    ),
+                                  ),
+                                if (widget.doctor.consultationFee > 0) ...[
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _DoctorInfoChip(
+                                      icon: Icons.payments_outlined,
+                                      label: 'Fee',
+                                      value: '${widget.doctor.consultationFee.toStringAsFixed(0)} EGP',
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+
+                            // Education
+                            if (widget.doctor.education != null &&
+                                widget.doctor.education!.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              _DoctorDetailRow(
+                                icon: Icons.school_rounded,
+                                label: 'Education',
+                                value: widget.doctor.education!,
+                                colorScheme: colorScheme,
+                              ),
+                            ],
+
+                            // Certification
+                            if (widget.doctor.certification != null &&
+                                widget.doctor.certification!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              _DoctorDetailRow(
+                                icon: Icons.verified_rounded,
+                                label: 'Certification',
+                                value: widget.doctor.certification!,
+                                colorScheme: colorScheme,
+                              ),
+                            ],
+
+                            // Location
+                            if (widget.doctor.location != null &&
+                                widget.doctor.location!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              _DoctorDetailRow(
+                                icon: Icons.location_on_outlined,
+                                label: 'Location',
+                                value: widget.doctor.location!,
+                                colorScheme: colorScheme,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
                       // ── Appointment Type ──
                       Text(
                         'Appointment Type',
@@ -445,6 +536,91 @@ class _TypeChip extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Doctor Info Chip ──────────────────────────────────────────────────────────
+class _DoctorInfoChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final ColorScheme colorScheme;
+  final Color? iconColor;
+
+  const _DoctorInfoChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.colorScheme,
+    this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.primary,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 15,
+              color: iconColor ?? colorScheme.secondary),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: colorScheme.onSurfaceVariant)),
+                Text(value,
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700),
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Doctor Detail Row ─────────────────────────────────────────────────────────
+class _DoctorDetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final ColorScheme colorScheme;
+
+  const _DoctorDetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.colorScheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 15, color: colorScheme.secondary),
+        const SizedBox(width: 8),
+        Text('$label: ',
+            style: TextStyle(
+                fontSize: 12, color: colorScheme.onSurfaceVariant)),
+        Expanded(
+          child: Text(value,
+              style: const TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis),
+        ),
+      ],
     );
   }
 }

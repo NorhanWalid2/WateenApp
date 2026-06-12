@@ -103,7 +103,7 @@ class PrescriptionCardWidget extends StatelessWidget {
           // ── Details ──
           _DetailRow(
             icon: Icons.access_time_rounded,
-            text: 'Frequency: ${prescription.frequency}',
+            text: 'Frequency: ${PrescriptionModel.formatFrequency(prescription.frequency)}',
           ),
           const SizedBox(height: 4),
           _DetailRow(
